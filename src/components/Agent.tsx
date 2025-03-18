@@ -1,9 +1,12 @@
 import * as React from "react";
 import { Card } from "./ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
+import { Id } from "../../convex/_generated/dataModel";
 
 export interface AgentProps {
+  _id: Id<"agents">;
   name: string;
+  personality: string;
   isRaisingHand: boolean;
   avatar?: string;
   onClick?: () => void;
@@ -11,6 +14,7 @@ export interface AgentProps {
 
 export const Agent: React.FC<AgentProps> = ({
   name,
+  personality,
   isRaisingHand,
   avatar,
   onClick,
@@ -31,6 +35,9 @@ export const Agent: React.FC<AgentProps> = ({
     </Avatar>
     <div className="flex-1 min-w-0">
       <h3 className="font-medium text-foreground truncate">{name}</h3>
+      <span className="text-sm text-muted-foreground block truncate">
+        {personality}
+      </span>
       {isRaisingHand && (
         <span className="text-sm text-muted-foreground block">
           Has something to say...
