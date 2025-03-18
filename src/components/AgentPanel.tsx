@@ -17,10 +17,10 @@ export const AgentPanel: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full h-full p-4 bg-white rounded-lg shadow-sm">
-      <h2 className="text-lg font-semibold mb-4">Agents</h2>
+    <div className="w-full h-full p-4 bg-white rounded-lg shadow-sm border border-pastel-200">
+      <h2 className="text-lg font-semibold mb-4 text-pastel-900">Agents</h2>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {agents.map((agent) => (
           <Agent key={agent.id} {...agent} />
         ))}
@@ -28,9 +28,9 @@ export const AgentPanel: React.FC = () => {
 
       <button
         className="
-          w-full mt-4 p-2 rounded-lg border-2 border-dashed 
-          border-gray-300 text-gray-500 hover:border-gray-400 
-          hover:text-gray-600 transition-colors
+          w-full mt-6 p-2 rounded-lg border-2 border-dashed 
+          border-pastel-200 text-pastel-500 hover:border-pastel-300 
+          hover:text-pastel-600 hover:bg-pastel-50 transition-colors
         "
       >
         Add Agent

@@ -10,7 +10,7 @@ export const SignOutButton: React.FC = () => {
 
   return (
     <button
-      className="bg-slate-200 dark:bg-slate-800 text-foreground rounded-md px-2 py-1"
+      className="bg-pastel-200 hover:bg-pastel-300 text-pastel-800 rounded-md px-4 py-2 transition-colors duration-200"
       onClick={() => void signOut()}
     >
       Sign out

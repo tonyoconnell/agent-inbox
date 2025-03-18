@@ -6,12 +6,14 @@ import { Content } from "./components/Content";
 
 export default function App() {
   return (
-    <>
-      <header className="sticky top-0 z-10 bg-background p-4 border-b-2 border-slate-200 dark:border-slate-800 flex flex-row justify-between items-center">
-        Convex + React + Convex Auth
+    <div className="min-h-screen bg-pastel-50">
+      <header className="sticky top-0 z-10 bg-pastel-100 p-4 border-b border-pastel-200 shadow-sm flex flex-row justify-between items-center">
+        <h1 className="text-pastel-900 font-semibold text-xl">
+          Convex + React + Convex Auth
+        </h1>
         <SignOutButton />
       </header>
-      <main className="p-8 flex flex-col gap-16">
+      <main className="p-8 flex flex-col gap-16 max-w-4xl mx-auto">
         <Authenticated>
           <Content />
         </Authenticated>
@@ -19,6 +21,6 @@ export default function App() {
           <SignInForm />
         </Unauthenticated>
       </main>
-    </>
+    </div>
   );
 }
