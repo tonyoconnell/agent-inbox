@@ -10,6 +10,7 @@ import {
 import { api } from "../convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
+import { SignInWithGithub } from "./SignInWithGithub";
 
 export default function App() {
   return (
@@ -68,7 +69,8 @@ function SignInForm() {
           });
         }}
       >
-        <input
+        <SignInWithGithub />
+        {/* <input
           className="bg-background text-foreground rounded-md p-2 border-2 border-slate-200 dark:border-slate-800"
           type="email"
           name="email"
@@ -98,7 +100,7 @@ function SignInForm() {
           >
             {flow === "signIn" ? "Sign up instead" : "Sign in instead"}
           </span>
-        </div>
+        </div> */}
         {error && (
           <div className="bg-red-500/20 border-2 border-red-500/50 rounded-md p-2">
             <p className="text-foreground font-mono text-xs">
@@ -147,7 +149,7 @@ function Content() {
         Numbers:{" "}
         {numbers?.length === 0
           ? "Click the button!"
-          : (numbers?.join(", ") ?? "...")}
+          : numbers?.join(", ") ?? "..."}
       </p>
       <p>
         Edit{" "}
