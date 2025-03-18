@@ -21,7 +21,7 @@ export function UnauthenticatedContent() {
           Write with AI
         </p>
       </div>
-      <Card className="w-full max-w-xs relative overflow-hidden shadow-md border-neutral-200">
+      <Card className="w-full max-w-xs relative overflow-hidden shadow-md border-neutral-200 p-0">
         <div
           className="flex transition-transform duration-300 ease-in-out"
           style={{
@@ -54,26 +54,28 @@ export function UnauthenticatedContent() {
           </div>
 
           {/* Second page - Password sign-in */}
-          <div className="min-w-full shrink-0">
-            <CardHeader className="relative pb-0">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-4 top-4"
-                onClick={() => setShowPasswordSignIn(false)}
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <CardTitle className="text-xl text-center mt-2">
-                {authMode === "signIn"
-                  ? "Sign in with Email"
-                  : "Create an Account"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <SignInWithPassword onModeChange={setAuthMode} />
-            </CardContent>
-          </div>
+          {showPasswordSignIn ? (
+            <div className="min-w-full shrink-0">
+              <CardHeader className="relative pb-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-4 top-4"
+                  onClick={() => setShowPasswordSignIn(false)}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <CardTitle className="text-xl text-center mt-2 pt-4">
+                  {authMode === "signIn"
+                    ? "Sign in with Email"
+                    : "Create an Account"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <SignInWithPassword onModeChange={setAuthMode} />
+              </CardContent>
+            </div>
+          ) : null}
         </div>
       </Card>
     </main>
