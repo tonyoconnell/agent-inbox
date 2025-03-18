@@ -9,7 +9,7 @@ export default function App() {
     <div className="min-h-screen bg-pastel-50">
       <header className="sticky top-0 z-10 bg-pastel-100 p-4 border-b border-pastel-200 shadow-sm flex flex-row justify-between items-center">
         <h1 className="text-pastel-900 font-semibold text-xl">
-          Convex + React + Convex Auth
+          Agentic Writing
         </h1>
         <SignOutButton />
       </header>
