@@ -1,8 +1,8 @@
-# Agentic Writing Assistant PRD
+# Agent Write PRD
 
 ## Project Overview
 
-The Agentic Writing Assistant is a collaborative writing tool that provides users with multiple AI agents, each with a different personality, to assist in the writing process. These agents work autonomously in the background, performing research, providing feedback, and offering insights from different perspectives. Unlike traditional AI writing tools where the user must explicitly prompt for assistance, these agents proactively engage with the content being written.
+The Agent Write is a collaborative writing tool that provides users with multiple AI agents, each with a different personality, to assist in the writing process. These agents work autonomously in the background, performing research, providing feedback, and offering insights from different perspectives. Unlike traditional AI writing tools where the user must explicitly prompt for assistance, these agents proactively engage with the content being written.
 
 ## Core Value Proposition
 

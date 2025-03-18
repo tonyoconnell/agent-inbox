@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "agentic-writing",
+      "name": "agent-write",
       "dependencies": {
         "@auth/core": "0.37.0",
         "@blocknote/core": "^0.23.0",

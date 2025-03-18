@@ -25,7 +25,7 @@ export default function App() {
         <>
           <header className="sticky top-0 z-10 bg-card p-4 border-b border-border shadow-sm flex flex-row justify-between items-center">
             <h1 className="text-foreground font-semibold text-xl">
-              Agentic Writing
+              Agent Write
             </h1>
             <SignOutButton />
           </header>
@@ -52,7 +52,7 @@ export default function App() {
                     Welcome Back
                   </CardTitle>
                   <CardDescription className="text-center mb-6">
-                    Sign in to continue to Agentic Writing
+                    Sign in to continue to Agent Write
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-4 py-6">
