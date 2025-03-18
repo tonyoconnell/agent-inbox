@@ -1,21 +1,60 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer theme {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Base colors */
+    --background: oklch(100% 0 0);
+    --foreground: oklch(20% 0 0);
+    
+    /* Pastel colors using OKLCH for better color representation */
+    --pastel-50: oklch(98% 0.02 240);
+    --pastel-100: oklch(95% 0.04 240);
+    --pastel-200: oklch(90% 0.06 240);
+    --pastel-300: oklch(85% 0.08 240);
+    --pastel-400: oklch(80% 0.10 240);
+    --pastel-500: oklch(75% 0.12 240);
+    --pastel-600: oklch(70% 0.14 240);
+    --pastel-700: oklch(65% 0.16 240);
+    --pastel-800: oklch(60% 0.18 240);
+    --pastel-900: oklch(55% 0.20 240);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: oklch(20% 0 0);
+      --foreground: oklch(95% 0 0);
+    }
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}
+
+@layer utilities {
+  .bg-pastel-50 { background-color: var(--pastel-50); }
+  .bg-pastel-100 { background-color: var(--pastel-100); }
+  .bg-pastel-200 { background-color: var(--pastel-200); }
+  .bg-pastel-300 { background-color: var(--pastel-300); }
+  .bg-pastel-400 { background-color: var(--pastel-400); }
+  .bg-pastel-500 { background-color: var(--pastel-500); }
+  .bg-pastel-600 { background-color: var(--pastel-600); }
+  .bg-pastel-700 { background-color: var(--pastel-700); }
+  .bg-pastel-800 { background-color: var(--pastel-800); }
+  .bg-pastel-900 { background-color: var(--pastel-900); }
+
+  .text-pastel-50 { color: var(--pastel-50); }
+  .text-pastel-100 { color: var(--pastel-100); }
+  .text-pastel-200 { color: var(--pastel-200); }
+  .text-pastel-300 { color: var(--pastel-300); }
+  .text-pastel-400 { color: var(--pastel-400); }
+  .text-pastel-500 { color: var(--pastel-500); }
+  .text-pastel-600 { color: var(--pastel-600); }
+  .text-pastel-700 { color: var(--pastel-700); }
+  .text-pastel-800 { color: var(--pastel-800); }
+  .text-pastel-900 { color: var(--pastel-900); }
 }
