@@ -7,7 +7,11 @@ import { authTables } from "@convex-dev/auth/server";
 // The schema provides more precise TypeScript types.
 export default defineSchema({
   ...authTables,
-  numbers: defineTable({
-    value: v.number(),
-  }),
+  // Any tables used by the example app go here.
+  documents: defineTable({
+    docId: v.string(),
+    content: v.string(),
+  })
+    .index("docId", ["docId"])
+    .searchIndex("search_documents", { searchField: "content" }),
 });
