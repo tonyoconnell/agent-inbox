@@ -1,4 +1,6 @@
 import * as React from "react";
+import { Card } from "./ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 
 export interface AgentProps {
   name: string;
@@ -13,31 +15,27 @@ export const Agent: React.FC<AgentProps> = ({
   avatar,
   onClick,
 }) => (
-  <div
+  <Card
     className={`
-      flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-colors
-      ${
-        isRaisingHand
-          ? "bg-accent hover:bg-accent/90"
-          : "bg-card hover:bg-accent/50"
-      }
+      flex flex-row items-center gap-3 p-3 cursor-pointer transition-colors hover:bg-accent/50
+      ${isRaisingHand ? "bg-accent" : "bg-card"}
     `}
     onClick={onClick}
   >
-    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+    <Avatar className="shrink-0">
       {avatar ? (
-        <img src={avatar} alt={name} className="w-full h-full rounded-full" />
+        <AvatarImage src={avatar} alt={name} />
       ) : (
-        <span className="text-lg font-medium">{name[0]}</span>
+        <AvatarFallback>{name[0]}</AvatarFallback>
       )}
-    </div>
-    <div className="flex-1">
-      <h3 className="font-medium text-foreground">{name}</h3>
+    </Avatar>
+    <div className="flex-1 min-w-0">
+      <h3 className="font-medium text-foreground truncate">{name}</h3>
       {isRaisingHand && (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground block">
           Has something to say...
         </span>
       )}
     </div>
-  </div>
+  </Card>
 );

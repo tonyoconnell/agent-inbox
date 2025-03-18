@@ -1,11 +1,16 @@
 import * as React from "react";
 import { SignInWithGithub } from "../SignInWithGithub";
+import { Card, CardContent, CardHeader } from "./ui/card";
 
 export const SignInForm: React.FC = () => (
-  <div className="flex flex-col gap-8 w-96 mx-auto bg-white p-8 rounded-lg shadow-sm border border-pastel-200">
-    <p className="text-foreground text-center text-lg">
-      Welcome! Please sign in to continue
-    </p>
-    <SignInWithGithub />
-  </div>
+  <Card className="w-96 mx-auto">
+    <CardHeader>
+      <h2 className="text-lg text-center">
+        Welcome! Please sign in to continue
+      </h2>
+    </CardHeader>
+    <CardContent className="flex justify-center">
+      <SignInWithGithub />
+    </CardContent>
+  </Card>
 );

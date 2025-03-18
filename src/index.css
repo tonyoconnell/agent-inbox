@@ -33,7 +33,7 @@
 
 @layer base {
   :root {
-    --radius: 0.625rem;
+    --radius: 0.5rem;
     --background: oklch(98% 0.02 240);
     --foreground: oklch(20% 0.04 240);
     --card: oklch(100% 0 240);
