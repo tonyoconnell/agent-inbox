@@ -36,7 +36,17 @@ export default function App() {
       </Authenticated>
       <Unauthenticated>
         <main className="min-h-screen flex flex-col items-center justify-center p-8">
-          <Card className="w-full max-w-md relative overflow-hidden">
+          <div className="mb-8 flex flex-col items-center">
+            <img
+              src="/logo.png"
+              alt="Agent Write Logo"
+              className="w-72 h-auto mb-2"
+            />
+            <p className="text-neutral-700 text-lg font-medium mt-2">
+              Write with AI
+            </p>
+          </div>
+          <Card className="w-full max-w-md relative overflow-hidden shadow-md border-neutral-200">
             <div
               className="flex transition-transform duration-300 ease-in-out"
               style={{
@@ -47,24 +57,18 @@ export default function App() {
             >
               {/* First page - GitHub sign-in */}
               <div className="min-w-full shrink-0">
-                <CardHeader className="pb-0">
-                  <CardTitle className="text-2xl text-center">
-                    Welcome Back
-                  </CardTitle>
-                  <CardDescription className="text-center mb-6">
-                    Sign in to continue to Agent Write
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex flex-col items-center gap-4 py-6">
+                <CardContent className="flex flex-col items-center gap-4 p-6">
                   <SignInWithGithub />
                   <div className="flex items-center gap-4 w-full my-2">
-                    <div className="h-px bg-gray-300 flex-1" />
-                    <span className="text-gray-500 text-sm">or</span>
-                    <div className="h-px bg-gray-300 flex-1" />
+                    <div className="h-px bg-neutral-300 flex-1" />
+                    <span className="text-neutral-700 text-sm font-medium px-2">
+                      or
+                    </span>
+                    <div className="h-px bg-neutral-300 flex-1" />
                   </div>
                   <Button
                     variant="outline"
-                    className="w-full"
+                    className="w-full h-10"
                     onClick={() => setShowPasswordSignIn(true)}
                   >
                     <Mail className="mr-2 h-4 w-4" />
@@ -76,7 +80,7 @@ export default function App() {
 
               {/* Second page - Password sign-in */}
               <div className="min-w-full shrink-0">
-                <CardHeader className="relative">
+                <CardHeader className="relative pb-0">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -85,18 +89,13 @@ export default function App() {
                   >
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
-                  <CardTitle className="text-2xl text-center mt-2">
+                  <CardTitle className="text-xl text-center mt-2">
                     {authMode === "signIn"
                       ? "Sign in with Email"
                       : "Create an Account"}
                   </CardTitle>
-                  <CardDescription className="text-center">
-                    {authMode === "signIn"
-                      ? "Enter your email and password to sign in"
-                      : "Enter your details to create a new account"}
-                  </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <SignInWithPassword onModeChange={setAuthMode} />
                 </CardContent>
               </div>

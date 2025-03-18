@@ -7,26 +7,26 @@
 @layer theme {
   :root {
     /* Base colors */
-    --background: oklch(98% 0.02 240);
-    --foreground: oklch(20% 0.04 240);
+    --background: #EAE9E9;
+    --foreground: #363636;
 
-    /* Pastel colors using OKLCH for better color representation */
-    --pastel-50: oklch(98% 0.02 240);
-    --pastel-100: oklch(95% 0.04 240);
-    --pastel-200: oklch(90% 0.06 240);
-    --pastel-300: oklch(85% 0.08 240);
-    --pastel-400: oklch(80% 0.10 240);
-    --pastel-500: oklch(75% 0.12 240);
-    --pastel-600: oklch(70% 0.14 240);
-    --pastel-700: oklch(65% 0.16 240);
-    --pastel-800: oklch(60% 0.18 240);
-    --pastel-900: oklch(55% 0.20 240);
+    /* Neutral colors inspired by #EAE9E9 */
+    --neutral-50: #FFFFFF;
+    --neutral-100: #F7F7F7;
+    --neutral-200: #EAE9E9;
+    --neutral-300: #D9D8D8;
+    --neutral-400: #C6C5C5;
+    --neutral-500: #AEADAD;
+    --neutral-600: #8D8C8C;
+    --neutral-700: #6B6A6A;
+    --neutral-800: #4A4949;
+    --neutral-900: #363636;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: oklch(20% 0.04 240);
-      --foreground: oklch(98% 0.02 240);
+      --background: #363636;
+      --foreground: #EAE9E9;
     }
   }
 }
@@ -34,47 +34,47 @@
 @layer base {
   :root {
     --radius: 0.5rem;
-    --background: oklch(98% 0.02 240);
-    --foreground: oklch(20% 0.04 240);
-    --card: oklch(100% 0 240);
-    --card-foreground: oklch(20% 0.04 240);
-    --popover: oklch(100% 0 240);
-    --popover-foreground: oklch(20% 0.04 240);
-    --primary: oklch(75% 0.12 240);
-    --primary-foreground: oklch(98% 0.02 240);
-    --secondary: oklch(95% 0.04 240);
-    --secondary-foreground: oklch(20% 0.04 240);
-    --muted: oklch(95% 0.04 240);
-    --muted-foreground: oklch(60% 0.08 240);
-    --accent: oklch(90% 0.06 240);
-    --accent-foreground: oklch(20% 0.04 240);
+    --background: #EAE9E9;
+    --foreground: #363636;
+    --card: #FFFFFF;
+    --card-foreground: #363636;
+    --popover: #FFFFFF;
+    --popover-foreground: #363636;
+    --primary: #8D8C8C;
+    --primary-foreground: #FFFFFF;
+    --secondary: #F7F7F7;
+    --secondary-foreground: #363636;
+    --muted: #F7F7F7;
+    --muted-foreground: #6B6A6A;
+    --accent: #D9D8D8;
+    --accent-foreground: #363636;
     --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(98% 0.02 240);
-    --border: oklch(90% 0.06 240);
-    --input: oklch(90% 0.06 240);
-    --ring: oklch(75% 0.12 240);
+    --destructive-foreground: #FFFFFF;
+    --border: #D9D8D8;
+    --input: #D9D8D8;
+    --ring: #8D8C8C;
   }
 
   .dark {
-    --background: oklch(20% 0.04 240);
-    --foreground: oklch(98% 0.02 240);
-    --card: oklch(25% 0.04 240);
-    --card-foreground: oklch(98% 0.02 240);
-    --popover: oklch(25% 0.04 240);
-    --popover-foreground: oklch(98% 0.02 240);
-    --primary: oklch(75% 0.12 240);
-    --primary-foreground: oklch(98% 0.02 240);
-    --secondary: oklch(30% 0.06 240);
-    --secondary-foreground: oklch(98% 0.02 240);
-    --muted: oklch(30% 0.06 240);
-    --muted-foreground: oklch(70% 0.08 240);
-    --accent: oklch(30% 0.06 240);
-    --accent-foreground: oklch(98% 0.02 240);
+    --background: #363636;
+    --foreground: #EAE9E9;
+    --card: #4A4949;
+    --card-foreground: #EAE9E9;
+    --popover: #4A4949;
+    --popover-foreground: #EAE9E9;
+    --primary: #8D8C8C;
+    --primary-foreground: #FFFFFF;
+    --secondary: #6B6A6A;
+    --secondary-foreground: #EAE9E9;
+    --muted: #6B6A6A;
+    --muted-foreground: #C6C5C5;
+    --accent: #6B6A6A;
+    --accent-foreground: #EAE9E9;
     --destructive: oklch(0.704 0.191 22.216);
-    --destructive-foreground: oklch(98% 0.02 240);
-    --border: oklch(30% 0.06 240);
-    --input: oklch(30% 0.06 240);
-    --ring: oklch(75% 0.12 240);
+    --destructive-foreground: #FFFFFF;
+    --border: #6B6A6A;
+    --input: #6B6A6A;
+    --ring: #8D8C8C;
   }
 
   body {
@@ -84,27 +84,27 @@
 }
 
 @layer utilities {
-  .bg-pastel-50 { background-color: var(--pastel-50); }
-  .bg-pastel-100 { background-color: var(--pastel-100); }
-  .bg-pastel-200 { background-color: var(--pastel-200); }
-  .bg-pastel-300 { background-color: var(--pastel-300); }
-  .bg-pastel-400 { background-color: var(--pastel-400); }
-  .bg-pastel-500 { background-color: var(--pastel-500); }
-  .bg-pastel-600 { background-color: var(--pastel-600); }
-  .bg-pastel-700 { background-color: var(--pastel-700); }
-  .bg-pastel-800 { background-color: var(--pastel-800); }
-  .bg-pastel-900 { background-color: var(--pastel-900); }
+  .bg-neutral-50 { background-color: var(--neutral-50); }
+  .bg-neutral-100 { background-color: var(--neutral-100); }
+  .bg-neutral-200 { background-color: var(--neutral-200); }
+  .bg-neutral-300 { background-color: var(--neutral-300); }
+  .bg-neutral-400 { background-color: var(--neutral-400); }
+  .bg-neutral-500 { background-color: var(--neutral-500); }
+  .bg-neutral-600 { background-color: var(--neutral-600); }
+  .bg-neutral-700 { background-color: var(--neutral-700); }
+  .bg-neutral-800 { background-color: var(--neutral-800); }
+  .bg-neutral-900 { background-color: var(--neutral-900); }
 
-  .text-pastel-50 { color: var(--pastel-50); }
-  .text-pastel-100 { color: var(--pastel-100); }
-  .text-pastel-200 { color: var(--pastel-200); }
-  .text-pastel-300 { color: var(--pastel-300); }
-  .text-pastel-400 { color: var(--pastel-400); }
-  .text-pastel-500 { color: var(--pastel-500); }
-  .text-pastel-600 { color: var(--pastel-600); }
-  .text-pastel-700 { color: var(--pastel-700); }
-  .text-pastel-800 { color: var(--pastel-800); }
-  .text-pastel-900 { color: var(--pastel-900); }
+  .text-neutral-50 { color: var(--neutral-50); }
+  .text-neutral-100 { color: var(--neutral-100); }
+  .text-neutral-200 { color: var(--neutral-200); }
+  .text-neutral-300 { color: var(--neutral-300); }
+  .text-neutral-400 { color: var(--neutral-400); }
+  .text-neutral-500 { color: var(--neutral-500); }
+  .text-neutral-600 { color: var(--neutral-600); }
+  .text-neutral-700 { color: var(--neutral-700); }
+  .text-neutral-800 { color: var(--neutral-800); }
+  .text-neutral-900 { color: var(--neutral-900); }
 }
 
 @theme inline {

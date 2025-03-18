@@ -8,9 +8,9 @@ export function SignInWithGithub() {
     <Button
       onClick={() => void signIn("github")}
       variant="outline"
-      className="bg-black hover:bg-black/90 text-white border-black"
+      className="w-full h-10 bg-black hover:bg-black/90 text-white border-black"
     >
-      <Github />
+      <Github className="mr-2 h-4 w-4" />
       Sign in with GitHub
     </Button>
   );
