@@ -1,5 +1,7 @@
 import * as React from "react";
 import { Agent } from "./Agent";
+import { Button } from "./ui/button";
+import { Plus } from "lucide-react";
 
 export interface AgentType {
   id: string;
@@ -17,8 +19,8 @@ export const AgentPanel: React.FC = () => {
   ]);
 
   return (
-    <div className="w-full h-full p-4 bg-white rounded-lg shadow-sm border border-pastel-200">
-      <h2 className="text-lg font-semibold mb-4 text-pastel-900">Agents</h2>
+    <div className="w-full h-full p-4 bg-white rounded-lg shadow-sm border border-border text-muted-foreground">
+      <h2 className="text-lg font-semibold mb-4 text-foreground">Agents</h2>
 
       <div className="space-y-3">
         {agents.map((agent) => (
@@ -26,15 +28,10 @@ export const AgentPanel: React.FC = () => {
         ))}
       </div>
 
-      <button
-        className="
-          w-full mt-6 p-2 rounded-lg border-2 border-dashed 
-          border-pastel-200 text-pastel-500 hover:border-pastel-300 
-          hover:text-pastel-600 hover:bg-pastel-50 transition-colors
-        "
-      >
+      <Button variant="outline" className="w-full mt-6 border-2 border-dashed">
+        <Plus className="size-4" />
         Add Agent
-      </button>
+      </Button>
     </div>
   );
 };

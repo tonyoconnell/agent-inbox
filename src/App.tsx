@@ -6,9 +6,9 @@ import { Content } from "./components/Content";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-pastel-50">
-      <header className="sticky top-0 z-10 bg-pastel-100 p-4 border-b border-pastel-200 shadow-sm flex flex-row justify-between items-center">
-        <h1 className="text-pastel-900 font-semibold text-xl">
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-10 bg-card p-4 border-b border-border shadow-sm flex flex-row justify-between items-center">
+        <h1 className="text-foreground font-semibold text-xl">
           Agentic Writing
         </h1>
         <SignOutButton />
