@@ -13,4 +13,44 @@ export default defineSchema({
     createdBy: v.id("users"),
     lastMessageTime: v.number(),
   }).index("by_user_and_time", ["createdBy", "lastMessageTime"]),
+
+  agents: defineTable({
+    name: v.string(),
+    description: v.string(),
+    personality: v.string(),
+    avatarUrl: v.string(),
+    tools: v.array(v.string()),
+    status: v.union(
+      v.literal("idle"),
+      v.literal("active"),
+      v.literal("processing"),
+    ),
+    createdBy: v.id("users"),
+    lastActiveTime: v.number(),
+  })
+    .index("by_creator", ["createdBy"])
+    .index("by_status", ["status"])
+    .index("by_name", ["name"]),
+
+  threadParticipants: defineTable(
+    v.union(
+      v.object({
+        threadId: v.id("threads"),
+        kind: v.literal("agent"),
+        agentId: v.id("agents"),
+        addedAt: v.number(),
+      }),
+      v.object({
+        threadId: v.id("threads"),
+        kind: v.literal("user"),
+        userId: v.id("users"),
+        addedAt: v.number(),
+      }),
+    ),
+  )
+    .index("by_thread", ["threadId"])
+    .index("by_agent", ["kind", "agentId"])
+    .index("by_user", ["kind", "userId"])
+    .index("by_thread_and_agent", ["threadId", "kind", "agentId"])
+    .index("by_thread_and_user", ["threadId", "kind", "userId"]),
 });

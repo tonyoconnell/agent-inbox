@@ -14,6 +14,8 @@ export const listMine = query({
   handler: async (ctx) => Threads.listMine(ctx),
 });
 
+
+
 export const getMine = query({
   args: {
     threadId: v.id("threads"),
@@ -40,5 +42,5 @@ export const removeMine = mutation({
   args: {
     threadId: v.id("threads"),
   },
-  handler: async (ctx, args) => Threads.deleteMine(ctx, args),
+  handler: async (ctx, args) => Threads.removeMine(ctx, args),
 });

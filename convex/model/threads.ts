@@ -1,17 +1,36 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import * as Users from "./users";
+import * as ThreadParticipants from "./threadParticipants";
+
+export const ensureICanAccessThread = async (
+  ctx: QueryCtx | MutationCtx,
+  { threadId }: { threadId: Id<"threads"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const thread = await ctx.db.get(threadId);
+
+  if (!thread) throw new Error("Thread not found");
+  if (thread.createdBy !== userId) throw new Error("Access denied");
+
+  return thread;
+};
 
 export const createThread = async (
   ctx: MutationCtx,
   { title }: { title: string },
 ) => {
   const userId = await Users.getMyId(ctx);
-  return await ctx.db.insert("threads", {
+  const threadId = await ctx.db.insert("threads", {
     title,
     createdBy: userId,
     lastMessageTime: Date.now(),
   });
+
+  // Add the creator as a participant
+  await ThreadParticipants.addUser(ctx.db, { threadId, userId });
+
+  return threadId;
 };
 
 export const listMine = async (ctx: QueryCtx) => {
@@ -47,24 +66,14 @@ export const updateMine = async (
   ctx: MutationCtx,
   { threadId, title }: { threadId: Id<"threads">; title: string },
 ) => {
-  const userId = await Users.getMyId(ctx);
-  const thread = await ctx.db.get(threadId);
-
-  if (!thread) throw new Error("Thread not found");
-  if (thread.createdBy !== userId) throw new Error("Access denied");
-
+  await ensureICanAccessThread(ctx, { threadId });
   return await ctx.db.patch(threadId, { title });
 };
 
-export const deleteMine = async (
+export const removeMine = async (
   ctx: MutationCtx,
   { threadId }: { threadId: Id<"threads"> },
 ) => {
-  const userId = await Users.getMyId(ctx);
-  const thread = await ctx.db.get(threadId);
-
-  if (!thread) throw new Error("Thread not found");
-  if (thread.createdBy !== userId) throw new Error("Access denied");
-
+  await ensureICanAccessThread(ctx, { threadId });
   await ctx.db.delete(threadId);
 };

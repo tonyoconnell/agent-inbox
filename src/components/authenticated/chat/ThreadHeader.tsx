@@ -16,6 +16,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Confirm } from "../../ui/confirm";
 import { routes } from "../../../routes";
+import { ThreadParticipants } from "./ThreadParticipants";
 
 interface ThreadHeaderProps {
   thread: Doc<"threads"> | undefined | null;
@@ -106,6 +107,8 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
         variant="destructive"
         onConfirm={handleDelete}
       />
+
+      <ThreadParticipants thread={thread} />
     </div>
   );
 };
