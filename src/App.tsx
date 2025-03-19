@@ -3,12 +3,11 @@ import { Authenticated, Unauthenticated } from "convex/react";
 import { AuthenticatedContent } from "./components/authenticated/AuthenticatedContent";
 import { UnauthenticatedContent } from "./components/unauthenticated/UnauthenticatedContent";
 import { toast, Toaster } from "sonner";
-import { ErrorBoundary } from "react-error-boundary";
+import { RouteProvider } from "./routes";
 
 export default function App() {
   return (
-    // <ErrorBoundary fallback={<>error</>} onError={(e) => toast.error("error!")}>
-    <>
+    <RouteProvider>
       <div className="min-h-screen bg-background">
         <Authenticated>
           <AuthenticatedContent />
@@ -18,7 +17,6 @@ export default function App() {
         </Unauthenticated>
       </div>
       <Toaster />
-    </>
-    // </ErrorBoundary>
+    </RouteProvider>
   );
 }

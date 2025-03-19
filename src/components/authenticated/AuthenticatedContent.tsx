@@ -2,6 +2,12 @@ import * as React from "react";
 import { ThreadList } from "./threads/ThreadList";
 import { ChatArea } from "./chat/ChatArea";
 import { UserProfile } from "@/components/authenticated/threads/UserProfile";
+import {
+  useRoute,
+  routes,
+  useCurrentThreadId,
+  useCurrentTaskId,
+} from "../../routes";
 
 interface Message {
   id: string;
@@ -12,7 +18,9 @@ interface Message {
 }
 
 export const AuthenticatedContent: React.FC = () => {
-  const [isTaskPanelOpen, setIsTaskPanelOpen] = React.useState(false);
+  const route = useRoute();
+  const currentThreadId = useCurrentThreadId();
+  const currentTaskId = useCurrentTaskId();
 
   // Dummy messages for now - we'll replace these later
   const dummyMessages: Message[] = [
@@ -44,6 +52,25 @@ export const AuthenticatedContent: React.FC = () => {
     // TODO: Implement sending message
   };
 
+  // If we're not in a thread, show a welcome message
+  if (!currentThreadId)
+    return (
+      <div className="h-screen flex bg-background">
+        <div className="w-64 bg-card border-r border-border flex flex-col dark">
+          <ThreadList />
+          <UserProfile />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Welcome to Agent Inbox</h1>
+            <p className="text-muted-foreground">
+              Select a thread to get started
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+
   return (
     <div className="h-screen flex bg-background">
       <div className="w-64 bg-card border-r border-border flex flex-col dark">
@@ -53,13 +80,15 @@ export const AuthenticatedContent: React.FC = () => {
 
       <ChatArea messages={dummyMessages} onSendMessage={handleSendMessage} />
 
-      {/* Right Sidebar - Task Details (Optional) */}
-      {isTaskPanelOpen && (
+      {/* Right Sidebar - Task Details */}
+      {currentTaskId && (
         <div className="w-80 bg-background border-l border-border p-4">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Task Details</h3>
             <button
-              onClick={() => setIsTaskPanelOpen(false)}
+              onClick={() =>
+                routes.thread({ threadId: currentThreadId! }).push()
+              }
               className="text-muted-foreground hover:text-foreground"
             >
               ×
