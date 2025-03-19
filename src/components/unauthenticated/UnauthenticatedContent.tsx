@@ -17,9 +17,6 @@ export function UnauthenticatedContent() {
           alt="Agent Inbox Logo"
           className="w-72 h-auto mb-2"
         />
-        <p className="text-neutral-700 text-lg font-medium mt-2">
-          Write with AI
-        </p>
       </div>
       <Card className="w-full max-w-xs relative overflow-hidden shadow-md border-neutral-200 p-0">
         <div
