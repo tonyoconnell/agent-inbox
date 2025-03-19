@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Card } from "./ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
-import { Id } from "../../convex/_generated/dataModel";
+import { Card } from "../ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export interface AgentProps {
   _id: Id<"agents">;

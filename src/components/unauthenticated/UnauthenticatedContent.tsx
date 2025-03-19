@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
 import { ChevronRight, ArrowLeft, Mail } from "lucide-react";
-import { SignInWithGithub } from "../SignInWithGithub";
-import { SignInWithPassword } from "../SignInWithPassword";
+import { SignInWithGithub } from "./SignInWithGithub";
+import { SignInWithPassword } from "./SignInWithPassword";
 
 export function UnauthenticatedContent() {
   const [showPasswordSignIn, setShowPasswordSignIn] = React.useState(false);

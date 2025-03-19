@@ -1,6 +1,6 @@
 import * as React from "react";
-import { SignInWithGithub } from "../SignInWithGithub";
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card, CardContent, CardHeader } from "../ui/card";
+import { SignInWithGithub } from "./SignInWithGithub";
 
 export const SignInForm: React.FC = () => (
   <Card className="w-96 mx-auto">

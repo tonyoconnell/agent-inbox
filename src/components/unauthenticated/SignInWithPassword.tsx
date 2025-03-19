@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { Button } from "./components/ui/button";
+import { Button } from "../ui/button";
 
 export function SignInWithPassword({
   onModeChange,

@@ -1,20 +1,20 @@
 import * as React from "react";
 import { Agent } from "./Agent";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Plus, Pencil } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "../../../convex/_generated/api";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Id } from "../../convex/_generated/dataModel";
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Id } from "../../../convex/_generated/dataModel";
 
 export const AgentPanel: React.FC = () => {
   const agents = useQuery(api.agents.listAgents);
