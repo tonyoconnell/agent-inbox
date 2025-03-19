@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+This is a shadcnui project, so please look at the components in /src/components/ui before creating your own for something or if there is an existing shadcn component that you know of and think the project needs to be installed please ask me to install it.

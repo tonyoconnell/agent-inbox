@@ -3,8 +3,8 @@ import { Id } from "../_generated/dataModel";
 import * as Users from "./users";
 
 export const createThread = async (
-  { title }: { title: string },
   ctx: MutationCtx,
+  { title }: { title: string },
 ) => {
   const userId = await Users.getMyId(ctx);
   return await ctx.db.insert("threads", {
@@ -14,7 +14,7 @@ export const createThread = async (
   });
 };
 
-export const getMyThreads = async (ctx: QueryCtx) => {
+export const listMine = async (ctx: QueryCtx) => {
   const userId = await Users.getMyId(ctx);
 
   return await ctx.db
@@ -24,11 +24,47 @@ export const getMyThreads = async (ctx: QueryCtx) => {
     .collect();
 };
 
-export const getMyThread = async (ctx: QueryCtx, threadId: Id<"threads">) => {
+export const findMine = async (
+  ctx: QueryCtx,
+  { threadId }: { threadId: Id<"threads"> },
+) => {
   const userId = await Users.getMyId(ctx);
   const thread = await ctx.db.get(threadId);
-  if (!thread) throw new Error("Thread not found");
-  if (thread.createdBy !== userId)
-    throw new Error(`Cannot access thread that doesnt belong to you`);
+  if (thread && thread.createdBy !== userId) throw new Error("Access denied");
   return thread;
+};
+
+export const getMine = async (
+  ctx: QueryCtx,
+  { threadId }: { threadId: Id<"threads"> },
+) => {
+  const thread = await findMine(ctx, { threadId });
+  if (!thread) throw new Error("Thread not found");
+  return thread;
+};
+
+export const updateMine = async (
+  ctx: MutationCtx,
+  { threadId, title }: { threadId: Id<"threads">; title: string },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const thread = await ctx.db.get(threadId);
+
+  if (!thread) throw new Error("Thread not found");
+  if (thread.createdBy !== userId) throw new Error("Access denied");
+
+  return await ctx.db.patch(threadId, { title });
+};
+
+export const deleteMine = async (
+  ctx: MutationCtx,
+  { threadId }: { threadId: Id<"threads"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const thread = await ctx.db.get(threadId);
+
+  if (!thread) throw new Error("Thread not found");
+  if (thread.createdBy !== userId) throw new Error("Access denied");
+
+  await ctx.db.delete(threadId);
 };

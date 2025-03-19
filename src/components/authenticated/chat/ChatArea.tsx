@@ -4,6 +4,10 @@ import { ChatInput } from "./ChatInput";
 import { useCurrentThreadId } from "../../../routes";
 import { ThreadHeader } from "./ThreadHeader";
 import { Skeleton } from "../../ui/skeleton";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Id } from "../../../../convex/_generated/dataModel";
+import { routes } from "@/routes";
 
 interface Message {
   id: string;
@@ -24,6 +28,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const currentThreadId = useCurrentThreadId();
+  const thread = useQuery(
+    api.threads.findMine,
+    currentThreadId ? { threadId: currentThreadId as Id<"threads"> } : "skip",
+  );
+
+  // If the thread is not found, redirect to the home page
+  React.useEffect(() => {
+    if (thread === undefined) return; // loading
+    if (thread === null) routes.home().push();
+  }, [thread]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -35,7 +49,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
 
   return (
     <div className="flex-1 flex flex-col bg-background">
-      <ThreadHeader threadId={currentThreadId} />
+      <ThreadHeader thread={thread} />
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {currentThreadId && messages.length === 0 ? (
           <>
