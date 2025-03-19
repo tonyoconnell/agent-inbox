@@ -136,19 +136,21 @@ export const AuthenticatedContent: React.FC = () => {
                   </div>
                 )}
                 <div>{message.content}</div>
-                <div className="text-xs text-muted-foreground mt-1">
+                <div
+                  className={`text-xs mt-1 ${message.sender === "user" ? "text-primary-foreground/80" : "text-muted-foreground"}`}
+                >
                   {message.timestamp}
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="p-4 border-t border-border">
-          <div className="flex gap-2">
+        <div className="p-4 border-t border-border bg-card">
+          <div className="flex gap-2 bg-background/50 p-2 rounded-lg border border-border">
             <input
               type="text"
               placeholder="Type a message..."
-              className="flex-1 rounded-md border border-input bg-background px-3 py-2"
+              className="flex-1 rounded-md border-0 bg-transparent px-3 py-2 focus-visible:ring-0 placeholder:text-muted-foreground/50"
             />
             <button className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90">
               Send

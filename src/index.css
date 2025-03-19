@@ -4,33 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@layer theme {
-  :root {
-    /* Base colors */
-    --background: #EAE9E9;
-    --foreground: #363636;
-
-    /* Neutral colors inspired by #EAE9E9 */
-    --neutral-50: #FFFFFF;
-    --neutral-100: #F7F7F7;
-    --neutral-200: #EAE9E9;
-    --neutral-300: #D9D8D8;
-    --neutral-400: #C6C5C5;
-    --neutral-500: #AEADAD;
-    --neutral-600: #8D8C8C;
-    --neutral-700: #6B6A6A;
-    --neutral-800: #4A4949;
-    --neutral-900: #363636;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #363636;
-      --foreground: #EAE9E9;
-    }
-  }
-}
-
 @layer base {
   :root {
     --radius: 0.5rem;
@@ -40,71 +13,47 @@
     --card-foreground: #363636;
     --popover: #FFFFFF;
     --popover-foreground: #363636;
-    --primary: #8D8C8C;
+    --primary: #64748B;
     --primary-foreground: #FFFFFF;
     --secondary: #F7F7F7;
     --secondary-foreground: #363636;
     --muted: #F7F7F7;
     --muted-foreground: #6B6A6A;
-    --accent: #D9D8D8;
-    --accent-foreground: #363636;
-    --destructive: oklch(0.577 0.245 27.325);
+    --accent: #E2E8F0;
+    --accent-foreground: #334155;
+    --destructive: #991B1B;
     --destructive-foreground: #FFFFFF;
-    --border: #D9D8D8;
+    --border: #E2E8F0;
     --input: #D9D8D8;
-    --ring: #8D8C8C;
+    --ring: #64748B;
   }
 
   .dark {
     --background: #363636;
     --foreground: #EAE9E9;
-    --card: #4A4949;
+    --card: #1E293B;
     --card-foreground: #EAE9E9;
     --popover: #4A4949;
     --popover-foreground: #EAE9E9;
-    --primary: #8D8C8C;
+    --primary: #94A3B8;
     --primary-foreground: #FFFFFF;
     --secondary: #6B6A6A;
     --secondary-foreground: #EAE9E9;
     --muted: #6B6A6A;
     --muted-foreground: #C6C5C5;
-    --accent: #6B6A6A;
-    --accent-foreground: #EAE9E9;
-    --destructive: oklch(0.704 0.191 22.216);
+    --accent: #334155;
+    --accent-foreground: #E2E8F0;
+    --destructive: #B91C1C;
     --destructive-foreground: #FFFFFF;
-    --border: #6B6A6A;
+    --border: #475569;
     --input: #6B6A6A;
-    --ring: #8D8C8C;
+    --ring: #64748B;
   }
 
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-}
-
-@layer utilities {
-  .bg-neutral-50 { background-color: var(--neutral-50); }
-  .bg-neutral-100 { background-color: var(--neutral-100); }
-  .bg-neutral-200 { background-color: var(--neutral-200); }
-  .bg-neutral-300 { background-color: var(--neutral-300); }
-  .bg-neutral-400 { background-color: var(--neutral-400); }
-  .bg-neutral-500 { background-color: var(--neutral-500); }
-  .bg-neutral-600 { background-color: var(--neutral-600); }
-  .bg-neutral-700 { background-color: var(--neutral-700); }
-  .bg-neutral-800 { background-color: var(--neutral-800); }
-  .bg-neutral-900 { background-color: var(--neutral-900); }
-
-  .text-neutral-50 { color: var(--neutral-50); }
-  .text-neutral-100 { color: var(--neutral-100); }
-  .text-neutral-200 { color: var(--neutral-200); }
-  .text-neutral-300 { color: var(--neutral-300); }
-  .text-neutral-400 { color: var(--neutral-400); }
-  .text-neutral-500 { color: var(--neutral-500); }
-  .text-neutral-600 { color: var(--neutral-600); }
-  .text-neutral-700 { color: var(--neutral-700); }
-  .text-neutral-800 { color: var(--neutral-800); }
-  .text-neutral-900 { color: var(--neutral-900); }
 }
 
 @theme inline {

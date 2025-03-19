@@ -10,7 +10,7 @@ export const SignOutButton: React.FC = () => {
   if (!isAuthenticated) return null;
 
   return (
-    <Button variant="secondary" onClick={() => void signOut()}>
+    <Button variant="default" onClick={() => void signOut()}>
       Sign out
     </Button>
   );
