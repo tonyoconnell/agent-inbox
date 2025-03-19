@@ -4,7 +4,7 @@ import { AgentPanel } from "./AgentPanel";
 
 export const Content: React.FC = () => (
   <div className="flex gap-6 h-screen max-h-[calc(100vh-200px)]">
-    <div className="flex-1 bg-white rounded-lg shadow-sm border border-border">
+    <div className="flex-1 bg-white rounded-lg shadow-sm border border-border py-6 ">
       <TextEditor />
     </div>
     <div className="w-96">

@@ -13,7 +13,7 @@ export function UnauthenticatedContent() {
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="mb-8 flex flex-col items-center">
         <img
-          src="/logo.png"
+          src="/logo-no-bg.png"
           alt="Agent Write Logo"
           className="w-72 h-auto mb-2"
         />
