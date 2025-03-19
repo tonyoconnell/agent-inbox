@@ -7,8 +7,6 @@ export const createThread = async (
   ctx: MutationCtx,
 ) => {
   const userId = await Users.getMyId(ctx);
-  if (0 < 10) throw new Error("whoops!");
-
   return await ctx.db.insert("threads", {
     title,
     createdBy: userId,

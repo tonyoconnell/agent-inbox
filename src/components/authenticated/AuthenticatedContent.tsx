@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card } from "../ui/card";
 import { Plus } from "lucide-react";
 import { Input } from "../ui/input";
+import { useApiErrorHandler } from "../misc/errors";
 
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
@@ -18,6 +19,7 @@ export const AuthenticatedContent: React.FC = () => {
   );
   const [isTaskPanelOpen, setIsTaskPanelOpen] = React.useState(false);
   const [newThreadTitle, setNewThreadTitle] = React.useState("");
+  const onApiError = useApiErrorHandler();
 
   // Dummy messages for now - we'll replace these later
   const dummyMessages = [
@@ -47,7 +49,7 @@ export const AuthenticatedContent: React.FC = () => {
   if (!me || !threads) return <div>Loading...</div>;
 
   const handleCreateThread = async () => {
-    await createThread({ title: DEFAULT_THREAD_TITLE });
+    await createThread({ title: DEFAULT_THREAD_TITLE }).catch(onApiError);
   };
 
   return (
