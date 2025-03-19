@@ -9,7 +9,14 @@ export const create = mutation({
   handler: async (ctx, args) => Threads.createThread(args, ctx),
 });
 
-export const list = query({
+export const listMine = query({
   args: {},
   handler: async (ctx) => Threads.getMyThreads(ctx),
+});
+
+export const getMine = query({
+  args: {
+    threadId: v.id("threads"),
+  },
+  handler: async (ctx, args) => Threads.getMyThread(ctx, args.threadId),
 });

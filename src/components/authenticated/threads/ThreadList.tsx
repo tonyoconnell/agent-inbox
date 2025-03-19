@@ -11,7 +11,7 @@ const DEFAULT_THREAD_TITLE = "New Conversation";
 interface ThreadListProps {}
 
 export const ThreadList: React.FC<ThreadListProps> = ({}) => {
-  const threads = useQuery(api.threads.list);
+  const threads = useQuery(api.threads.listMine);
   const createThread = useMutation(api.threads.create);
   const onApiError = useApiErrorHandler();
   const currentThreadId = useCurrentThreadId();

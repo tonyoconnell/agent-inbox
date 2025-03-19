@@ -10,7 +10,7 @@ interface UserProfileProps {}
 export const UserProfile: React.FC<UserProfileProps> = ({}) => {
   const me = useQuery(api.users.getMe);
   return (
-    <Card className="m-2 p-2 bg-accent/20 border-accent/20">
+    <Card className="m-2 p-2 bg-accent/50 border-accent/50">
       <div className="flex items-center gap-3">
         <Avatar>
           <AvatarImage src={me?.image} />

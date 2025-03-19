@@ -23,3 +23,12 @@ export const getMyThreads = async (ctx: QueryCtx) => {
     .order("desc")
     .collect();
 };
+
+export const getMyThread = async (ctx: QueryCtx, threadId: Id<"threads">) => {
+  const userId = await Users.getMyId(ctx);
+  const thread = await ctx.db.get(threadId);
+  if (!thread) throw new Error("Thread not found");
+  if (thread.createdBy !== userId)
+    throw new Error(`Cannot access thread that doesnt belong to you`);
+  return thread;
+};

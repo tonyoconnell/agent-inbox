@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 
 export const ThreadList = () => {
-  const threads = useQuery(api.threads.list);
+  const threads = useQuery(api.threads.listMine);
   const createThread = useMutation(api.threads.create);
   const [newThreadTitle, setNewThreadTitle] = useState("");
 
