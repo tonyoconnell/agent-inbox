@@ -10,7 +10,7 @@ export const createAgent = mutation({
   },
   returns: v.id("agents"),
   handler: async (ctx, args) => {
-    const userId = await Users.getCurrentUserId(ctx);
+    const userId = await Users.getMyId(ctx);
 
     return await ctx.db.insert("agents", {
       name: args.name,
@@ -31,7 +31,7 @@ export const updateAgent = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const userId = await Users.getCurrentUserId(ctx);
+    const userId = await Users.getMyId(ctx);
 
     // Get the agent
     const agent = await ctx.db.get(args.id);
@@ -54,7 +54,7 @@ export const updateAgent = mutation({
 export const listAgents = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await Users.getCurrentUserId(ctx);
+    const userId = await Users.getMyId(ctx);
 
     return await ctx.db
       .query("agents")

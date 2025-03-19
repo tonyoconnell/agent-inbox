@@ -12,7 +12,9 @@ import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
 import type * as documents from "../documents.js";
 import type * as http from "../http.js";
+import type * as model_documents from "../model/documents.js";
 import type * as model_users from "../model/users.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -33,7 +35,9 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   documents: typeof documents;
   http: typeof http;
+  "model/documents": typeof model_documents;
   "model/users": typeof model_users;
+  users: typeof users;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

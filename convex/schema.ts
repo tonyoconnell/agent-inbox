@@ -8,6 +8,10 @@ import { authTables } from "@convex-dev/auth/server";
 export default defineSchema({
   ...authTables,
 
+  documents: defineTable({
+    owningUserId: v.id("users"),
+  }).index("by_owningUserId", ["owningUserId"]),
+
   agents: defineTable({
     name: v.string(),
     owningUserId: v.id("users"),
