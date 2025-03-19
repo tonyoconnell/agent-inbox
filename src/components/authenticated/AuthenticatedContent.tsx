@@ -1,37 +1,25 @@
 import * as React from "react";
 import { SignOutButton } from "./SignOutButton";
 import { api } from "../../../convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Card } from "../ui/card";
 import { Plus } from "lucide-react";
+import { Input } from "../ui/input";
+
+const DEFAULT_THREAD_TITLE = "New Conversation";
 
 export const AuthenticatedContent: React.FC = () => {
   const me = useQuery(api.users.getMe);
+  const threads = useQuery(api.threads.list);
+  const createThread = useMutation(api.threads.create);
   const [selectedThreadId, setSelectedThreadId] = React.useState<string | null>(
     null,
   );
   const [isTaskPanelOpen, setIsTaskPanelOpen] = React.useState(false);
+  const [newThreadTitle, setNewThreadTitle] = React.useState("");
 
-  // Dummy data for initial UI
-  const dummyThreads = [
-    {
-      id: "1",
-      name: "Project Planning",
-      lastMessage: "Let's break this down...",
-    },
-    {
-      id: "2",
-      name: "Research Task",
-      lastMessage: "I found some interesting papers...",
-    },
-    {
-      id: "3",
-      name: "Code Review",
-      lastMessage: "The implementation looks good...",
-    },
-  ];
-
+  // Dummy messages for now - we'll replace these later
   const dummyMessages = [
     {
       id: "1",
@@ -56,7 +44,11 @@ export const AuthenticatedContent: React.FC = () => {
     },
   ];
 
-  if (!me) return <div>Loading...</div>;
+  if (!me || !threads) return <div>Loading...</div>;
+
+  const handleCreateThread = async () => {
+    await createThread({ title: DEFAULT_THREAD_TITLE });
+  };
 
   return (
     <div className="h-screen flex bg-background">
@@ -71,25 +63,28 @@ export const AuthenticatedContent: React.FC = () => {
           <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
         </div>
         <div className="p-4">
-          <button className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-primary/90">
+          <button
+            onClick={handleCreateThread}
+            className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
             <Plus className="h-5 w-5" />
             New Thread
           </button>
         </div>
         <div className="flex-1 overflow-y-auto">
-          {dummyThreads.map((thread) => (
+          {threads.map((thread) => (
             <div
-              key={thread.id}
-              onClick={() => setSelectedThreadId(thread.id)}
+              key={thread._id}
+              onClick={() => setSelectedThreadId(thread._id)}
               className={`p-4 cursor-pointer hover:bg-accent ${
-                selectedThreadId === thread.id ? "bg-accent" : ""
+                selectedThreadId === thread._id ? "bg-accent" : ""
               }`}
             >
               <div className="font-medium text-primary-foreground">
-                {thread.name}
+                {thread.title}
               </div>
               <div className="text-sm text-muted-foreground/80 truncate">
-                {thread.lastMessage}
+                {new Date(thread.lastMessageTime).toLocaleTimeString()}
               </div>
             </div>
           ))}
