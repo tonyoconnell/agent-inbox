@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "../../ui/dialog";
 import { UserPlus, Trash2 } from "lucide-react";
+import { AgentSelector } from "./AgentSelector";
 
 interface ParticipantsDialogProps {
   conversation: Doc<"conversations">;
@@ -39,6 +40,10 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
     });
   };
 
+  // Group participants by type
+  const users = participants?.filter((p) => p.kind === "user") ?? [];
+  const agents = participants?.filter((p) => p.kind === "agent") ?? [];
+
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -46,9 +51,13 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Conversation Participants</DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Users section */}
           <div className="space-y-2">
-            {participants?.map((p) => (
+            <div className="text-sm font-medium text-muted-foreground">
+              Users
+            </div>
+            {users.map((p) => (
               <div
                 key={p.id}
                 className="flex items-center justify-between p-2 rounded-lg hover:bg-muted"
@@ -60,11 +69,6 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
                   </Avatar>
                   <div>
                     <div className="font-medium">{p.name}</div>
-                    {p.kind === "agent" && (
-                      <div className="text-sm text-muted-foreground">
-                        {p.description}
-                      </div>
-                    )}
                     {p.isCreator && (
                       <div className="text-xs text-muted-foreground">
                         Creator
@@ -72,22 +76,58 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
                     )}
                   </div>
                 </div>
-                {!p.isCreator && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleRemove(p.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
               </div>
             ))}
           </div>
-          <Button className="w-full" variant="outline">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Participant
-          </Button>
+
+          {/* Agents section */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-muted-foreground">
+                Agents
+              </div>
+              <AgentSelector
+                conversation={conversation}
+                trigger={
+                  <Button variant="ghost" size="sm" className="h-7">
+                    <UserPlus className="h-4 w-4 mr-1.5" />
+                    Add
+                  </Button>
+                }
+              />
+            </div>
+            {agents.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-muted"
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={p.avatarUrl} />
+                    <AvatarFallback>{p.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium">{p.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {p.description}
+                    </div>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleRemove(p.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+            {agents.length === 0 && (
+              <div className="text-sm text-muted-foreground text-center py-4 bg-muted/50 rounded-lg">
+                No agents added yet
+              </div>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
