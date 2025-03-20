@@ -3,6 +3,8 @@ import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { Avatar } from "@/components/ui/avatar";
+import { AgentAvatar } from "@/components/ui/agent-avatar";
 
 interface ChatInputProps {
   onSendMessage: (
@@ -77,14 +79,33 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
               list: {
                 backgroundColor: "var(--background)",
                 border: "1px solid var(--border)",
-                borderRadius: 6,
-                fontSize: 14,
-                maxHeight: 200,
+                borderRadius: "0.375rem",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                fontSize: "14px",
+                maxHeight: "300px",
                 overflow: "auto",
-                position: "absolute",
+                width: "300px",
+                minWidth: "100%",
+                position: "absolute" as const,
                 bottom: "100%",
                 left: 0,
                 right: 0,
+                marginBottom: "0.5rem",
+                zIndex: 1000,
+              },
+              item: {
+                padding: "8px 12px",
+                borderBottom: "1px solid var(--border)",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                cursor: "pointer",
+                transition: "background-color 0.2s",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                "&focused": {
+                  backgroundColor: "var(--accent)",
+                },
               },
             },
           }}
@@ -105,8 +126,14 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
               suggestion: SuggestionDataItem,
               search,
               highlightedDisplay,
+              index,
             ) => (
               <div className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer">
+                <AgentAvatar
+                  size="sm"
+                  avatarUrl={agents[index].avatarUrl}
+                  name={agents[index].name}
+                />
                 <span>{highlightedDisplay}</span>
               </div>
             )}
