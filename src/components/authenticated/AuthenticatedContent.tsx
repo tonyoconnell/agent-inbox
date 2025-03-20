@@ -8,6 +8,7 @@ import {
   useCurrentThreadId,
   useCurrentTaskId,
 } from "../../routes";
+import { Id } from "convex/_generated/dataModel";
 
 interface Message {
   id: string;
@@ -76,7 +77,13 @@ export const AuthenticatedContent: React.FC = () => {
         <Sidebar />
       </div>
 
-      <ChatArea messages={dummyMessages} onSendMessage={handleSendMessage} />
+      {route.name == "thread" ? (
+        <ChatArea
+          messages={dummyMessages}
+          onSendMessage={handleSendMessage}
+          threadId={route.params.threadId as Id<"threads">}
+        />
+      ) : null}
 
       {/* Right Sidebar - Task Details */}
       {currentTaskId && (

@@ -6,6 +6,7 @@ import { api } from "../../../../convex/_generated/api";
 import { useApiErrorHandler } from "../../misc/errors";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react/cache";
+import { routes, useCurrentAgentId } from "../../../routes";
 
 type Agent = {
   _id: Id<"agents">;
@@ -26,6 +27,7 @@ export const AgentList = () => {
   const agents = useQuery(api.agents.listMine);
   const createAgent = useMutation(api.agents.create);
   const onApiError = useApiErrorHandler();
+  const currentAgentId = useCurrentAgentId();
 
   return (
     <>
@@ -33,7 +35,11 @@ export const AgentList = () => {
         <Button
           className="w-full"
           variant="default"
-          onClick={() => createAgent(DEFAULT_AGENT).catch(onApiError)}
+          onClick={() =>
+            createAgent(DEFAULT_AGENT)
+              .then((agentId) => routes.agent({ agentId }).push())
+              .catch(onApiError)
+          }
         >
           <Plus className="h-5 w-5" />
           New Agent
@@ -41,7 +47,13 @@ export const AgentList = () => {
       </div>
       <div className="flex-1 overflow-y-auto">
         {agents?.map((agent: Agent) => (
-          <div key={agent._id} className="p-4 cursor-pointer hover:bg-accent">
+          <div
+            key={agent._id}
+            onClick={() => routes.agent({ agentId: agent._id }).push()}
+            className={`p-4 cursor-pointer hover:bg-accent ${
+              agent._id === currentAgentId ? "bg-accent" : ""
+            }`}
+          >
             <div className="font-medium text-primary-foreground">
               {agent.name}
             </div>

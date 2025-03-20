@@ -15,6 +15,12 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     },
     (p) => `/thread/${p.threadId}/task/${p.taskId}`,
   ),
+  agent: defineRoute(
+    {
+      agentId: param.path.string,
+    },
+    (p) => `/agent/${p.agentId}`,
+  ),
 });
 
 export type ThreadParams = {
@@ -34,5 +40,11 @@ export function useCurrentThreadId(): string | undefined {
 export function useCurrentTaskId(): string | undefined {
   const route = useRoute();
   if (route.name === "threadWithTask") return route.params.taskId;
+  return undefined;
+}
+
+export function useCurrentAgentId() {
+  const route = useRoute();
+  if (route.name === "agent") return route.params.agentId;
   return undefined;
 }
