@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { routes } from "@/routes";
@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Confirm } from "@/components/ui/confirm";
+import { EditableText } from "@/components/ui/editable-text";
+import { useApiErrorHandler } from "@/components/misc/errors";
 
 interface AgentProfileProps {
   agentId: Id<"agents">;
@@ -14,6 +17,10 @@ interface AgentProfileProps {
 
 export const AgentProfile: React.FC<AgentProfileProps> = ({ agentId }) => {
   const agent = useQuery(api.agents.findMine, { agentId });
+  const deleteAgent = useMutation(api.agents.removeMine);
+  const updateAgent = useMutation(api.agents.updateMine);
+  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+
 
   // If the agent is not found, redirect to home
   React.useEffect(() => {
@@ -63,14 +70,36 @@ export const AgentProfile: React.FC<AgentProfileProps> = ({ agentId }) => {
         {/* Description */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-2">About</h2>
-          <p className="text-muted-foreground">{agent.description}</p>
+          <EditableText
+            value={agent.description}
+            onSave={async (description) => {
+              await updateAgent({
+                agentId,
+                name: agent.name,
+                description,
+                personality: agent.personality,
+                tools: agent.tools,
+              });
+            }}
+          />
         </Card>
 
         {/* Personality and Tools */}
         <div className="grid grid-cols-2 gap-6">
           <Card className="p-6">
             <h2 className="text-lg font-semibold mb-4">Personality</h2>
-            <p className="text-muted-foreground">{agent.personality}</p>
+            <EditableText
+              value={agent.personality}
+              onSave={async (personality) => {
+                await updateAgent({
+                  agentId,
+                  name: agent.name,
+                  description: agent.description,
+                  personality,
+                  tools: agent.tools,
+                });
+              }}
+            />
           </Card>
           <Card className="p-6">
             <h2 className="text-lg font-semibold mb-4">Tools</h2>
@@ -88,6 +117,31 @@ export const AgentProfile: React.FC<AgentProfileProps> = ({ agentId }) => {
         <div className="text-sm text-muted-foreground text-center">
           Last active: {new Date(agent.lastActiveTime).toLocaleString()}
         </div>
+
+        {/* Delete Button */}
+        <div className="flex justify-center">
+          <Button
+            variant="destructive"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            Delete Agent
+          </Button>
+        </div>
+
+        {/* Delete Confirmation Dialog */}
+        <Confirm
+          open={showDeleteConfirm}
+          onOpenChange={setShowDeleteConfirm}
+          title="Delete Agent"
+          description={`Are you sure you want to delete ${agent.name}? This action cannot be undone.`}
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={async () => {
+            await deleteAgent({ agentId });
+            routes.home().push();
+          }}
+          variant="destructive"
+        />
       </div>
     </div>
   );
