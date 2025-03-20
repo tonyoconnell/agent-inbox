@@ -1,6 +1,12 @@
 import * as React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "../../ui/avatar";
-import { formatDistanceToNow } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
+import { useTimeAgo } from "../../misc/hooks";
 
 interface ChatMessageProps {
   id: string;
@@ -18,8 +24,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   agentName,
   avatarUrl,
 }) => {
-  // Format the timestamp using date-fns
-  const timeAgo = formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+  const timeAgo = useTimeAgo(timestamp);
 
   return (
     <div
@@ -27,12 +32,21 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
         sender === "user" ? "flex-row-reverse" : "flex-row"
       }`}
     >
-      <Avatar className="mt-1">
-        <AvatarImage src={avatarUrl} />
-        <AvatarFallback>
-          {sender === "user" ? "U" : agentName?.[0] ?? "A"}
-        </AvatarFallback>
-      </Avatar>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Avatar className="mt-1">
+              <AvatarImage src={avatarUrl} />
+              <AvatarFallback>
+                {sender === "user" ? "U" : agentName?.[0] ?? "A"}
+              </AvatarFallback>
+            </Avatar>
+          </TooltipTrigger>
+          <TooltipContent>
+            {sender === "user" ? "You" : agentName ?? "Agent"}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <div
         className={`max-w-[70%] rounded-lg p-3 ${
           sender === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
