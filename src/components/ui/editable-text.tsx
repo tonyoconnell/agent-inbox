@@ -4,11 +4,16 @@ import { Textarea } from "./textarea";
 import { cn } from "@/lib/utils";
 import { useApiErrorHandler } from "@/components/misc/errors";
 
+export interface EditableTextHandle {
+  startEditing: () => void;
+}
+
 interface EditableTextProps {
   value: string;
   onSave: (value: string) => Promise<void>;
   className?: string;
   textClassName?: string;
+  editRef?: React.RefObject<EditableTextHandle | null>;
 }
 
 export const EditableText: React.FC<EditableTextProps> = ({
@@ -16,6 +21,7 @@ export const EditableText: React.FC<EditableTextProps> = ({
   onSave,
   className,
   textClassName,
+  editRef,
 }) => {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editValue, setEditValue] = React.useState(value);
@@ -26,13 +32,21 @@ export const EditableText: React.FC<EditableTextProps> = ({
     setEditValue(value);
   }, [value]);
 
+  React.useImperativeHandle(
+    editRef,
+    () => ({
+      startEditing: () => setIsEditing(true),
+    }),
+    [],
+  );
+
   if (isEditing)
     return (
       <div className={cn("space-y-2", className)}>
         <Textarea
           value={editValue}
           onChange={(e) => setEditValue(e.target.value)}
-          className="min-h-[100px] resize-none"
+          className="min-h-[100px]"
           disabled={isSaving}
         />
         <div className="flex gap-2 justify-end">

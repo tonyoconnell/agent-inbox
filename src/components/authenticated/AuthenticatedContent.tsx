@@ -85,7 +85,9 @@ export const AuthenticatedContent: React.FC = () => {
             onSendMessage={handleSendMessage}
             threadId={route.params.threadId as Id<"threads">}
           />
-        ) : route.name === "agent" ? (
+        ) : null}
+
+        {route.name === "agent" ? (
           <AgentProfile agentId={route.params.agentId as Id<"agents">} />
         ) : null}
       </div>

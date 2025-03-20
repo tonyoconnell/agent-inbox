@@ -55,3 +55,15 @@ export const updateStatus = mutation({
   },
   handler: async (ctx, args) => Agents.updateStatus(ctx, args),
 });
+
+export const updateAvatar = mutation({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    const agent = await Agents.getMine(ctx, args);
+    return await ctx.db.patch(args.agentId, {
+      avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.name}-${Date.now()}`,
+    });
+  },
+});

@@ -12,3 +12,30 @@ createAgent()
     .then((agentId) => routes.agent({ agentId }).push())
     .catch(onApiError)
 ```
+
+Simmilarly if the logic is simple you should refreain from using try catch finally and instead just use the funcional approach. 
+
+So instead of this:
+
+```ts
+try {
+ await deleteAgent({ agentId });
+ routes.home().push();
+}
+catch(error) {
+    onApiError(error);
+}
+finally {
+    tidyUp();
+}
+
+```
+
+You should do this as it uses less lines and is easier to read:
+
+```ts
+deleteAgent({ agentId })
+    .then(() => routes.home().push())
+    .catch(onApiError)
+    .finally(tidyUp)
+```
