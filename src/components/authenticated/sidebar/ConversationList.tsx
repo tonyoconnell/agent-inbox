@@ -3,17 +3,17 @@ import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Plus } from "lucide-react";
 import { useApiErrorHandler } from "../../misc/errors";
-import { routes, useCurrentThreadId } from "../../../routes";
+import { routes, useCurrentConversationId } from "../../../routes";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "convex-helpers/react/cache";
 
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
-export const ThreadList = () => {
-  const threads = useQuery(api.threads.listMine);
-  const createThread = useMutation(api.threads.create);
+export const ConversationList = () => {
+  const conversations = useQuery(api.conversations.listMine);
+  const createConversation = useMutation(api.conversations.create);
   const onApiError = useApiErrorHandler();
-  const currentThreadId = useCurrentThreadId();
+  const currentConversationId = useCurrentConversationId();
 
   return (
     <>
@@ -22,29 +22,33 @@ export const ThreadList = () => {
           className="w-full"
           variant="default"
           onClick={() =>
-            createThread({ title: DEFAULT_THREAD_TITLE })
-              .then((threadId) => routes.thread({ threadId }).push())
+            createConversation({ title: DEFAULT_THREAD_TITLE })
+              .then((conversationId) =>
+                routes.conversation({ conversationId }).push(),
+              )
               .catch(onApiError)
           }
         >
           <Plus className="h-5 w-5" />
-          New Thread
+          New Conversation
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {threads?.map((thread) => (
+        {conversations?.map((conversation) => (
           <div
-            key={thread._id}
-            onClick={() => routes.thread({ threadId: thread._id }).push()}
+            key={conversation._id}
+            onClick={() =>
+              routes.conversation({ conversationId: conversation._id }).push()
+            }
             className={`p-4 cursor-pointer hover:bg-accent ${
-              thread._id === currentThreadId ? "bg-accent" : ""
+              conversation._id === currentConversationId ? "bg-accent" : ""
             }`}
           >
             <div className="font-medium text-primary-foreground">
-              {thread.title}
+              {conversation.title}
             </div>
             <div className="text-sm text-muted-foreground/80 truncate">
-              {new Date(thread._creationTime).toLocaleTimeString()}
+              {new Date(conversation._creationTime).toLocaleTimeString()}
             </div>
           </div>
         ))}

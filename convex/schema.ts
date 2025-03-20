@@ -8,7 +8,7 @@ import { v } from "convex/values";
 export default defineSchema({
   ...authTables,
 
-  threads: defineTable({
+  conversations: defineTable({
     title: v.string(),
     createdBy: v.id("users"),
     lastMessageTime: v.number(),
@@ -32,25 +32,25 @@ export default defineSchema({
     .index("by_status", ["status"])
     .index("by_name", ["name"]),
 
-  threadParticipants: defineTable(
+  conversationParticipants: defineTable(
     v.union(
       v.object({
-        threadId: v.id("threads"),
+        conversationId: v.id("conversations"),
         kind: v.literal("agent"),
         agentId: v.id("agents"),
         addedAt: v.number(),
       }),
       v.object({
-        threadId: v.id("threads"),
+        conversationId: v.id("conversations"),
         kind: v.literal("user"),
         userId: v.id("users"),
         addedAt: v.number(),
       }),
     ),
   )
-    .index("by_thread", ["threadId"])
+    .index("by_conversation", ["conversationId"])
     .index("by_agent", ["kind", "agentId"])
     .index("by_user", ["kind", "userId"])
-    .index("by_thread_and_agent", ["threadId", "kind", "agentId"])
-    .index("by_thread_and_user", ["threadId", "kind", "userId"]),
+    .index("by_conversation_and_agent", ["conversationId", "kind", "agentId"])
+    .index("by_conversation_and_user", ["conversationId", "kind", "userId"]),
 });

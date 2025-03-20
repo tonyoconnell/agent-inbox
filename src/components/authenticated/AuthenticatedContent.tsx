@@ -1,11 +1,11 @@
 import * as React from "react";
 import { ChatArea } from "./chat/ChatArea";
-import { UserProfile } from "@/components/authenticated/threads/UserProfile";
+import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
 import { Sidebar } from "./sidebar/Sidebar";
 import {
   useRoute,
   routes,
-  useCurrentThreadId,
+  useCurrentConversationId,
   useCurrentTaskId,
 } from "../../routes";
 import { Id } from "convex/_generated/dataModel";
@@ -21,7 +21,7 @@ interface Message {
 
 export const AuthenticatedContent: React.FC = () => {
   const route = useRoute();
-  const currentThreadId = useCurrentThreadId();
+  const currentConversationId = useCurrentConversationId();
   const currentTaskId = useCurrentTaskId();
 
   // Dummy messages for now - we'll replace these later
@@ -54,8 +54,8 @@ export const AuthenticatedContent: React.FC = () => {
     // TODO: Implement sending message
   };
 
-  // If we're not in a thread or agent view, show a welcome message
-  if (!currentThreadId && route.name !== "agent")
+  // If we're not in a conversation or agent view, show a welcome message
+  if (!currentConversationId && route.name !== "agent")
     return (
       <div className="h-screen flex bg-background">
         <div className="w-64 bg-card border-r border-border flex flex-col dark">
@@ -65,7 +65,7 @@ export const AuthenticatedContent: React.FC = () => {
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Welcome to Agent Inbox</h1>
             <p className="text-muted-foreground">
-              Select a thread or agent to get started
+              Select a conversation or agent to get started
             </p>
           </div>
         </div>
@@ -79,11 +79,11 @@ export const AuthenticatedContent: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-auto">
-        {route.name === "thread" ? (
+        {route.name === "conversation" ? (
           <ChatArea
             messages={dummyMessages}
             onSendMessage={handleSendMessage}
-            threadId={route.params.threadId as Id<"threads">}
+            conversationId={route.params.conversationId as Id<"conversations">}
           />
         ) : null}
 
@@ -99,7 +99,9 @@ export const AuthenticatedContent: React.FC = () => {
             <h3 className="font-medium">Task Details</h3>
             <button
               onClick={() =>
-                routes.thread({ threadId: currentThreadId! }).push()
+                routes
+                  .conversation({ conversationId: currentConversationId! })
+                  .push()
               }
               className="text-muted-foreground hover:text-foreground"
             >

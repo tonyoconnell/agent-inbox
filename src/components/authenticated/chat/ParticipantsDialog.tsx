@@ -14,25 +14,27 @@ import {
 import { UserPlus, Trash2 } from "lucide-react";
 
 interface ParticipantsDialogProps {
-  thread: Doc<"threads">;
+  conversation: Doc<"conversations">;
   trigger: React.ReactNode;
 }
 
 export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
-  thread,
+  conversation,
   trigger,
 }) => {
-  const participants = useQuery(api.threadParticipants.listDetails, {
-    threadId: thread._id,
+  const participants = useQuery(api.conversationParticipants.listDetails, {
+    conversationId: conversation._id,
   });
 
   const removeParticipant = useMutation(
-    api.threadParticipants.removeParticipant,
+    api.conversationParticipants.removeParticipant,
   );
 
-  const handleRemove = async (participantId: Id<"threadParticipants">) => {
+  const handleRemove = async (
+    participantId: Id<"conversationParticipants">,
+  ) => {
     await removeParticipant({
-      threadId: thread._id,
+      conversationId: conversation._id,
       participantId,
     });
   };
@@ -42,7 +44,7 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Thread Participants</DialogTitle>
+          <DialogTitle>Conversation Participants</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">

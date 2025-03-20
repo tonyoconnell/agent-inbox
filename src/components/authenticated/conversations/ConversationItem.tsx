@@ -1,6 +1,6 @@
 import * as React from "react";
 
-interface ThreadItemProps {
+interface ConversationItemProps {
   id: string;
   title: string;
   lastMessageTime: number;
@@ -8,7 +8,7 @@ interface ThreadItemProps {
   onSelect: (id: string) => void;
 }
 
-export const ThreadItem: React.FC<ThreadItemProps> = ({
+export const ConversationItem: React.FC<ConversationItemProps> = ({
   id,
   title,
   lastMessageTime,

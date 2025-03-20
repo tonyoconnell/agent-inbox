@@ -3,23 +3,25 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Plus } from "lucide-react";
 import { useApiErrorHandler } from "../../misc/errors";
-import { ThreadItem } from "./ThreadItem";
-import { useCurrentThreadId, routes } from "../../../routes";
+import { ConversationItem } from "./ConversationItem";
+import { useCurrentConversationId, routes } from "../../../routes";
 
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
-interface ThreadListProps {}
+interface ConversationListProps {}
 
-export const ThreadList: React.FC<ThreadListProps> = ({}) => {
-  const threads = useQuery(api.threads.listMine);
-  const createThread = useMutation(api.threads.create);
+export const ConversationList: React.FC<ConversationListProps> = ({}) => {
+  const conversations = useQuery(api.conversations.listMine);
+  const createConversation = useMutation(api.conversations.create);
   const onApiError = useApiErrorHandler();
-  const currentThreadId = useCurrentThreadId();
+  const currentConversationId = useCurrentConversationId();
 
-  const handleCreateThread = async () => {
+  const handleCreateConversation = async () => {
     try {
-      const threadId = await createThread({ title: DEFAULT_THREAD_TITLE });
-      routes.thread({ threadId }).push();
+      const conversationId = await createConversation({
+        title: DEFAULT_THREAD_TITLE,
+      });
+      routes.conversation({ conversationId }).push();
     } catch (error) {
       onApiError(error);
     }
@@ -37,22 +39,24 @@ export const ThreadList: React.FC<ThreadListProps> = ({}) => {
       </div>
       <div className="p-4">
         <button
-          onClick={handleCreateThread}
+          onClick={handleCreateConversation}
           className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
         >
           <Plus className="h-5 w-5" />
-          New Thread
+          New Conversation
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {threads?.map((thread) => (
-          <ThreadItem
-            key={thread._id}
-            id={thread._id}
-            title={thread.title}
-            lastMessageTime={thread._creationTime}
-            isSelected={thread._id === currentThreadId}
-            onSelect={(id) => routes.thread({ threadId: id }).push()}
+        {conversations?.map((conversation) => (
+          <ConversationItem
+            key={conversation._id}
+            id={conversation._id}
+            title={conversation.title}
+            lastMessageTime={conversation._creationTime}
+            isSelected={conversation._id === currentConversationId}
+            onSelect={(id) =>
+              routes.conversation({ conversationId: id }).push()
+            }
           />
         ))}
       </div>

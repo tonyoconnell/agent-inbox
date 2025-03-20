@@ -1,13 +1,13 @@
 import * as React from "react";
-import { ThreadList } from "./ThreadList";
+import { ConversationList } from "./ConversationList";
 import { AgentList } from "./AgentList";
 import { Button } from "../../ui/button";
-import { UserProfile } from "@/components/authenticated/threads/UserProfile";
+import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
 
-type Tab = "threads" | "agents";
+type Tab = "conversations" | "agents";
 
 export const Sidebar = () => {
-  const [activeTab, setActiveTab] = React.useState<Tab>("threads");
+  const [activeTab, setActiveTab] = React.useState<Tab>("conversations");
 
   return (
     <div className="flex flex-col h-full border-r">
@@ -21,11 +21,11 @@ export const Sidebar = () => {
       </div>
       <div className="flex border-b">
         <Button
-          variant={activeTab === "threads" ? "default" : "ghost"}
+          variant={activeTab === "conversations" ? "default" : "ghost"}
           className="flex-1 rounded-none text-primary-foreground"
-          onClick={() => setActiveTab("threads")}
+          onClick={() => setActiveTab("conversations")}
         >
-          Threads
+          Conversations
         </Button>
         <Button
           variant={activeTab === "agents" ? "default" : "ghost"}
@@ -37,7 +37,7 @@ export const Sidebar = () => {
       </div>
       <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         <div className="flex-1 overflow-y-auto">
-          {activeTab === "threads" ? <ThreadList /> : <AgentList />}
+          {activeTab === "conversations" ? <ConversationList /> : <AgentList />}
         </div>
       </div>
       <UserProfile />

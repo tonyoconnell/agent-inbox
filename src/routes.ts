@@ -2,18 +2,18 @@ import { createRouter, defineRoute, param } from "type-route";
 
 export const { RouteProvider, useRoute, routes } = createRouter({
   home: defineRoute("/"),
-  thread: defineRoute(
+  conversation: defineRoute(
     {
-      threadId: param.path.string,
+      conversationId: param.path.string,
     },
-    (p) => `/thread/${p.threadId}`,
+    (p) => `/conversation/${p.conversationId}`,
   ),
-  threadWithTask: defineRoute(
+  conversationWithTask: defineRoute(
     {
-      threadId: param.path.string,
+      conversationId: param.path.string,
       taskId: param.path.string,
     },
-    (p) => `/thread/${p.threadId}/task/${p.taskId}`,
+    (p) => `/conversation/${p.conversationId}/task/${p.taskId}`,
   ),
   agent: defineRoute(
     {
@@ -23,23 +23,23 @@ export const { RouteProvider, useRoute, routes } = createRouter({
   ),
 });
 
-export type ThreadParams = {
-  threadId: string;
+export type ConversationParams = {
+  conversationId: string;
   taskId?: string;
 };
 
-// Helper to get current thread ID if we're on a thread route
-export function useCurrentThreadId(): string | undefined {
+// Helper to get current conversation ID if we're on a conversation route
+export function useCurrentConversationId(): string | undefined {
   const route = useRoute();
-  if (route.name === "thread" || route.name === "threadWithTask")
-    return route.params.threadId;
+  if (route.name === "conversation" || route.name === "conversationWithTask")
+    return route.params.conversationId;
   return undefined;
 }
 
 // Helper to get current task ID if we're on a task route
 export function useCurrentTaskId(): string | undefined {
   const route = useRoute();
-  if (route.name === "threadWithTask") return route.params.taskId;
+  if (route.name === "conversationWithTask") return route.params.taskId;
   return undefined;
 }
 

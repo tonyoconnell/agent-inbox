@@ -5,27 +5,27 @@ import { Doc } from "../../../../convex/_generated/dataModel";
 import { ParticipantsDialog } from "./ParticipantsDialog";
 import { Avatar, AvatarImage, AvatarFallback } from "../../ui/avatar";
 
-interface ThreadParticipantsProps {
-  thread: Doc<"threads"> | undefined | null;
+interface ConversationParticipantsProps {
+  conversation: Doc<"conversations"> | undefined | null;
 }
 
-export const ThreadParticipants: React.FC<ThreadParticipantsProps> = ({
-  thread,
-}) => {
+export const ConversationParticipants: React.FC<
+  ConversationParticipantsProps
+> = ({ conversation }) => {
   const avatars = useQuery(
-    api.threadParticipants.listAvatars,
-    thread
+    api.conversationParticipants.listAvatars,
+    conversation
       ? {
-          threadId: thread._id,
+          conversationId: conversation._id,
         }
       : "skip",
   );
 
-  if (!thread) return null;
+  if (!conversation) return null;
 
   return (
     <ParticipantsDialog
-      thread={thread}
+      conversation={conversation}
       trigger={
         <div className="flex -space-x-2 ml-auto cursor-pointer hover:opacity-80 transition-opacity">
           {avatars?.slice(0, 3).map((url, i) => (

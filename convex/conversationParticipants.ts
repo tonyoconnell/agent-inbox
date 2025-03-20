@@ -1,25 +1,28 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import * as ThreadParticipants from "./model/threadParticipants";
-import { ensureICanAccessThread } from "./model/threads";
+import * as ConversationParticipants from "./model/conversationParticipants";
+import { ensureICanAccessConversation } from "./model/conversations";
 
 export const list = query({
-  args: { threadId: v.id("threads") },
-  handler: async (ctx, { threadId }) => {
-    await ensureICanAccessThread(ctx, { threadId });
-    return ThreadParticipants.getParticipants(ctx.db, {
-      threadId,
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    return ConversationParticipants.getParticipants(ctx.db, {
+      conversationId,
     });
   },
 });
 
 export const listAvatars = query({
-  args: { threadId: v.id("threads") },
-  handler: async (ctx, { threadId }) => {
-    await ensureICanAccessThread(ctx, { threadId });
-    const participants = await ThreadParticipants.getParticipants(ctx.db, {
-      threadId,
-    });
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    const participants = await ConversationParticipants.getParticipants(
+      ctx.db,
+      {
+        conversationId,
+      },
+    );
 
     const participantPromises = participants.map(async (p) => {
       if (p.kind === "agent") {
@@ -45,49 +48,58 @@ export const listAvatars = query({
 
 export const addAgent = mutation({
   args: {
-    threadId: v.id("threads"),
+    conversationId: v.id("conversations"),
     agentId: v.id("agents"),
   },
-  handler: async (ctx, { threadId, agentId }) => {
-    await ensureICanAccessThread(ctx, { threadId });
-    return ThreadParticipants.addAgent(ctx.db, { threadId, agentId });
+  handler: async (ctx, { conversationId, agentId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    return ConversationParticipants.addAgent(ctx.db, {
+      conversationId,
+      agentId,
+    });
   },
 });
 
 export const addUser = mutation({
   args: {
-    threadId: v.id("threads"),
+    conversationId: v.id("conversations"),
     userId: v.id("users"),
   },
-  handler: async (ctx, { threadId, userId }) => {
-    await ensureICanAccessThread(ctx, { threadId });
-    return ThreadParticipants.addUser(ctx.db, { threadId, userId });
+  handler: async (ctx, { conversationId, userId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    return ConversationParticipants.addUser(ctx.db, { conversationId, userId });
   },
 });
 
 export const removeParticipant = mutation({
   args: {
-    threadId: v.id("threads"),
-    participantId: v.id("threadParticipants"),
+    conversationId: v.id("conversations"),
+    participantId: v.id("conversationParticipants"),
   },
-  handler: async (ctx, { threadId, participantId }) => {
-    await ensureICanAccessThread(ctx, { threadId });
-    await ThreadParticipants.removeParticipant(ctx.db, { participantId });
+  handler: async (ctx, { conversationId, participantId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    await ConversationParticipants.removeParticipant(ctx.db, { participantId });
     return null;
   },
 });
 
 export const listDetails = query({
-  args: { threadId: v.id("threads") },
-  handler: async (ctx, { threadId }) => {
-    const thread = await ensureICanAccessThread(ctx, { threadId });
-    const participants = await ThreadParticipants.getParticipants(ctx.db, {
-      threadId,
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    const conversation = await ensureICanAccessConversation(ctx, {
+      conversationId,
     });
+    const participants = await ConversationParticipants.getParticipants(
+      ctx.db,
+      {
+        conversationId,
+      },
+    );
 
     const details = await Promise.all(
       participants.map(async (p) => {
-        const isCreator = p.kind === "user" && p.userId === thread.createdBy;
+        const isCreator =
+          p.kind === "user" && p.userId === conversation.createdBy;
         if (p.kind === "agent") {
           const agent = await ctx.db.get(p.agentId);
           if (!agent) return null;

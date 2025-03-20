@@ -9,23 +9,23 @@ To provide users with a streamlined interface for collaborating with multiple AI
 ## User Experience
 
 ### Core Interface
-- **Left Sidebar**: Contains thread history and a button to create new threads
-- **Main Window**: Displays the current thread's message history and input field
+- **Left Sidebar**: Contains conversation history and a button to create new conversations
+- **Main Window**: Displays the current conversation's message history and input field
 - **Optional Right Sidebar**: Shows detailed task history when requested
 
 ### Key Interactions
-- Users create threads to start conversations
+- Users create conversations to start conversations
 - Users can "@" specific agents to request their attention or assistance
-- Agents respond in the thread and can go off to perform tasks
+- Agents respond in the conversation and can go off to perform tasks
 - Agents can "@" other agents to bring them into the conversation
 - Task histories can be expanded to see detailed steps agents took
 
 ## Features
 
-### Thread Management
-- Create new discussion threads
-- View thread history
-- Switch between active threads
+### Conversation Management
+- Create new discussion conversations
+- View conversation history
+- Switch between active conversations
 
 ### Agent Interaction
 - Direct message agents using @ mentions
@@ -51,22 +51,22 @@ To provide users with a streamlined interface for collaborating with multiple AI
 
 ### Frontend
 - Real-time chat UI
-- Thread management system
+- Conversation management system
 - Agent gallery and configuration
 - Task history visualization
 
 ## User Flows
 
-### Creating a New Thread
-1. User clicks "Create New Thread" button
+### Creating a New Conversation
+1. User clicks "Create New Conversation" button
 2. User enters initial message and selects agents to participate
-3. System creates thread and notifies selected agents
+3. System creates conversation and notifies selected agents
 
 ### Interacting with Agents
 1. User types message with "@agent" to direct a query
 2. Agent is notified and processes the request
 3. Agent performs any necessary tasks (invisible to main chat)
-4. Agent responds in the thread with results
+4. Agent responds in the conversation with results
 
 ### Viewing Task Details
 1. User clicks on an agent's response that references a completed task

@@ -16,38 +16,40 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { Confirm } from "../../ui/confirm";
 import { routes } from "../../../routes";
-import { ThreadParticipants } from "./ThreadParticipants";
+import { ConversationParticipants } from "./ConversationParticipants";
 
-interface ThreadHeaderProps {
-  thread: Doc<"threads"> | undefined | null;
+interface ConversationHeaderProps {
+  conversation: Doc<"conversations"> | undefined | null;
 }
 
-export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
-  const updateThread = useMutation(api.threads.updateMine);
-  const deleteThread = useMutation(api.threads.removeMine);
+export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
+  conversation,
+}) => {
+  const updateConversation = useMutation(api.conversations.updateMine);
+  const deleteConversation = useMutation(api.conversations.removeMine);
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
-  const [newTitle, setNewTitle] = React.useState(thread?.title ?? "");
+  const [newTitle, setNewTitle] = React.useState(conversation?.title ?? "");
 
   React.useEffect(() => {
-    if (thread?.title) setNewTitle(thread.title);
-  }, [thread?.title]);
+    if (conversation?.title) setNewTitle(conversation.title);
+  }, [conversation?.title]);
 
   const handleSave = async () => {
-    if (!thread?._id || !newTitle.trim()) return;
+    if (!conversation?._id || !newTitle.trim()) return;
 
-    await updateThread({
-      threadId: thread?._id as Id<"threads">,
+    await updateConversation({
+      conversationId: conversation?._id as Id<"conversations">,
       title: newTitle.trim(),
     });
     setIsOpen(false);
   };
 
   const handleDelete = async () => {
-    if (!thread?._id) return;
+    if (!conversation?._id) return;
 
-    await deleteThread({
-      threadId: thread?._id as Id<"threads">,
+    await deleteConversation({
+      conversationId: conversation?._id as Id<"conversations">,
     });
     setIsDeleteConfirmOpen(false);
     setIsOpen(false);
@@ -62,11 +64,11 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
             variant="ghost"
             className="font-medium text-lg gap-2 bg-background"
           >
-            {thread?._id && !thread ? (
+            {conversation?._id && !conversation ? (
               <Skeleton className="h-7 w-48" />
             ) : (
               <>
-                {thread?.title}
+                {conversation?.title}
                 <Wrench className="h-4 w-4 opacity-20" />
               </>
             )}
@@ -74,16 +76,16 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Thread Settings</DialogTitle>
+            <DialogTitle>Conversation Settings</DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <label className="text-sm font-medium mb-2 block">
-              Thread Name
+              Conversation Name
             </label>
             <Input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Enter thread name"
+              placeholder="Enter conversation name"
             />
           </div>
           <DialogFooter className="flex justify-between items-center">
@@ -94,7 +96,7 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
               onClick={() => setIsDeleteConfirmOpen(true)}
             >
               <Trash2 className="h-4 w-4" />
-              Delete Thread
+              Delete Conversation
             </Button>
             <Button onClick={handleSave}>Save Changes</Button>
           </DialogFooter>
@@ -104,14 +106,14 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
       <Confirm
         open={isDeleteConfirmOpen}
         onOpenChange={setIsDeleteConfirmOpen}
-        title="Delete Thread"
-        description={`Are you sure you want to delete "${thread?.title}"? This action cannot be undone.`}
-        confirmText="Delete Thread"
+        title="Delete Conversation"
+        description={`Are you sure you want to delete "${conversation?.title}"? This action cannot be undone.`}
+        confirmText="Delete Conversation"
         variant="destructive"
         onConfirm={handleDelete}
       />
 
-      <ThreadParticipants thread={thread} />
+      <ConversationParticipants conversation={conversation} />
     </div>
   );
 };
