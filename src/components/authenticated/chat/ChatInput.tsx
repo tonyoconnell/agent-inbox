@@ -122,13 +122,17 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
             displayTransform={(id, display) => `@${display}`}
             markup="@[__display__](__id__)"
             appendSpaceOnAdd={true}
+            style={{
+              backgroundColor: "var(--accent)",
+              borderRadius: "6px",
+            }}
             renderSuggestion={(
               suggestion: SuggestionDataItem,
               search,
               highlightedDisplay,
               index,
             ) => (
-              <div className="flex items-center gap-2 p-2 hover:bg-accent cursor-pointer">
+              <div className="flex items-center gap-2 p-0 hover:bg-accent cursor-pointer">
                 <AgentAvatar
                   size="sm"
                   avatarUrl={agents[index].avatarUrl}
