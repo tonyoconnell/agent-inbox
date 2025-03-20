@@ -1,47 +1,61 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "./users";
 import * as Conversations from "./conversations";
+import { internal } from "../_generated/api";
+import { ensureFP } from "../../shared/ensure";
+
+export const addMessageToConversation = async (
+  ctx: MutationCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+    author: Doc<"conversationMessages">["author"];
+    references: Doc<"conversationMessages">["references"];
+  },
+) => {
+  // Create the message
+  const messageId = await ctx.db.insert("conversationMessages", {
+    ...args,
+    references: args.references ?? [],
+  });
+
+  // Update conversation's last message time
+  await ctx.db.patch(args.conversationId, {
+    lastMessageTime: Date.now(),
+  });
+
+  // Schedule a task to process the message
+  await ctx.scheduler.runAfter(
+    0,
+    internal.conversationMessages.processMessage,
+    {
+      message: await ctx.db.get(messageId).then(ensureFP()),
+    },
+  );
+
+  return messageId;
+};
 
 export const addMessageToConversationFromMe = async (
   ctx: MutationCtx,
-  {
-    conversationId,
-    content,
-    references = [],
-  }: {
+  args: {
     conversationId: Id<"conversations">;
     content: string;
-    references?: Array<{
-      kind: "agent";
-      agentId: Id<"agents">;
-      startIndex: number;
-      endIndex: number;
-    }>;
+    references: Doc<"conversationMessages">["references"];
   },
 ) => {
   const userId = await Users.getMyId(ctx);
-
-  // Ensure user has access to conversation
-  await Conversations.ensureICanAccessConversation(ctx, { conversationId });
-
-  // Create the message
-  const messageId = await ctx.db.insert("conversationMessages", {
-    conversationId,
+  await Conversations.ensureICanAccessConversation(ctx, {
+    conversationId: args.conversationId,
+  });
+  return addMessageToConversation(ctx, {
+    ...args,
     author: {
       kind: "user",
       userId,
     },
-    content,
-    references,
   });
-
-  // Update conversation's last message time
-  await ctx.db.patch(conversationId, {
-    lastMessageTime: Date.now(),
-  });
-
-  return messageId;
 };
 
 export const listMessages = async (
