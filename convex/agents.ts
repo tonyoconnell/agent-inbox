@@ -3,13 +3,8 @@ import { v } from "convex/values";
 import * as Agents from "./model/agents";
 
 export const create = mutation({
-  args: {
-    name: v.string(),
-    description: v.string(),
-    personality: v.string(),
-    tools: v.array(v.string()),
-  },
-  handler: async (ctx, args) => Agents.createAgent(ctx, args),
+  args: {},
+  handler: async (ctx) => Agents.createAgent(ctx),
 });
 
 export const listMine = query({

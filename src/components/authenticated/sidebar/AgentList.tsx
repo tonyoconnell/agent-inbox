@@ -16,13 +16,6 @@ type Agent = {
   avatarUrl: string;
 };
 
-const DEFAULT_AGENT = {
-  name: "New Agent",
-  description: "A helpful AI assistant",
-  personality: "Friendly and professional",
-  tools: [],
-};
-
 export const AgentList = () => {
   const agents = useQuery(api.agents.listMine);
   const createAgent = useMutation(api.agents.create);
@@ -36,7 +29,7 @@ export const AgentList = () => {
           className="w-full"
           variant="default"
           onClick={() =>
-            createAgent(DEFAULT_AGENT)
+            createAgent()
               .then((agentId) => routes.agent({ agentId }).push())
               .catch(onApiError)
           }

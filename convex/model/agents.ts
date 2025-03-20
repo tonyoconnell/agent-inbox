@@ -1,33 +1,24 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import * as Users from "./users";
+import { predefinedAgents } from "./predefinedAgents";
 
 type AgentStatus = "idle" | "active" | "processing";
 
-export const createAgent = async (
-  ctx: MutationCtx,
-  {
-    name,
-    description,
-    personality,
-    tools,
-  }: {
-    name: string;
-    description: string;
-    personality: string;
-    tools: string[];
-  },
-) => {
+export const createAgent = async (ctx: MutationCtx) => {
   const userId = await Users.getMyId(ctx);
+  const randomIndex = Math.floor(Math.random() * predefinedAgents.length);
+  const selectedAgent = predefinedAgents[randomIndex];
+
   return await ctx.db.insert("agents", {
-    name,
-    description,
-    personality,
-    tools,
+    name: selectedAgent.name,
+    description: selectedAgent.description,
+    personality: selectedAgent.personality,
+    tools: selectedAgent.tools,
     status: "idle" as const,
     createdBy: userId,
     lastActiveTime: Date.now(),
-    avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${name}`,
+    avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${selectedAgent.name}`,
   });
 };
 

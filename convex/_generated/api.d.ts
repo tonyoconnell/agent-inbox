@@ -17,6 +17,7 @@ import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as model_agents from "../model/agents.js";
+import type * as model_predefinedAgents from "../model/predefinedAgents.js";
 import type * as model_threadParticipants from "../model/threadParticipants.js";
 import type * as model_threads from "../model/threads.js";
 import type * as model_users from "../model/users.js";
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   http: typeof http;
   "model/agents": typeof model_agents;
+  "model/predefinedAgents": typeof model_predefinedAgents;
   "model/threadParticipants": typeof model_threadParticipants;
   "model/threads": typeof model_threads;
   "model/users": typeof model_users;
