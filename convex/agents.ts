@@ -56,7 +56,7 @@ export const updateStatus = mutation({
   handler: async (ctx, args) => Agents.updateStatus(ctx, args),
 });
 
-export const updateAvatar = mutation({
+export const shuffleAvatar = mutation({
   args: {
     agentId: v.id("agents"),
   },

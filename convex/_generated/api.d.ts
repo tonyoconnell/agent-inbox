@@ -15,10 +15,10 @@ import type {
 } from "convex/server";
 import type * as agents from "../agents.js";
 import type * as auth from "../auth.js";
+import type * as conversationMessages from "../conversationMessages.js";
 import type * as conversationParticipants from "../conversationParticipants.js";
 import type * as conversations from "../conversations.js";
 import type * as http from "../http.js";
-import type * as messages from "../messages.js";
 import type * as model_agents from "../model/agents.js";
 import type * as model_conversationParticipants from "../model/conversationParticipants.js";
 import type * as model_conversations from "../model/conversations.js";
@@ -38,10 +38,10 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   agents: typeof agents;
   auth: typeof auth;
+  conversationMessages: typeof conversationMessages;
   conversationParticipants: typeof conversationParticipants;
   conversations: typeof conversations;
   http: typeof http;
-  messages: typeof messages;
   "model/agents": typeof model_agents;
   "model/conversationParticipants": typeof model_conversationParticipants;
   "model/conversations": typeof model_conversations;

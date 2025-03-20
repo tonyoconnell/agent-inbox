@@ -20,8 +20,8 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
   avatarUrl,
   status,
 }) => {
-  const updateAvatar = useMutation(api.agents.updateAvatar);
-  const [isUpdatingAvatar, setIsUpdatingAvatar] = React.useState(false);
+  const updateAvatar = useMutation(api.agents.shuffleAvatar);
+  const [isShufflingAvatar, setIsShufflingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
 
   return (
@@ -36,15 +36,17 @@ export const AgentAvatar: React.FC<AgentAvatarProps> = ({
           variant="secondary"
           size="icon"
           className="absolute bottom-6 -right-2"
-          disabled={isUpdatingAvatar}
+          disabled={isShufflingAvatar}
           onClick={async () => {
-            setIsUpdatingAvatar(true);
-            await updateAvatar({ agentId })
+            setIsShufflingAvatar(true);
+            await updateAvatar({
+              agentId,
+            })
               .catch(onApiError)
-              .finally(() => setIsUpdatingAvatar(false));
+              .finally(() => setIsShufflingAvatar(false));
           }}
         >
-          {isUpdatingAvatar ? (
+          {isShufflingAvatar ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Shuffle className="h-4 w-4" />

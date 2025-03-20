@@ -6,6 +6,16 @@ export const send = mutation({
   args: {
     conversationId: v.id("conversations"),
     content: v.string(),
+    references: v.optional(
+      v.array(
+        v.object({
+          kind: v.literal("agent"),
+          agentId: v.id("agents"),
+          startIndex: v.number(),
+          endIndex: v.number(),
+        }),
+      ),
+    ),
   },
   handler: async (ctx, args) =>
     Messages.addMessageToConversationFromMe(ctx, args),

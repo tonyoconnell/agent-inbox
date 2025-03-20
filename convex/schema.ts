@@ -67,5 +67,15 @@ export default defineSchema({
         agentId: v.id("agents"),
       }),
     ),
+    references: v.array(
+      v.union(
+        v.object({
+          kind: v.literal("agent"),
+          agentId: v.id("agents"),
+          startIndex: v.number(),
+          endIndex: v.number(),
+        }),
+      ),
+    ),
   }).index("by_conversationId", ["conversationId"]),
 });

@@ -8,9 +8,16 @@ export const addMessageToConversationFromMe = async (
   {
     conversationId,
     content,
+    references = [],
   }: {
     conversationId: Id<"conversations">;
     content: string;
+    references?: Array<{
+      kind: "agent";
+      agentId: Id<"agents">;
+      startIndex: number;
+      endIndex: number;
+    }>;
   },
 ) => {
   const userId = await Users.getMyId(ctx);
@@ -26,6 +33,7 @@ export const addMessageToConversationFromMe = async (
       userId,
     },
     content,
+    references,
   });
 
   // Update conversation's last message time
@@ -54,7 +62,7 @@ export const listMessages = async (
     .withIndex("by_conversationId", (q) =>
       q.eq("conversationId", conversationId),
     )
-    .order("desc")
+    .order("asc")
     .take(limit);
 
   // Fetch avatar URLs and names for each message

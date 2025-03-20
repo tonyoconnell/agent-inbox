@@ -17,9 +17,9 @@ import { Loader2, Shuffle } from "lucide-react";
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const agent = useQuery(api.agents.findMine, { agentId });
   const deleteAgent = useMutation(api.agents.removeMine);
-  const updateAvatar = useMutation(api.agents.updateAvatar);
+  const shuffleAvatar = useMutation(api.agents.shuffleAvatar);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  const [isUpdatingAvatar, setIsUpdatingAvatar] = React.useState(false);
+  const [isShufflingAvatar, setIsShufflingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
 
   if (!agent)
@@ -52,15 +52,17 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
               variant="secondary"
               size="icon"
               className="absolute bottom-6 -right-2"
-              disabled={isUpdatingAvatar}
+              disabled={isShufflingAvatar}
               onClick={async () => {
-                setIsUpdatingAvatar(true);
-                await updateAvatar({ agentId })
+                setIsShufflingAvatar(true);
+                await shuffleAvatar({
+                  agentId,
+                })
                   .catch(onApiError)
-                  .finally(() => setIsUpdatingAvatar(false));
+                  .finally(() => setIsShufflingAvatar(false));
               }}
             >
-              {isUpdatingAvatar ? (
+              {isShufflingAvatar ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Shuffle className="h-4 w-4" />

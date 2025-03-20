@@ -15,8 +15,8 @@ interface ChatAreaProps {
 export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const conversation = useQuery(api.conversations.findMine, { conversationId });
-  const messages = useQuery(api.messages.list, { conversationId });
-  const sendMessage = useMutation(api.messages.send);
+  const messages = useQuery(api.conversationMessages.list, { conversationId });
+  const sendMessage = useMutation(api.conversationMessages.send);
 
   // If the conversation is not found, redirect to the home page
   React.useEffect(() => {
@@ -32,8 +32,16 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (content: string) => {
-    await sendMessage({ conversationId, content });
+  const handleSendMessage = async (
+    content: string,
+    references: Array<{
+      kind: "agent";
+      agentId: Id<"agents">;
+      startIndex: number;
+      endIndex: number;
+    }> = [],
+  ) => {
+    await sendMessage({ conversationId, content, references });
   };
 
   return (
