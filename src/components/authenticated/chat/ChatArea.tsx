@@ -3,32 +3,20 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { ConversationHeader } from "./ConversationHeader";
 import { Skeleton } from "../../ui/skeleton";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { routes } from "@/routes";
 
-interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "agent";
-  timestamp: string;
-  agentName?: string;
-}
-
 interface ChatAreaProps {
-  messages: Message[];
-  onSendMessage: (message: string) => void;
   conversationId: Id<"conversations">;
 }
 
-export const ChatArea: React.FC<ChatAreaProps> = ({
-  messages,
-  onSendMessage,
-  conversationId,
-}) => {
+export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const conversation = useQuery(api.conversations.findMine, { conversationId });
+  const messages = useQuery(api.messages.list, { conversationId });
+  const sendMessage = useMutation(api.messages.send);
 
   // If the conversation is not found, redirect to the home page
   React.useEffect(() => {
@@ -44,18 +32,22 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
     scrollToBottom();
   }, [messages]);
 
+  const handleSendMessage = async (content: string) => {
+    await sendMessage({ conversationId, content });
+  };
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <ConversationHeader conversation={conversation} />
       <div className="relative flex-1">
         <div className="absolute inset-0 flex flex-col-reverse">
           <div className="absolute bottom-0 left-0 right-0">
-            <ChatInput onSendMessage={onSendMessage} />
+            <ChatInput onSendMessage={handleSendMessage} />
           </div>
           <div className="overflow-y-auto pb-24">
             <div className="p-4 space-y-4">
               <div ref={messagesEndRef} />
-              {conversationId && messages.length === 0 ? (
+              {!messages ? (
                 <>
                   <div className="flex justify-start">
                     <Skeleton className="h-24 w-2/3" />
@@ -69,7 +61,17 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
                 </>
               ) : (
                 messages.map((message) => (
-                  <ChatMessage key={message.id} {...message} />
+                  <ChatMessage
+                    key={message._id}
+                    id={message._id}
+                    content={message.content}
+                    sender={message.author.kind}
+                    timestamp={new Date(message._creationTime).toISOString()}
+                    agentName={
+                      message.author.kind === "agent" ? "Agent" : undefined
+                    }
+                    avatarUrl={message.avatarUrl ?? undefined}
+                  />
                 ))
               )}
             </div>

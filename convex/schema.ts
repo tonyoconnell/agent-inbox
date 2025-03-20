@@ -53,4 +53,19 @@ export default defineSchema({
     .index("by_user", ["kind", "userId"])
     .index("by_conversation_and_agent", ["conversationId", "kind", "agentId"])
     .index("by_conversation_and_user", ["conversationId", "kind", "userId"]),
+
+  conversationMessages: defineTable({
+    conversationId: v.id("conversations"),
+    content: v.string(),
+    author: v.union(
+      v.object({
+        kind: v.literal("user"),
+        userId: v.id("users"),
+      }),
+      v.object({
+        kind: v.literal("agent"),
+        agentId: v.id("agents"),
+      }),
+    ),
+  }).index("by_conversationId", ["conversationId"]),
 });

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { ChatArea } from "./chat/ChatArea";
-import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
 import { Sidebar } from "./sidebar/Sidebar";
 import {
   useRoute,
@@ -23,36 +22,6 @@ export const AuthenticatedContent: React.FC = () => {
   const route = useRoute();
   const currentConversationId = useCurrentConversationId();
   const currentTaskId = useCurrentTaskId();
-
-  // Dummy messages for now - we'll replace these later
-  const dummyMessages: Message[] = [
-    {
-      id: "1",
-      content: "Can you help me plan this project?",
-      sender: "user",
-      timestamp: "10:00 AM",
-    },
-    {
-      id: "2",
-      content:
-        "I'd be happy to help break down the project planning. Let's start by identifying the main objectives.",
-      sender: "agent",
-      agentName: "ProjectBot",
-      timestamp: "10:01 AM",
-    },
-    {
-      id: "3",
-      content: "@ResearchBot can you find some relevant case studies?",
-      sender: "agent",
-      agentName: "ProjectBot",
-      timestamp: "10:02 AM",
-    },
-  ];
-
-  const handleSendMessage = (message: string) => {
-    console.log("Sending message:", message);
-    // TODO: Implement sending message
-  };
 
   // If we're not in a conversation or agent view, show a welcome message
   if (!currentConversationId && route.name !== "agent")
@@ -81,8 +50,6 @@ export const AuthenticatedContent: React.FC = () => {
       <div className="flex-1 overflow-auto">
         {route.name === "conversation" ? (
           <ChatArea
-            messages={dummyMessages}
-            onSendMessage={handleSendMessage}
             conversationId={route.params.conversationId as Id<"conversations">}
           />
         ) : null}
