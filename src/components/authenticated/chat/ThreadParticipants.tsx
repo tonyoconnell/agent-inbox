@@ -12,9 +12,14 @@ interface ThreadParticipantsProps {
 export const ThreadParticipants: React.FC<ThreadParticipantsProps> = ({
   thread,
 }) => {
-  const avatars = useQuery(api.threadParticipants.listAvatars, {
-    threadId: thread?._id!,
-  });
+  const avatars = useQuery(
+    api.threadParticipants.listAvatars,
+    thread
+      ? {
+          threadId: thread._id,
+        }
+      : "skip",
+  );
 
   if (!thread) return null;
 

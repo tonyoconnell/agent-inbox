@@ -1,7 +1,7 @@
 import * as React from "react";
-import { ThreadList } from "./threads/ThreadList";
 import { ChatArea } from "./chat/ChatArea";
 import { UserProfile } from "@/components/authenticated/threads/UserProfile";
+import { Sidebar } from "./sidebar/Sidebar";
 import {
   useRoute,
   routes,
@@ -57,8 +57,7 @@ export const AuthenticatedContent: React.FC = () => {
     return (
       <div className="h-screen flex bg-background">
         <div className="w-64 bg-card border-r border-border flex flex-col dark">
-          <ThreadList />
-          <UserProfile />
+          <Sidebar />
         </div>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -74,8 +73,7 @@ export const AuthenticatedContent: React.FC = () => {
   return (
     <div className="h-screen flex bg-background">
       <div className="w-64 bg-card border-r border-border flex flex-col dark">
-        <ThreadList />
-        <UserProfile />
+        <Sidebar />
       </div>
 
       <ChatArea messages={dummyMessages} onSendMessage={handleSendMessage} />
