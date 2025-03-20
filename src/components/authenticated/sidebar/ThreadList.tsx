@@ -1,10 +1,11 @@
 import * as React from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Plus } from "lucide-react";
 import { useApiErrorHandler } from "../../misc/errors";
 import { routes, useCurrentThreadId } from "../../../routes";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "convex-helpers/react/cache";
 
 const DEFAULT_THREAD_TITLE = "New Conversation";
 

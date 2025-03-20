@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Button } from "../../ui/button";
 import { Plus } from "lucide-react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { useApiErrorHandler } from "../../misc/errors";
 import { Id } from "../../../../convex/_generated/dataModel";
+import { useQuery } from "convex-helpers/react/cache";
 
 type Agent = {
   _id: Id<"agents">;
@@ -39,7 +40,7 @@ export const AgentList = () => {
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {agents?.map((agent) => (
+        {agents?.map((agent: Agent) => (
           <div key={agent._id} className="p-4 cursor-pointer hover:bg-accent">
             <div className="font-medium text-primary-foreground">
               {agent.name}
