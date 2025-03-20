@@ -17,3 +17,13 @@ When an agent is "atted" (@) it can go off on a "Task" this "Task" might involve
 The user can create new agents at any time. Each agent can be given different personality prompts and tools they have access to so that they behave differntly. 
 
 All agents can be viewed from an agent gallery modal.
+
+## How the Bots Work
+
+Whenever a user posts a message to a conversation I want the function to also schedule a convex action to run that will invoke the "triage bot". 
+
+This triage bot will eventually run an LLM that will look at the message and work out what to do. 
+
+For now its important that you dont attempt to use an LLM and instead you should just fake calling one and instead do a time delay or something. 
+
+What the triage bot will do will look at the message and decide a plan on action. It will look at what agents are conversation participants and what tools and personality and description they have then it it will then reply by creating a message into the conversation and will reference one of those bots. 
