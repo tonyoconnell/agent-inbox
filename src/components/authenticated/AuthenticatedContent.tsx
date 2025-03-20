@@ -9,6 +9,7 @@ import {
   useCurrentTaskId,
 } from "../../routes";
 import { Id } from "convex/_generated/dataModel";
+import { AgentProfile } from "./agents/AgentProfile";
 
 interface Message {
   id: string;
@@ -53,8 +54,8 @@ export const AuthenticatedContent: React.FC = () => {
     // TODO: Implement sending message
   };
 
-  // If we're not in a thread, show a welcome message
-  if (!currentThreadId)
+  // If we're not in a thread or agent view, show a welcome message
+  if (!currentThreadId && route.name !== "agent")
     return (
       <div className="h-screen flex bg-background">
         <div className="w-64 bg-card border-r border-border flex flex-col dark">
@@ -64,7 +65,7 @@ export const AuthenticatedContent: React.FC = () => {
           <div className="text-center">
             <h1 className="text-2xl font-bold mb-4">Welcome to Agent Inbox</h1>
             <p className="text-muted-foreground">
-              Select a thread to get started
+              Select a thread or agent to get started
             </p>
           </div>
         </div>
@@ -72,22 +73,26 @@ export const AuthenticatedContent: React.FC = () => {
     );
 
   return (
-    <div className="h-screen flex bg-background">
-      <div className="w-64 bg-card border-r border-border flex flex-col dark">
+    <div className="h-screen flex overflow-hidden bg-background">
+      <div className="w-64 bg-card border-r border-border flex-shrink-0 dark">
         <Sidebar />
       </div>
 
-      {route.name == "thread" ? (
-        <ChatArea
-          messages={dummyMessages}
-          onSendMessage={handleSendMessage}
-          threadId={route.params.threadId as Id<"threads">}
-        />
-      ) : null}
+      <div className="flex-1 overflow-auto">
+        {route.name === "thread" ? (
+          <ChatArea
+            messages={dummyMessages}
+            onSendMessage={handleSendMessage}
+            threadId={route.params.threadId as Id<"threads">}
+          />
+        ) : route.name === "agent" ? (
+          <AgentProfile agentId={route.params.agentId as Id<"agents">} />
+        ) : null}
+      </div>
 
       {/* Right Sidebar - Task Details */}
       {currentTaskId && (
-        <div className="w-80 bg-background border-l border-border p-4">
+        <div className="w-80 bg-background border-l border-border overflow-y-auto flex-shrink-0">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Task Details</h3>
             <button
