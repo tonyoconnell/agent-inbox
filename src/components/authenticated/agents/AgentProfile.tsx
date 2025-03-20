@@ -7,15 +7,19 @@ import { routes } from "@/routes";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Confirm } from "@/components/ui/confirm";
-import { AgentAvatar } from "./AgentAvatar";
+import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { AgentDescription } from "./AgentDescription";
 import { AgentPersonality } from "./AgentPersonality";
 import { AgentTools } from "./AgentTools";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Shuffle } from "lucide-react";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const agent = useQuery(api.agents.findMine, { agentId });
   const deleteAgent = useMutation(api.agents.removeMine);
+  const updateAvatar = useMutation(api.agents.updateAvatar);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [isUpdatingAvatar, setIsUpdatingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
 
   if (!agent)
@@ -36,12 +40,46 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   return (
     <div className="flex-1 p-8">
       <div className="max-w-2xl mx-auto space-y-8">
-        <AgentAvatar
-          agentId={agent._id}
-          name={agent.name}
-          avatarUrl={agent.avatarUrl}
-          status={agent.status}
-        />
+        <div className="text-center">
+          <div className="relative inline-block">
+            <AgentAvatar
+              avatarUrl={agent.avatarUrl}
+              name={agent.name}
+              status={agent.status}
+              size="lg"
+            />
+            <Button
+              variant="secondary"
+              size="icon"
+              className="absolute bottom-6 -right-2"
+              disabled={isUpdatingAvatar}
+              onClick={async () => {
+                setIsUpdatingAvatar(true);
+                await updateAvatar({ agentId })
+                  .catch(onApiError)
+                  .finally(() => setIsUpdatingAvatar(false));
+              }}
+            >
+              {isUpdatingAvatar ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Shuffle className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+          <h1 className="text-3xl font-bold mb-2">{agent.name}</h1>
+          <Badge
+            variant={
+              agent.status === "idle"
+                ? "secondary"
+                : agent.status === "active"
+                  ? "default"
+                  : "destructive"
+            }
+          >
+            {agent.status}
+          </Badge>
+        </div>
         <AgentDescription
           agentId={agent._id}
           name={agent.name}

@@ -7,6 +7,7 @@ import { useApiErrorHandler } from "../../misc/errors";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useQuery } from "convex-helpers/react/cache";
 import { routes, useCurrentAgentId } from "../../../routes";
+import { AgentAvatar } from "@/components/ui/agent-avatar";
 
 type Agent = {
   _id: Id<"agents">;
@@ -43,15 +44,23 @@ export const AgentList = () => {
           <div
             key={agent._id}
             onClick={() => routes.agent({ agentId: agent._id }).push()}
-            className={`p-4 cursor-pointer hover:bg-accent ${
+            className={`p-4 cursor-pointer hover:bg-accent flex items-center gap-3 ${
               agent._id === currentAgentId ? "bg-accent" : ""
             }`}
           >
-            <div className="font-medium text-primary-foreground">
-              {agent.name}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {agent.description}
+            <AgentAvatar
+              size="sm"
+              avatarUrl={agent.avatarUrl}
+              name={agent.name}
+              status={agent.status}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="font-medium text-primary-foreground truncate">
+                {agent.name}
+              </div>
+              <div className="text-sm text-muted-foreground truncate">
+                {agent.description}
+              </div>
             </div>
           </div>
         ))}
