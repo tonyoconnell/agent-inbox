@@ -55,10 +55,13 @@ export const ThreadHeader: React.FC<ThreadHeaderProps> = ({ thread }) => {
   };
 
   return (
-    <div className="h-14  flex items-center px-4">
+    <div className="h-14  flex items-center px-4 ">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" className="font-medium text-lg gap-2">
+          <Button
+            variant="ghost"
+            className="font-medium text-lg gap-2 bg-background"
+          >
             {thread?._id && !thread ? (
               <Skeleton className="h-7 w-48" />
             ) : (
