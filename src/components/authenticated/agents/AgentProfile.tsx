@@ -11,7 +11,6 @@ import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { AgentDescription } from "./AgentDescription";
 import { AgentPersonality } from "./AgentPersonality";
 import { AgentTools } from "./AgentTools";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, Shuffle } from "lucide-react";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
@@ -45,7 +44,6 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             <AgentAvatar
               avatarUrl={agent.avatarUrl}
               name={agent.name}
-              status={agent.status}
               size="lg"
             />
             <Button
@@ -70,17 +68,6 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             </Button>
           </div>
           <h1 className="text-3xl font-bold mb-2">{agent.name}</h1>
-          <Badge
-            variant={
-              agent.status === "idle"
-                ? "secondary"
-                : agent.status === "active"
-                  ? "default"
-                  : "destructive"
-            }
-          >
-            {agent.status}
-          </Badge>
         </div>
         <AgentDescription
           agentId={agent._id}

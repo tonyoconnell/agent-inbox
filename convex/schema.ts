@@ -17,7 +17,6 @@ export default defineSchema({
 
   agents: defineTable(agentsSchemaValidator)
     .index("by_creator", ["createdBy"])
-    .index("by_status", ["status"])
     .index("by_name", ["name"]),
 
   conversationParticipants: defineTable(conversationParticipantsSchemaValidator)
@@ -41,7 +40,6 @@ export default defineSchema({
       }),
       v.object({
         kind: v.literal("system"),
-        systemId: v.union(v.literal("triage")),
       }),
     ),
     references: v.array(

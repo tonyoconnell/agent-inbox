@@ -5,11 +5,10 @@ interface AgentAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   avatarUrl: string;
   name: string;
   size?: "sm" | "md" | "lg";
-  status?: "idle" | "active" | "processing";
 }
 
 export const AgentAvatar = React.forwardRef<HTMLDivElement, AgentAvatarProps>(
-  ({ avatarUrl, name, size = "md", status, className, ...props }, ref) => {
+  ({ avatarUrl, name, size = "md", className, ...props }, ref) => {
     const sizeClasses = {
       sm: "h-8 w-8",
       md: "h-12 w-12",

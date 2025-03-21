@@ -61,15 +61,12 @@ export const addMessageToConversationFromSystem = async (
     conversationId: Id<"conversations">;
     content: string;
     references: Doc<"conversationMessages">["references"];
-    systemId: "triage";
   },
 ) => {
-  const userId = await Users.getMyId(ctx);
   return addMessageToConversation(ctx, {
     ...args,
     author: {
       kind: "system",
-      systemId: "triage",
     },
   });
 };

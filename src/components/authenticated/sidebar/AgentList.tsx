@@ -40,7 +40,7 @@ export const AgentList = () => {
         </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
-        {agents?.map((agent: Agent) => (
+        {agents?.map((agent) => (
           <div
             key={agent._id}
             onClick={() => routes.agent({ agentId: agent._id }).push()}
@@ -52,7 +52,6 @@ export const AgentList = () => {
               size="sm"
               avatarUrl={agent.avatarUrl}
               name={agent.name}
-              status={agent.status}
             />
             <div className="min-w-0 flex-1">
               <div className="font-medium text-primary-foreground truncate">
