@@ -29,7 +29,7 @@ export const addMessageToConversationFromUserOrAgent = async (
   // Schedule a task to process the message
   await ctx.scheduler.runAfter(
     0,
-    internal.conversationMessages.private.processMessage,
+    internal.conversationMessages.internalActions.processMessage,
     {
       message: await ctx.db.get(messageId).then(ensureFP()),
       conversation: await ctx.db.get(args.conversationId).then(ensureFP()),
@@ -74,6 +74,27 @@ export const addMessageToConversationFromMe = async (
     },
   });
 };
+
+export const addMessageToConversationFromAgent = async (
+  ctx: MutationCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    agentId: Id<"agents">;
+    content: string;
+    references: Doc<"conversationMessages">["references"];
+  },
+) => {
+  return addMessageToConversationFromUserOrAgent(ctx, {
+    conversationId: args.conversationId,
+    content: args.content,
+    references: args.references,
+    author: {
+      kind: "agent",
+      agentId: args.agentId,
+    },
+  });
+};
+
 
 export const listMessages = async (
   ctx: QueryCtx,
@@ -155,7 +176,7 @@ export const createParticipantLeftConversationMessage = async (
     args.participant.kind === "user"
       ? args.participant.user.name
       : args.participant.agent.name;
-      
+
   await addMessageToConversationFromSystem(db, {
     conversationId: args.conversationId,
     content: `🚪 ${name} has left the conversation.`,

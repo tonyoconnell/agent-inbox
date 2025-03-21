@@ -1,9 +1,14 @@
+"use node";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
 import { internal } from "../_generated/api";
 import { Doc } from "../_generated/dataModel";
-import { wait } from "../../shared/misc";
-import { createMastra } from "./mastra";
+import { storage, memory } from "./mastra";
+import { Mastra } from "@mastra/core/mastra";
+import { Agent } from "@mastra/core/agent";
+import { openai } from "@ai-sdk/openai";
+import { pick } from "../../shared/misc";
+import { createTools } from "./tools";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -61,22 +66,44 @@ export const triageMessage = async (
       { conversationId: args.conversation._id },
     );
 
-    const mastra = createMastra(ctx);
-    const mastraAgent = mastra.getAgent("triageAgent");
+    const allTools = createTools(ctx);
+
+    const triageAgent = new Agent({
+      name: "Conversation Triage Agent",
+      instructions: `You are a helpful agent that triages conversations.
+  
+    You will be given a conversation message and its up to you to determine what agent you should route this message to.
+    You must select one of the agents from the list of agents that I will provide.
+    If there are no agent provided then you should send a message to the conversation stating that there are no agents available to handle the message.
+    If there is an agent that can handle the message then you should send a message to the conversation stating that the message has been routed to the agent.
+  
+    `,
+      model: openai("gpt-4o-mini"),
+      tools: pick(allTools, "sendMessageToConversation"),
+      memory,
+    });
+
+    const mastra = new Mastra({
+      agents: { triageAgent },
+      storage,
+    });
 
     // Format agent information for the system message
-    const agentDescriptions = availableAgents
-      .map(
-        ({ agent }) => `[${agent._id}] - ${agent.name}: ${agent.description}`,
-      )
-      .join("\n");
 
-    await mastraAgent.generate([
+    await mastra.getAgent("triageAgent").generate([
       {
         role: "system",
         content: `Available agents in this conversation:
-${agentDescriptions}
-`,
+    ${availableAgents
+      .map(
+        ({ agent }) => `[${agent._id}] - ${agent.name}: ${agent.description}`,
+      )
+      .join("\n")}
+    `,
+      },
+      {
+        role: "system",
+        content: `The current conversationId is ${args.conversation._id}`,
       },
     ]);
   } catch (error) {

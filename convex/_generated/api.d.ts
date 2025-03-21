@@ -18,6 +18,7 @@ import type * as agents_model from "../agents/model.js";
 import type * as agents_private from "../agents/private.js";
 import type * as agents_public from "../agents/public.js";
 import type * as auth from "../auth.js";
+import type * as conversationMessages_internalActions from "../conversationMessages/internalActions.js";
 import type * as conversationMessages_model from "../conversationMessages/model.js";
 import type * as conversationMessages_private from "../conversationMessages/private.js";
 import type * as conversationMessages_public from "../conversationMessages/public.js";
@@ -51,6 +52,7 @@ declare const fullApi: ApiFromModules<{
   "agents/private": typeof agents_private;
   "agents/public": typeof agents_public;
   auth: typeof auth;
+  "conversationMessages/internalActions": typeof conversationMessages_internalActions;
   "conversationMessages/model": typeof conversationMessages_model;
   "conversationMessages/private": typeof conversationMessages_private;
   "conversationMessages/public": typeof conversationMessages_public;

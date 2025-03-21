@@ -1,28 +1,7 @@
 import { internalAction, internalMutation } from "../_generated/server";
-import schema from "../schema";
 import { v } from "convex/values";
 import * as Messages from "./model";
-import { triageMessage } from "../mastra/triage";
-import { doc } from "convex-helpers/validators";
-
-export const processMessage = internalAction({
-  args: {
-    message: doc(schema, "conversationMessages"),
-    conversation: doc(schema, "conversations"),
-  },
-  handler: async (ctx, args) => {
-    // If there are no references then we should invoke the "triage agent" which will    decide what to do with the message
-    if (args.message.references.length == 0)
-      await triageMessage(ctx, {
-        message: args.message,
-        conversation: args.conversation,
-      });
-    // Otherwise we should invoke each agent with the message
-    // for (const reference of args.message.references)
-    //   if (reference.kind == "agent")
-    //     await Mastra.invokeAgent(ctx, { message: args.message, reference });
-  },
-});
+import * as Agents from "../agents/model";
 
 export const sendFromTriageAgent = internalMutation({
   args: {
@@ -30,10 +9,12 @@ export const sendFromTriageAgent = internalMutation({
     content: v.string(),
   },
   handler: async (ctx, args) => {
-    await Messages.addMessageToConversationFromMe(ctx, {
+    const triageAgent = await Agents.getTriageAgent(ctx.db);
+    await Messages.addMessageToConversationFromAgent(ctx, {
       conversationId: args.conversationId,
       content: args.content,
       references: [],
+      agentId: triageAgent._id,
     });
   },
 });
