@@ -132,6 +132,7 @@ export const listDetails = query({
             avatarUrl: agent.avatarUrl,
             kind: "agent" as const,
             isCreator: false,
+            isSystem: agent.kind === "system_agent",
           };
         } else {
           const user = await ctx.db.get(p.userId);

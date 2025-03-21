@@ -13,6 +13,12 @@ import {
 } from "../../ui/dialog";
 import { UserPlus, Trash2 } from "lucide-react";
 import { AgentSelector } from "./AgentSelector";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
 
 interface ParticipantsDialogProps {
   conversation: Doc<"conversations">;
@@ -116,13 +122,29 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
                     </div>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleRemove(p.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemove(p.id)}
+                          disabled={p.isSystem}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {p.isSystem && (
+                      <TooltipContent>
+                        <p>
+                          System agents cannot be removed from a conversation
+                        </p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             ))}
             {agents.length === 0 && (
