@@ -21,6 +21,14 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
     conversationId,
   });
 
+  const scrollToBottom = React.useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  React.useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <ConversationHeader conversation={conversation} />
@@ -31,7 +39,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
           </div>
           <div className="overflow-y-auto pb-24">
             <div className="p-4 space-y-4">
-              <div ref={messagesEndRef} />
               {!messages ? (
                 <>
                   <div className="flex justify-start">
@@ -59,6 +66,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
                   />
                 ))
               )}
+              <div ref={messagesEndRef} />
             </div>
           </div>
         </div>

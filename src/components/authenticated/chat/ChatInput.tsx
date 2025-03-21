@@ -49,7 +49,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   };
 
   return (
-    <div className="p-4 sticky bottom-0">
+    <div className="p-4 sticky bottom-0 z-10">
       <form
         onSubmit={handleSubmit}
         className="flex gap-2 bg-card shadow-lg p-2 rounded-lg border border-border"
