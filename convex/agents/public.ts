@@ -61,7 +61,7 @@ export const shuffleAvatar = mutation({
   handler: async (ctx, args) => {
     const agent = await Agents.getMine(ctx, args);
     return await ctx.db.patch(args.agentId, {
-      avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${agent.name}-${Date.now()}`,
+      avatarUrl: Agents.createAgentAvatarUrl(`${agent.name}-${Date.now()}`),
     });
   },
 });

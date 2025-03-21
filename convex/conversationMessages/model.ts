@@ -1,11 +1,11 @@
-import { MutationCtx, QueryCtx } from "../_generated/server";
+import { DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
 import { exhaustiveCheck } from "../../shared/misc";
 
-export const addMessageToConversation = async (
+export const addMessageToConversationFromUserOrAgent = async (
   ctx: MutationCtx,
   args: {
     conversationId: Id<"conversations">;
@@ -31,10 +31,29 @@ export const addMessageToConversation = async (
     internal.conversationMessages.private.processMessage,
     {
       message: await ctx.db.get(messageId).then(ensureFP()),
+      conversation: await ctx.db.get(args.conversationId).then(ensureFP()),
     },
   );
 
   return messageId;
+};
+
+export const addMessageToConversationFromSystem = async (
+  db: DatabaseWriter,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+  },
+) => {
+  // Create the message
+  return await db.insert("conversationMessages", {
+    author: {
+      kind: "system",
+    },
+    conversationId: args.conversationId,
+    content: args.content,
+    references: [],
+  });
 };
 
 export const addMessageToConversationFromMe = async (
@@ -46,27 +65,11 @@ export const addMessageToConversationFromMe = async (
   },
 ) => {
   const userId = await Users.getMyId(ctx);
-  return addMessageToConversation(ctx, {
+  return addMessageToConversationFromUserOrAgent(ctx, {
     ...args,
     author: {
       kind: "user",
       userId,
-    },
-  });
-};
-
-export const addMessageToConversationFromSystem = async (
-  ctx: MutationCtx,
-  args: {
-    conversationId: Id<"conversations">;
-    content: string;
-    references: Doc<"conversationMessages">["references"];
-  },
-) => {
-  return addMessageToConversation(ctx, {
-    ...args,
-    author: {
-      kind: "system",
     },
   });
 };
@@ -124,4 +127,32 @@ export const listMessages = async (
   );
 
   return messagesWithAvatars;
+};
+
+export const createParticipantJoinedConversationMessage = async (
+  db: DatabaseWriter,
+  args: {
+    conversationId: Id<"conversations">;
+    agentOrUser: Doc<"agents"> | Doc<"users">;
+  },
+) => {
+  const name = args.agentOrUser.name ?? "Unknown";
+  await addMessageToConversationFromSystem(db, {
+    conversationId: args.conversationId,
+    content: `${name} has joined the conversation.`,
+  });
+};
+
+export const createParticipantLeftConversationMessage = async (
+  db: DatabaseWriter,
+  args: {
+    conversationId: Id<"conversations">;
+    participant: Doc<"agents"> | Doc<"users">;
+  },
+) => {
+  const name = args.participant.name ?? "Unknown";
+  await addMessageToConversationFromSystem(db, {
+    conversationId: args.conversationId,
+    content: `${name} has left the conversation.`,
+  });
 };

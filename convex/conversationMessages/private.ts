@@ -2,16 +2,21 @@ import { internalAction, internalMutation } from "../_generated/server";
 import schema from "../schema";
 import { v } from "convex/values";
 import * as Messages from "./model";
+import { triageMessage } from "../mastra/triage";
+import { doc } from "convex-helpers/validators";
 
 export const processMessage = internalAction({
   args: {
-    message: schema.tables.conversationMessages.validator,
+    message: doc(schema, "conversationMessages"),
+    conversation: doc(schema, "conversations"),
   },
   handler: async (ctx, args) => {
-    // If there are no references then we should invoke the "triage agent" which will
-    // decide what to do with the message
-    // if (args.message.references.length == 0)
-    //   await Mastra.triageMessage(ctx, { message: args.message });
+    // If there are no references then we should invoke the "triage agent" which will    decide what to do with the message
+    if (args.message.references.length == 0)
+      await triageMessage(ctx, {
+        message: args.message,
+        conversation: args.conversation,
+      });
     // Otherwise we should invoke each agent with the message
     // for (const reference of args.message.references)
     //   if (reference.kind == "agent")

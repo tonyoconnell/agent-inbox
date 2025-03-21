@@ -2,6 +2,8 @@ import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
 import * as ConversationParticipants from "./model";
 import { ensureICanAccessConversation } from "../conversations/model";
+import * as ConversationMessages from "../conversationMessages/model";
+import * as Agents from "../agents/model";
 
 export const list = query({
   args: { conversationId: v.id("conversations") },
@@ -53,10 +55,19 @@ export const addAgent = mutation({
   },
   handler: async (ctx, { conversationId, agentId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
-    return ConversationParticipants.addAgent(ctx.db, {
+    const agent = await Agents.getMine(ctx, { agentId });
+    const participantId = await ConversationParticipants.addAgent(ctx.db, {
       conversationId,
       agentId,
     });
+    await ConversationMessages.createParticipantJoinedConversationMessage(
+      ctx.db,
+      {
+        conversationId,
+        agentOrUser: agent,
+      },
+    );
+    return participantId;
   },
 });
 
@@ -79,6 +90,17 @@ export const removeParticipant = mutation({
   handler: async (ctx, { conversationId, participantId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
     await ConversationParticipants.removeParticipant(ctx.db, { participantId });
+    await ConversationMessages.createParticipantLeftConversationMessage(
+      ctx.db,
+      {
+        conversationId,
+        participant: await ConversationParticipants.getParticipantUserOrAgent(
+          ctx.db,
+          { participantId },
+        ),
+      },
+    );
+
     return null;
   },
 });

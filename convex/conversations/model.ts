@@ -1,7 +1,10 @@
-import { MutationCtx, QueryCtx } from "../_generated/server";
+import { DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import * as ConversationParticipants from "../conversationParticipants/model";
+import * as Agents from "../agents/model";
+import { doesHaveTriageAgent } from "../conversationParticipants/model";
+import * as ConversationMessages from "../conversationMessages/model";
 
 export const ensureICanAccessConversation = async (
   ctx: QueryCtx | MutationCtx,
@@ -80,4 +83,26 @@ export const removeMine = async (
 ) => {
   await ensureICanAccessConversation(ctx, { conversationId });
   await ctx.db.delete(conversationId);
+};
+
+export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
+  db: DatabaseWriter,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const agent = await Agents.getSystemAgentByKind(db, {
+    systemAgentKind: "triage",
+  });
+  const conversation = await db.get(conversationId);
+  if (!conversation)
+    throw new Error(`Conversation not found ${conversationId}`);
+  if (await doesHaveTriageAgent(db, { conversationId })) return;
+  await ConversationParticipants.addAgent(db, {
+    conversationId,
+    agentId: agent._id,
+  });
+  const triageAgent = await Agents.getTriageAgent(db);
+  await ConversationMessages.createParticipantJoinedConversationMessage(db, {
+    conversationId,
+    agentOrUser: triageAgent,
+  });
 };

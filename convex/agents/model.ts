@@ -1,7 +1,28 @@
-import { MutationCtx, QueryCtx } from "../_generated/server";
-import { Id } from "../_generated/dataModel";
+import { DatabaseReader, MutationCtx, QueryCtx } from "../_generated/server";
+import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import { predefinedAgents } from "./constants";
+import { systemAgentKindValidator, systemAgentValidator } from "./schema";
+
+export const find = async (
+  db: DatabaseReader,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  return await db.get(agentId);
+};
+
+export const get = async (
+  db: DatabaseReader,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  const agent = await find(db, { agentId });
+  if (!agent) throw new Error(`Agent not found ${agentId}`);
+  return agent;
+};
+
+export const createAgentAvatarUrl = (seed: string) => {
+  return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+};
 
 export const createAgent = async (ctx: MutationCtx) => {
   const userId = await Users.getMyId(ctx);
@@ -15,8 +36,18 @@ export const createAgent = async (ctx: MutationCtx) => {
     tools: selectedAgent.tools,
     createdBy: userId,
     lastActiveTime: Date.now(),
-    avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${selectedAgent.name}`,
+    avatarUrl: createAgentAvatarUrl(selectedAgent.name),
     kind: "user_agent",
+  });
+};
+
+export const createSystemAgent = async (
+  ctx: MutationCtx,
+  args: typeof systemAgentValidator.type,
+) => {
+  return await ctx.db.insert("agents", {
+    ...args,
+    kind: "system_agent",
   });
 };
 
@@ -79,4 +110,34 @@ export const remove = async (
   { agentId }: { agentId: Id<"agents"> },
 ) => {
   await ctx.db.delete(agentId);
+};
+
+export const findSystemAgentByKind = async (
+  db: DatabaseReader,
+  {
+    systemAgentKind,
+  }: { systemAgentKind: typeof systemAgentKindValidator.type },
+) => {
+  const agent = await db
+    .query("agents")
+    .withIndex("by_system_agent_kind", (q) =>
+      q.eq("systemAgentKind", systemAgentKind),
+    )
+    .first();
+  return agent;
+};
+
+export const getSystemAgentByKind = async (
+  db: DatabaseReader,
+  {
+    systemAgentKind,
+  }: { systemAgentKind: typeof systemAgentKindValidator.type },
+) => {
+  const agent = await findSystemAgentByKind(db, { systemAgentKind });
+  if (!agent) throw new Error(`System agent '${systemAgentKind}' not found`);
+  return agent;
+};
+
+export const getTriageAgent = async (db: DatabaseReader) => {
+  return await getSystemAgentByKind(db, { systemAgentKind: "triage" });
 };

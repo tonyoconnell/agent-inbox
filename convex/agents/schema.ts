@@ -9,14 +9,19 @@ const common = {
   lastActiveTime: v.number(),
 };
 
+export const systemAgentKindValidator = v.union(v.literal("triage"));
+
+export const systemAgentValidator = v.object({
+  ...common,
+  kind: v.literal("system_agent"),
+  systemAgentKind: systemAgentKindValidator,
+});
+
 export const agentsSchemaValidator = v.union(
   v.object({
     ...common,
     kind: v.literal("user_agent"),
     createdBy: v.id("users"),
   }),
-  v.object({
-    ...common,
-    kind: v.literal("system_agent"),
-  }),
+  systemAgentValidator,
 );

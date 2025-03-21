@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as agents_constants from "../agents/constants.js";
 import type * as agents_model from "../agents/model.js";
+import type * as agents_private from "../agents/private.js";
 import type * as agents_public from "../agents/public.js";
 import type * as auth from "../auth.js";
 import type * as conversationMessages_model from "../conversationMessages/model.js";
@@ -23,6 +24,7 @@ import type * as conversationMessages_public from "../conversationMessages/publi
 import type * as conversationParticipants_model from "../conversationParticipants/model.js";
 import type * as conversationParticipants_public from "../conversationParticipants/public.js";
 import type * as conversations_model from "../conversations/model.js";
+import type * as conversations_private from "../conversations/private.js";
 import type * as conversations_public from "../conversations/public.js";
 import type * as http from "../http.js";
 import type * as mastra_lib_storage from "../mastra/lib/storage.js";
@@ -45,6 +47,7 @@ import type * as users_public from "../users/public.js";
 declare const fullApi: ApiFromModules<{
   "agents/constants": typeof agents_constants;
   "agents/model": typeof agents_model;
+  "agents/private": typeof agents_private;
   "agents/public": typeof agents_public;
   auth: typeof auth;
   "conversationMessages/model": typeof conversationMessages_model;
@@ -53,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   "conversationParticipants/model": typeof conversationParticipants_model;
   "conversationParticipants/public": typeof conversationParticipants_public;
   "conversations/model": typeof conversations_model;
+  "conversations/private": typeof conversations_private;
   "conversations/public": typeof conversations_public;
   http: typeof http;
   "mastra/lib/storage": typeof mastra_lib_storage;
