@@ -27,6 +27,7 @@ export const addMessageToConversationFromUserOrAgent = async (
   });
 
   // Schedule a task to process the message
+
   await ctx.scheduler.runAfter(
     0,
     internal.conversationMessages.internalActions.processMessage,
@@ -94,7 +95,6 @@ export const addMessageToConversationFromAgent = async (
     },
   });
 };
-
 
 export const listMessages = async (
   ctx: QueryCtx,

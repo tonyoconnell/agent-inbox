@@ -10,6 +10,9 @@ export const processMessage = internalAction({
     conversation: doc(schema, "conversations"),
   },
   handler: async (ctx, args) => {
+    // TEMP for now dont handle other agent messages
+    if (args.message.author.kind == "agent") return;
+
     // If there are no references then we should invoke the "triage agent" which will    decide what to do with the message
     if (args.message.references.length == 0)
       await triageMessage(ctx, {
