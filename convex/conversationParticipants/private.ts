@@ -1,4 +1,4 @@
-import { internalMutation } from "../_generated/server";
+import { internalMutation, internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import * as ConversationParticipants from "./model";
 
@@ -16,5 +16,17 @@ export const updateParticipantStatus = internalMutation({
 
     await ctx.db.patch(participantId, { status });
     return null;
+  },
+});
+
+export const listNonSystemAgentParticipants = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    return await ConversationParticipants.findNonSystemAgentParticipants(
+      ctx.db,
+      args,
+    );
   },
 });

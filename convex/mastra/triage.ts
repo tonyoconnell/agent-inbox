@@ -3,6 +3,7 @@ import * as Agents from "../agents/model";
 import { internal } from "../_generated/api";
 import { Doc } from "../_generated/dataModel";
 import { wait } from "../../shared/misc";
+import { createMastra } from "./mastra";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -54,15 +55,34 @@ export const triageMessage = async (
   );
 
   try {
-    // const mastra = createMastra(ctx);
-    // const mastraAgent = mastra.getAgent("triageAgent");
-    // mastraAgent.generate([{
-    //   role: "system"
-    // }])
-    await wait(3000);
+    // Get available non-system agents in the conversation
+    const availableAgents = await ctx.runQuery(
+      internal.conversationParticipants.private.listNonSystemAgentParticipants,
+      { conversationId: args.conversation._id },
+    );
+
+    const mastra = createMastra(ctx);
+    const mastraAgent = mastra.getAgent("triageAgent");
+
+    // Format agent information for the system message
+    const agentDescriptions = availableAgents
+      .map(
+        ({ agent }) => `[${agent._id}] - ${agent.name}: ${agent.description}`,
+      )
+      .join("\n");
+
+    await mastraAgent.generate([
+      {
+        role: "system",
+        content: `Available agents in this conversation:
+${agentDescriptions}
+`,
+      },
+    ]);
   } catch (error) {
+    // we should add a message to the conversation to notify the user that the triage agent has errored
   } finally {
-    // If there is an error then we should set the triage agent's status to none
+    // No longer thinking
     await ctx.runMutation(
       internal.conversationParticipants.private.updateParticipantStatus,
       {

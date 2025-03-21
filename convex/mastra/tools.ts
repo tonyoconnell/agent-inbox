@@ -15,6 +15,8 @@ export const createTools = (ctx: ActionCtx) => {
     }),
     outputSchema: z.object({}),
     execute: async ({ context }) => {
+      console.log(`EXECUTING TOOL`, context);
+
       await ctx.runMutation(
         internal.conversationMessages.private.sendFromTriageAgent,
         {

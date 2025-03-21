@@ -1,6 +1,7 @@
 import { internalMutation, internalQuery } from "../_generated/server";
 import { systemAgentKindValidator, systemAgentValidator } from "./schema";
 import * as Agents from "./model";
+import { v } from "convex/values";
 
 export const findSystemAgentByKind = internalQuery({
   args: {
@@ -24,4 +25,3 @@ export const createSystemAgent = internalMutation({
     });
   },
 });
-

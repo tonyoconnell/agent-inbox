@@ -206,3 +206,41 @@ export const getParticipantDetails = async (
     };
   }
 };
+
+export const findNonSystemAgentParticipants = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await getParticipants(db, { conversationId });
+
+  // Filter to only agent participants and get their details
+  const agentParticipants = await Promise.all(
+    participants
+      .filter((p) => p.kind === "agent")
+      .map(async (p) => {
+        if (p.kind !== "agent") return null; // TypeScript narrowing
+        const agent = await Agents.find(db, { agentId: p.agentId });
+        if (!agent || agent.kind === "system_agent") return null;
+        return {
+          participant: p,
+          agent,
+        };
+      }),
+  );
+
+  return agentParticipants.filter(
+    (p): p is NonNullable<typeof p> => p !== null,
+  );
+};
+
+export const getNonSystemAgentParticipants = async (
+  db: DatabaseReader,
+  args: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await findNonSystemAgentParticipants(db, args);
+  if (!participants)
+    throw new Error(
+      `No non-system agent participants found for conversation '${args.conversationId}'`,
+    );
+  return participants;
+};
