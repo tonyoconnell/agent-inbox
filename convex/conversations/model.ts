@@ -1,4 +1,4 @@
-import { DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
+import { DatabaseReader, DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import * as ConversationParticipants from "../conversationParticipants/model";
@@ -83,6 +83,13 @@ export const removeMine = async (
 ) => {
   await ensureICanAccessConversation(ctx, { conversationId });
   await ctx.db.delete(conversationId);
+};
+
+export const isTriageAgentJoined = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  return await doesHaveTriageAgent(db, { conversationId });
 };
 
 export const joinTriageAgentToConversationIfNotAlreadyJoined = async (

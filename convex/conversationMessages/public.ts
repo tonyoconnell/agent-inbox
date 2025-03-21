@@ -7,8 +7,6 @@ import {
 } from "../_generated/server";
 import { v } from "convex/values";
 import * as Messages from "./model";
-import schema from "../schema";
-//import * as Mastra from "./mastra/mastra";
 import * as Conversations from "../conversations/model";
 
 export const sendFromMe = mutation({

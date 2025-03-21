@@ -29,13 +29,24 @@ export const triageMessage = async (
   },
 ) => {
   const agent = await getTriageAgent(ctx);
-  await ctx.runMutation(
-    internal.conversations.private
-      .joinTriageAgentToConversationIfNotAlreadyJoined,
+
+  const isJoined = await ctx.runQuery(
+    internal.conversations.private.isTriageAgentJoined,
     {
       conversationId: args.conversation._id,
     },
   );
+
+  if (!isJoined)
+    await ctx.runMutation(
+      internal.conversations.private
+        .joinTriageAgentToConversationIfNotAlreadyJoined,
+      {
+        conversationId: args.conversation._id,
+      },
+    );
+
+  
 
   // const mastra = createMastra(ctx);
   // const mastraAgent = mastra.getAgent("triageAgent");
