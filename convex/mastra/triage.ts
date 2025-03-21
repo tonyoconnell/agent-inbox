@@ -2,6 +2,7 @@ import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
 import { internal } from "../_generated/api";
 import { Doc } from "../_generated/dataModel";
+import { wait } from "../../shared/misc";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -43,9 +44,31 @@ export const triageMessage = async (
       `Participant is not an agent, it should be as it is the triage agent`,
     );
 
-  // const mastra = createMastra(ctx);
-  // const mastraAgent = mastra.getAgent("triageAgent");
-  // mastraAgent.generate([{
-  //   role: "system"
-  // }])
+  // Set the triage agent's status to thinking
+  await ctx.runMutation(
+    internal.conversationParticipants.private.updateParticipantStatus,
+    {
+      participantId: participant._id,
+      status: "thinking",
+    },
+  );
+
+  try {
+    // const mastra = createMastra(ctx);
+    // const mastraAgent = mastra.getAgent("triageAgent");
+    // mastraAgent.generate([{
+    //   role: "system"
+    // }])
+    await wait(3000);
+  } catch (error) {
+  } finally {
+    // If there is an error then we should set the triage agent's status to none
+    await ctx.runMutation(
+      internal.conversationParticipants.private.updateParticipantStatus,
+      {
+        participantId: participant._id,
+        status: "none",
+      },
+    );
+  }
 };

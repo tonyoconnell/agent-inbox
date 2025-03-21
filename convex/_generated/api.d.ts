@@ -22,6 +22,7 @@ import type * as conversationMessages_model from "../conversationMessages/model.
 import type * as conversationMessages_private from "../conversationMessages/private.js";
 import type * as conversationMessages_public from "../conversationMessages/public.js";
 import type * as conversationParticipants_model from "../conversationParticipants/model.js";
+import type * as conversationParticipants_private from "../conversationParticipants/private.js";
 import type * as conversationParticipants_public from "../conversationParticipants/public.js";
 import type * as conversations_model from "../conversations/model.js";
 import type * as conversations_private from "../conversations/private.js";
@@ -54,6 +55,7 @@ declare const fullApi: ApiFromModules<{
   "conversationMessages/private": typeof conversationMessages_private;
   "conversationMessages/public": typeof conversationMessages_public;
   "conversationParticipants/model": typeof conversationParticipants_model;
+  "conversationParticipants/private": typeof conversationParticipants_private;
   "conversationParticipants/public": typeof conversationParticipants_public;
   "conversations/model": typeof conversations_model;
   "conversations/private": typeof conversations_private;
