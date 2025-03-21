@@ -150,3 +150,40 @@ export const doesHaveTriageAgent = async (
   const triageAgent = await Agents.getTriageAgent(db);
   return doesHaveAgent(db, { conversationId, agentId: triageAgent._id });
 };
+
+export const getParticipantDetails = async (
+  db: DatabaseReader,
+  participant: Doc<"conversationParticipants">,
+  options?: {
+    includeDescription?: boolean;
+    isCreator?: (participant: Doc<"conversationParticipants">) => boolean;
+  },
+) => {
+  if (participant.kind === "agent") {
+    const agent = await db.get(participant.agentId);
+    if (!agent) return null;
+    return {
+      id: participant._id,
+      name: agent.name,
+      avatarUrl: agent.avatarUrl,
+      kind: "agent",
+      ...(options?.includeDescription && { description: agent.description }),
+      ...(options?.includeDescription && {
+        isSystem: agent.kind === "system_agent",
+      }),
+      isCreator: false,
+    };
+  } else {
+    const user = await db.get(participant.userId);
+    if (!user) return null;
+    return {
+      id: participant._id,
+      name: user.name ?? "Unknown User",
+      avatarUrl:
+        user.image ??
+        `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
+      kind: "user",
+      isCreator: options?.isCreator?.(participant) ?? false,
+    };
+  }
+};

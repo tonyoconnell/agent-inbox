@@ -126,35 +126,34 @@ export const listDetails = query({
     );
 
     const details = await Promise.all(
-      participants.map(async (p) => {
-        const isCreator =
-          p.kind === "user" && p.userId === conversation.createdBy;
-        if (p.kind === "agent") {
-          const agent = await ctx.db.get(p.agentId);
-          if (!agent) return null;
-          return {
-            id: p._id,
-            name: agent.name,
-            description: agent.description,
-            avatarUrl: agent.avatarUrl,
-            kind: "agent" as const,
-            isCreator: false,
-            isSystem: agent.kind === "system_agent",
-          };
-        } else {
-          const user = await ctx.db.get(p.userId);
-          if (!user) return null;
-          return {
-            id: p._id,
-            name: user.name ?? "Unknown User",
-            avatarUrl:
-              user.image ??
-              `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
-            kind: "user" as const,
-            isCreator,
-          };
-        }
-      }),
+      participants.map((p) =>
+        ConversationParticipants.getParticipantDetails(ctx.db, p, {
+          includeDescription: true,
+          isCreator: (p) =>
+            p.kind === "user" && p.userId === conversation.createdBy,
+        }),
+      ),
+    );
+
+    return details.filter((d): d is NonNullable<typeof d> => d !== null);
+  },
+});
+
+export const listThinkingParticipants = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    const participants = await ctx.db
+      .query("conversationParticipants")
+      .withIndex("by_conversationId_status", (q) =>
+        q.eq("conversationId", conversationId).eq("status", "thinking"),
+      )
+      .collect();
+
+    const details = await Promise.all(
+      participants.map((p) =>
+        ConversationParticipants.getParticipantDetails(ctx.db, p),
+      ),
     );
 
     return details.filter((d): d is NonNullable<typeof d> => d !== null);

@@ -7,7 +7,6 @@ const common = {
   status: v.union(v.literal("none"), v.literal("thinking")),
 };
 
-
 export const conversationParticipantsSchemaValidator = v.union(
   v.object({
     kind: v.literal("agent"),
@@ -31,4 +30,5 @@ export const conversationParticipantsSchema = defineTable(
     "kind",
     "agentId",
   ])
-  .index("by_conversationId_kind_userId", ["conversationId", "kind", "userId"]);
+  .index("by_conversationId_kind_userId", ["conversationId", "kind", "userId"])
+  .index("by_conversationId_status", ["conversationId", "status"]);

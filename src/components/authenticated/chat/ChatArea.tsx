@@ -2,6 +2,7 @@ import * as React from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { ConversationHeader } from "./ConversationHeader";
+import { ThinkingIndicator } from "./ThinkingIndicator";
 import { Skeleton } from "../../ui/skeleton";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
@@ -52,19 +53,22 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
                   </div>
                 </>
               ) : (
-                messages.map((message) => (
-                  <ChatMessage
-                    key={message._id}
-                    id={message._id}
-                    content={message.content}
-                    sender={message.author.kind}
-                    timestamp={new Date(message._creationTime).toISOString()}
-                    agentName={
-                      message.author.kind === "agent" ? "Agent" : undefined
-                    }
-                    avatarUrl={message.avatarUrl ?? undefined}
-                  />
-                ))
+                <>
+                  {messages.map((message) => (
+                    <ChatMessage
+                      key={message._id}
+                      id={message._id}
+                      content={message.content}
+                      sender={message.author.kind}
+                      timestamp={new Date(message._creationTime).toISOString()}
+                      agentName={
+                        message.author.kind === "agent" ? "Agent" : undefined
+                      }
+                      avatarUrl={message.avatarUrl ?? undefined}
+                    />
+                  ))}
+                  <ThinkingIndicator conversationId={conversationId} />
+                </>
               )}
               <div ref={messagesEndRef} />
             </div>
