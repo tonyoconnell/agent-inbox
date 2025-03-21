@@ -25,7 +25,7 @@ export const AgentPersonality: React.FC<AgentPersonalityProps> = ({
   personality,
   tools,
 }) => {
-  const updateAgent = useMutation(api.agents.updateMine);
+  const updateAgent = useMutation(api.agents.public.updateMine);
   const personalityEditRef = React.useRef<EditableTextHandle>(null);
 
   return (

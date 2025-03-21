@@ -20,7 +20,7 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
   const [message, setMessage] = React.useState("");
-  const agents = useQuery(api.agents.listMine) ?? [];
+  const agents = useQuery(api.agents.public.listMine) ?? [];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

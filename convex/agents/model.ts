@@ -1,7 +1,7 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import * as Users from "./users";
-import { predefinedAgents } from "./predefinedAgents";
+import * as Users from "../model/users";
+import { predefinedAgents } from "./constants";
 
 type AgentStatus = "idle" | "active" | "processing";
 
@@ -19,6 +19,7 @@ export const createAgent = async (ctx: MutationCtx) => {
     createdBy: userId,
     lastActiveTime: Date.now(),
     avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${selectedAgent.name}`,
+    kind: "user_agent",
   });
 };
 

@@ -1,6 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
+import { agentCommonSchemaValidator } from "./agents/schema";
 
 const conversationParticipantCommon = {
   conversationId: v.id("conversations"),
@@ -19,20 +20,7 @@ export default defineSchema({
     lastMessageTime: v.number(),
   }).index("by_user_and_time", ["createdBy", "lastMessageTime"]),
 
-  agents: defineTable({
-    name: v.string(),
-    description: v.string(),
-    personality: v.string(),
-    avatarUrl: v.string(),
-    tools: v.array(v.string()),
-    status: v.union(
-      v.literal("idle"),
-      v.literal("active"),
-      v.literal("processing"),
-    ),
-    createdBy: v.optional(v.id("users")),
-    lastActiveTime: v.number(),
-  })
+  agents: defineTable(agentCommonSchemaValidator)
     .index("by_creator", ["createdBy"])
     .index("by_status", ["status"])
     .index("by_name", ["name"]),

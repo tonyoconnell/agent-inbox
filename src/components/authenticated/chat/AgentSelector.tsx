@@ -21,7 +21,7 @@ export const AgentSelector: React.FC<AgentSelectorProps> = ({
   conversation,
   trigger,
 }) => {
-  const agents = useQuery(api.agents.listMine);
+  const agents = useQuery(api.agents.public.listMine);
   const addAgent = useMutation(api.conversationParticipants.addAgent);
   const participants = useQuery(api.conversationParticipants.listDetails, {
     conversationId: conversation._id,

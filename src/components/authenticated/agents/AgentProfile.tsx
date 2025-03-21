@@ -15,9 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Shuffle } from "lucide-react";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
-  const agent = useQuery(api.agents.findMine, { agentId });
-  const deleteAgent = useMutation(api.agents.removeMine);
-  const shuffleAvatar = useMutation(api.agents.shuffleAvatar);
+  const agent = useQuery(api.agents.public.findMine, { agentId });
+  const deleteAgent = useMutation(api.agents.public.removeMine);
+  const shuffleAvatar = useMutation(api.agents.public.shuffleAvatar);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [isShufflingAvatar, setIsShufflingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
