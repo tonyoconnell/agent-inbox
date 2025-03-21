@@ -1,6 +1,6 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
-import * as Users from "./users";
+import * as Users from "../users/model";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
 import { exhaustiveCheck } from "../../shared/misc";
@@ -28,7 +28,7 @@ export const addMessageToConversation = async (
   // Schedule a task to process the message
   await ctx.scheduler.runAfter(
     0,
-    internal.conversationMessages.processMessage,
+    internal.conversationMessages.private.processMessage,
     {
       message: await ctx.db.get(messageId).then(ensureFP()),
     },

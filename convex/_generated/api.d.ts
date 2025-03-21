@@ -17,9 +17,13 @@ import type * as agents_constants from "../agents/constants.js";
 import type * as agents_model from "../agents/model.js";
 import type * as agents_public from "../agents/public.js";
 import type * as auth from "../auth.js";
-import type * as conversationMessages from "../conversationMessages.js";
-import type * as conversationParticipants from "../conversationParticipants.js";
-import type * as conversations from "../conversations.js";
+import type * as conversationMessages_model from "../conversationMessages/model.js";
+import type * as conversationMessages_private from "../conversationMessages/private.js";
+import type * as conversationMessages_public from "../conversationMessages/public.js";
+import type * as conversationParticipants_model from "../conversationParticipants/model.js";
+import type * as conversationParticipants_public from "../conversationParticipants/public.js";
+import type * as conversations_model from "../conversations/model.js";
+import type * as conversations_public from "../conversations/public.js";
 import type * as http from "../http.js";
 import type * as mastra_lib_storage from "../mastra/lib/storage.js";
 import type * as mastra_lib_vector from "../mastra/lib/vector.js";
@@ -27,11 +31,8 @@ import type * as mastra_mastra from "../mastra/mastra.js";
 import type * as mastra_tools from "../mastra/tools.js";
 import type * as mastra_triage from "../mastra/triage.js";
 import type * as mastra__ from "../mastra/_.js";
-import type * as model_conversationMessages from "../model/conversationMessages.js";
-import type * as model_conversationParticipants from "../model/conversationParticipants.js";
-import type * as model_conversations from "../model/conversations.js";
-import type * as model_users from "../model/users.js";
-import type * as users from "../users.js";
+import type * as users_model from "../users/model.js";
+import type * as users_public from "../users/public.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -46,9 +47,13 @@ declare const fullApi: ApiFromModules<{
   "agents/model": typeof agents_model;
   "agents/public": typeof agents_public;
   auth: typeof auth;
-  conversationMessages: typeof conversationMessages;
-  conversationParticipants: typeof conversationParticipants;
-  conversations: typeof conversations;
+  "conversationMessages/model": typeof conversationMessages_model;
+  "conversationMessages/private": typeof conversationMessages_private;
+  "conversationMessages/public": typeof conversationMessages_public;
+  "conversationParticipants/model": typeof conversationParticipants_model;
+  "conversationParticipants/public": typeof conversationParticipants_public;
+  "conversations/model": typeof conversations_model;
+  "conversations/public": typeof conversations_public;
   http: typeof http;
   "mastra/lib/storage": typeof mastra_lib_storage;
   "mastra/lib/vector": typeof mastra_lib_vector;
@@ -56,11 +61,8 @@ declare const fullApi: ApiFromModules<{
   "mastra/tools": typeof mastra_tools;
   "mastra/triage": typeof mastra_triage;
   "mastra/_": typeof mastra__;
-  "model/conversationMessages": typeof model_conversationMessages;
-  "model/conversationParticipants": typeof model_conversationParticipants;
-  "model/conversations": typeof model_conversations;
-  "model/users": typeof model_users;
-  users: typeof users;
+  "users/model": typeof users_model;
+  "users/public": typeof users_public;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

@@ -15,10 +15,13 @@ export const createTools = (ctx: ActionCtx) => {
     }),
     outputSchema: z.object({}),
     execute: async ({ context }) => {
-      await ctx.runMutation(internal.conversationMessages.sendFromTriageAgent, {
-        conversationId: context.conversationId as Id<"conversations">,
-        content: context.content,
-      });
+      await ctx.runMutation(
+        internal.conversationMessages.private.sendFromTriageAgent,
+        {
+          conversationId: context.conversationId as Id<"conversations">,
+          content: context.content,
+        },
+      );
       return {};
     },
   });

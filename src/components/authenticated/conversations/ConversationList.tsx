@@ -11,8 +11,8 @@ const DEFAULT_THREAD_TITLE = "New Conversation";
 interface ConversationListProps {}
 
 export const ConversationList: React.FC<ConversationListProps> = ({}) => {
-  const conversations = useQuery(api.conversations.listMine);
-  const createConversation = useMutation(api.conversations.create);
+  const conversations = useQuery(api.conversations.public.listMine);
+  const createConversation = useMutation(api.conversations.public.create);
   const onApiError = useApiErrorHandler();
   const currentConversationId = useCurrentConversationId();
 

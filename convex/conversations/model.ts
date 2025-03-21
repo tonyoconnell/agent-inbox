@@ -1,7 +1,7 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import * as Users from "./users";
-import * as ConversationParticipants from "./conversationParticipants";
+import * as Users from "../users/model";
+import * as ConversationParticipants from "../conversationParticipants/model";
 
 export const ensureICanAccessConversation = async (
   ctx: QueryCtx | MutationCtx,

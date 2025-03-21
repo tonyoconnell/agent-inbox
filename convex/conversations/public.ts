@@ -1,6 +1,6 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
-import * as Conversations from "./model/conversations";
+import * as Conversations from "./model";
 
 export const create = mutation({
   args: {

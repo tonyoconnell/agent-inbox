@@ -10,8 +10,8 @@ import { useQuery } from "convex-helpers/react/cache";
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
 export const ConversationList = () => {
-  const conversations = useQuery(api.conversations.listMine);
-  const createConversation = useMutation(api.conversations.create);
+  const conversations = useQuery(api.conversations.public.listMine);
+  const createConversation = useMutation(api.conversations.public.create);
   const onApiError = useApiErrorHandler();
   const currentConversationId = useCurrentConversationId();
 

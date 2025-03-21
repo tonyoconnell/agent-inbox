@@ -1,7 +1,7 @@
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
-import * as ConversationParticipants from "./model/conversationParticipants";
-import { ensureICanAccessConversation } from "./model/conversations";
+import * as ConversationParticipants from "./model";
+import { ensureICanAccessConversation } from "../conversations/model";
 
 export const list = query({
   args: { conversationId: v.id("conversations") },

@@ -1,6 +1,6 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
-import * as Users from "../model/users";
+import * as Users from "../users/model";
 import { predefinedAgents } from "./constants";
 
 type AgentStatus = "idle" | "active" | "processing";

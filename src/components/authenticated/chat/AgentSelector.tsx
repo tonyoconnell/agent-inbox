@@ -22,10 +22,13 @@ export const AgentSelector: React.FC<AgentSelectorProps> = ({
   trigger,
 }) => {
   const agents = useQuery(api.agents.public.listMine);
-  const addAgent = useMutation(api.conversationParticipants.addAgent);
-  const participants = useQuery(api.conversationParticipants.listDetails, {
-    conversationId: conversation._id,
-  });
+  const addAgent = useMutation(api.conversationParticipants.public.addAgent);
+  const participants = useQuery(
+    api.conversationParticipants.public.listDetails,
+    {
+      conversationId: conversation._id,
+    },
+  );
 
   // Filter out agents that are already in the conversation
   const availableAgents = agents?.filter(
