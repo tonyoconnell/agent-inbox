@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 
-const agentCommon = {
+const common = {
   name: v.string(),
   description: v.string(),
   personality: v.string(),
@@ -15,14 +15,14 @@ const agentCommon = {
   lastActiveTime: v.number(),
 };
 
-export const agentCommonSchemaValidator = v.union(
+export const agentsSchemaValidator = v.union(
   v.object({
-    ...agentCommon,
+    ...common,
     kind: v.literal("user_agent"),
     createdBy: v.id("users"),
   }),
   v.object({
-    ...agentCommon,
+    ...common,
     kind: v.literal("system_agent"),
     createdBy: v.id("users"),
   }),

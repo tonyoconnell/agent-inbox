@@ -1,13 +1,8 @@
 import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { agentCommonSchemaValidator } from "./agents/schema";
-
-const conversationParticipantCommon = {
-  conversationId: v.id("conversations"),
-  addedAt: v.number(),
-  status: v.union(v.literal("none"), v.literal("thinking")),
-};
+import { agentsSchemaValidator } from "./agents/schema";
+import { conversationParticipantsSchemaValidator } from "./conversationParticipants/schema";
 
 // The schema is normally optional, but Convex Auth
 // requires indexes defined on `authTables`.
@@ -20,25 +15,12 @@ export default defineSchema({
     lastMessageTime: v.number(),
   }).index("by_user_and_time", ["createdBy", "lastMessageTime"]),
 
-  agents: defineTable(agentCommonSchemaValidator)
+  agents: defineTable(agentsSchemaValidator)
     .index("by_creator", ["createdBy"])
     .index("by_status", ["status"])
     .index("by_name", ["name"]),
 
-  conversationParticipants: defineTable(
-    v.union(
-      v.object({
-        kind: v.literal("agent"),
-        agentId: v.id("agents"),
-        ...conversationParticipantCommon,
-      }),
-      v.object({
-        kind: v.literal("user"),
-        userId: v.id("users"),
-        ...conversationParticipantCommon,
-      }),
-    ),
-  )
+  conversationParticipants: defineTable(conversationParticipantsSchemaValidator)
     .index("by_conversation", ["conversationId"])
     .index("by_agent", ["kind", "agentId"])
     .index("by_user", ["kind", "userId"])
