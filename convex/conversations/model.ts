@@ -1,4 +1,9 @@
-import { DatabaseReader, DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
+import {
+  DatabaseReader,
+  DatabaseWriter,
+  MutationCtx,
+  QueryCtx,
+} from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import * as ConversationParticipants from "../conversationParticipants/model";
@@ -102,14 +107,31 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
   const conversation = await db.get(conversationId);
   if (!conversation)
     throw new Error(`Conversation not found ${conversationId}`);
-  if (await doesHaveTriageAgent(db, { conversationId })) return;
-  await ConversationParticipants.addAgent(db, {
+
+  // If we have the triage agent in the conversation then we can return that
+  const triageAgent = await Agents.getTriageAgent(db);
+  const triageAgentParticipant =
+    await ConversationParticipants.findParticipantByConversationIdAndKindAndAgentId(
+      db,
+      {
+        conversationId,
+        kind: "agent",
+        agentId: triageAgent._id,
+      },
+    );
+  if (triageAgentParticipant) return triageAgentParticipant;
+
+  // Otherwise we add the triage agent to the conversation
+  const participantId = await ConversationParticipants.addAgent(db, {
     conversationId,
     agentId: agent._id,
   });
-  const triageAgent = await Agents.getTriageAgent(db);
+
+  // We also create a message to notify the user that the triage agent has joined the conversation
   await ConversationMessages.createParticipantJoinedConversationMessage(db, {
     conversationId,
     agentOrUser: triageAgent,
   });
+
+  return ConversationParticipants.getParticipant(db, { participantId });
 };

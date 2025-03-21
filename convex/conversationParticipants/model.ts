@@ -123,6 +123,29 @@ export const removeParticipant = async (
   await db.delete(participantId);
 };
 
+export const findParticipantByConversationIdAndKindAndAgentId = async (
+  db: DatabaseReader,
+  {
+    conversationId,
+    kind,
+    agentId,
+  }: {
+    conversationId: Id<"conversations">;
+    kind: "agent";
+    agentId: Id<"agents">;
+  },
+) => {
+  return await db
+    .query("conversationParticipants")
+    .withIndex("by_conversationId_kind_agentId", (q) =>
+      q
+        .eq("conversationId", conversationId)
+        .eq("kind", kind)
+        .eq("agentId", agentId),
+    )
+    .first();
+};
+
 export const doesHaveAgent = async (
   db: DatabaseReader,
   {
@@ -130,17 +153,13 @@ export const doesHaveAgent = async (
     agentId,
   }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
 ) => {
-  const conversationParticipants = await db
-    .query("conversationParticipants")
-    .withIndex("by_conversationId_kind_agentId", (q) =>
-      q
-        .eq("conversationId", conversationId)
-        .eq("kind", "agent")
-        .eq("agentId", agentId),
-    )
-    .first();
-
-  return !!conversationParticipants;
+  const conversationParticipant =
+    await findParticipantByConversationIdAndKindAndAgentId(db, {
+      conversationId,
+      kind: "agent",
+      agentId,
+    });
+  return !!conversationParticipant;
 };
 
 export const doesHaveTriageAgent = async (

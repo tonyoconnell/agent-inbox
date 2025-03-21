@@ -30,23 +30,18 @@ export const triageMessage = async (
 ) => {
   const agent = await getTriageAgent(ctx);
 
-  const isJoined = await ctx.runQuery(
-    internal.conversations.private.isTriageAgentJoined,
+  const participant = await ctx.runMutation(
+    internal.conversations.private
+      .joinTriageAgentToConversationIfNotAlreadyJoined,
     {
       conversationId: args.conversation._id,
     },
   );
 
-  if (!isJoined)
-    await ctx.runMutation(
-      internal.conversations.private
-        .joinTriageAgentToConversationIfNotAlreadyJoined,
-      {
-        conversationId: args.conversation._id,
-      },
+  if (participant.kind != "agent")
+    throw new Error(
+      `Participant is not an agent, it should be as it is the triage agent`,
     );
-
-  
 
   // const mastra = createMastra(ctx);
   // const mastraAgent = mastra.getAgent("triageAgent");
