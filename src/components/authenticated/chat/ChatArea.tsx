@@ -15,8 +15,10 @@ interface ChatAreaProps {
 export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
   const conversation = useQuery(api.conversations.findMine, { conversationId });
-  const messages = useQuery(api.conversationMessages.list, { conversationId });
-  const sendMessage = useMutation(api.conversationMessages.send);
+  const messages = useQuery(api.conversationMessages.listFromMe, {
+    conversationId,
+  });
+  const sendMessage = useMutation(api.conversationMessages.sendFromMe);
 
   // If the conversation is not found, redirect to the home page
   React.useEffect(() => {

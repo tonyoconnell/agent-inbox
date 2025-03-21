@@ -1,10 +1,17 @@
-import { action, internalAction, mutation, query } from "./_generated/server";
+import {
+  action,
+  internalAction,
+  internalMutation,
+  mutation,
+  query,
+} from "./_generated/server";
 import { v } from "convex/values";
-import * as Messages from "./model/messages";
+import * as Messages from "./model/conversationMessages";
 import schema from "./schema";
-import * as Mastra from "./mastra/mastraMock";
+//import * as Mastra from "./mastra/mastra";
+import * as Conversations from "./model/conversations";
 
-export const send = mutation({
+export const sendFromMe = mutation({
   args: {
     conversationId: v.id("conversations"),
     content: v.string(),
@@ -17,16 +24,25 @@ export const send = mutation({
       }),
     ),
   },
-  handler: async (ctx, args) =>
-    Messages.addMessageToConversationFromMe(ctx, args),
+  handler: async (ctx, args) => {
+    await Conversations.ensureICanAccessConversation(ctx, {
+      conversationId: args.conversationId,
+    });
+    return Messages.addMessageToConversationFromMe(ctx, args);
+  },
 });
 
-export const list = query({
+export const listFromMe = query({
   args: {
     conversationId: v.id("conversations"),
     limit: v.optional(v.number()),
   },
-  handler: async (ctx, args) => Messages.listMessages(ctx, args),
+  handler: async (ctx, args) => {
+    await Conversations.ensureICanAccessConversation(ctx, {
+      conversationId: args.conversationId,
+    });
+    return Messages.listMessages(ctx, args);
+  },
 });
 
 export const processMessage = internalAction({
@@ -36,12 +52,25 @@ export const processMessage = internalAction({
   handler: async (ctx, args) => {
     // If there are no references then we should invoke the "triage agent" which will
     // decide what to do with the message
-    if (args.message.references.length == 0)
-      await Mastra.triageMessage(ctx, { message: args.message });
-
+    // if (args.message.references.length == 0)
+    //   await Mastra.triageMessage(ctx, { message: args.message });
     // Otherwise we should invoke each agent with the message
-    for (const reference of args.message.references)
-      if (reference.kind == "agent")
-        await Mastra.invokeAgent(ctx, { message: args.message, reference });
+    // for (const reference of args.message.references)
+    //   if (reference.kind == "agent")
+    //     await Mastra.invokeAgent(ctx, { message: args.message, reference });
+  },
+});
+
+export const sendFromTriageAgent = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Messages.addMessageToConversationFromMe(ctx, {
+      conversationId: args.conversationId,
+      content: args.content,
+      references: [],
+    });
   },
 });

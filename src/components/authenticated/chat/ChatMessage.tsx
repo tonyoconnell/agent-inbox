@@ -11,7 +11,7 @@ import { useTimeAgo } from "../../misc/hooks";
 interface ChatMessageProps {
   id: string;
   content: string;
-  sender: "user" | "agent";
+  sender: "user" | "agent" | "system";
   timestamp: string;
   agentName?: string;
   avatarUrl?: string;

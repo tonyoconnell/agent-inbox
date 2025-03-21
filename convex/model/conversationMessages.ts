@@ -1,9 +1,9 @@
 import { MutationCtx, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "./users";
-import * as Conversations from "./conversations";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
+import { exhaustiveCheck } from "../../shared/misc";
 
 export const addMessageToConversation = async (
   ctx: MutationCtx,
@@ -46,14 +46,30 @@ export const addMessageToConversationFromMe = async (
   },
 ) => {
   const userId = await Users.getMyId(ctx);
-  await Conversations.ensureICanAccessConversation(ctx, {
-    conversationId: args.conversationId,
-  });
   return addMessageToConversation(ctx, {
     ...args,
     author: {
       kind: "user",
       userId,
+    },
+  });
+};
+
+export const addMessageToConversationFromSystem = async (
+  ctx: MutationCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+    references: Doc<"conversationMessages">["references"];
+    systemId: "triage";
+  },
+) => {
+  const userId = await Users.getMyId(ctx);
+  return addMessageToConversation(ctx, {
+    ...args,
+    author: {
+      kind: "system",
+      systemId: "triage",
     },
   });
 };
@@ -68,9 +84,6 @@ export const listMessages = async (
     limit?: number;
   },
 ) => {
-  // Ensure user has access to conversation
-  await Conversations.ensureICanAccessConversation(ctx, { conversationId });
-
   const messages = await ctx.db
     .query("conversationMessages")
     .withIndex("by_conversationId", (q) =>
@@ -91,7 +104,9 @@ export const listMessages = async (
             user.image ??
             `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
         };
-      } else {
+      }
+
+      if (message.author.kind === "agent") {
         const agent = await ctx.db.get(message.author.agentId);
         if (!agent) return { ...message, avatarUrl: null };
         return {
@@ -99,6 +114,15 @@ export const listMessages = async (
           avatarUrl: agent.avatarUrl,
         };
       }
+
+      if (message.author.kind === "system") {
+        return {
+          ...message,
+          avatarUrl: null,
+        };
+      }
+
+      exhaustiveCheck(message.author);
     }),
   );
 

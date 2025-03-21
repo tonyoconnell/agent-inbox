@@ -2,12 +2,17 @@ import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
+const conversationParticipantCommon = {
+  conversationId: v.id("conversations"),
+  addedAt: v.number(),
+  status: v.union(v.literal("none"), v.literal("thinking")),
+};
+
 // The schema is normally optional, but Convex Auth
 // requires indexes defined on `authTables`.
 // The schema provides more precise TypeScript types.
 export default defineSchema({
   ...authTables,
-
   conversations: defineTable({
     title: v.string(),
     createdBy: v.id("users"),
@@ -25,7 +30,7 @@ export default defineSchema({
       v.literal("active"),
       v.literal("processing"),
     ),
-    createdBy: v.id("users"),
+    createdBy: v.optional(v.id("users")),
     lastActiveTime: v.number(),
   })
     .index("by_creator", ["createdBy"])
@@ -35,16 +40,14 @@ export default defineSchema({
   conversationParticipants: defineTable(
     v.union(
       v.object({
-        conversationId: v.id("conversations"),
         kind: v.literal("agent"),
         agentId: v.id("agents"),
-        addedAt: v.number(),
+        ...conversationParticipantCommon,
       }),
       v.object({
-        conversationId: v.id("conversations"),
         kind: v.literal("user"),
         userId: v.id("users"),
-        addedAt: v.number(),
+        ...conversationParticipantCommon,
       }),
     ),
   )
@@ -65,6 +68,10 @@ export default defineSchema({
       v.object({
         kind: v.literal("agent"),
         agentId: v.id("agents"),
+      }),
+      v.object({
+        kind: v.literal("system"),
+        systemId: v.union(v.literal("triage")),
       }),
     ),
     references: v.array(

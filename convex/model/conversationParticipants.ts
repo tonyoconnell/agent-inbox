@@ -37,6 +37,7 @@ export const addAgent = async (
     agentId,
     kind: "agent",
     addedAt: Date.now(),
+    status: "none",
   });
 };
 
@@ -64,6 +65,7 @@ export const addUser = async (
     userId,
     kind: "user",
     addedAt: Date.now(),
+    status: "none",
   });
 };
 
