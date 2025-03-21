@@ -1,28 +1,23 @@
 import * as React from "react";
 import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Avatar } from "@/components/ui/avatar";
 import { AgentAvatar } from "@/components/ui/agent-avatar";
+import { useApiErrorHandler } from "@/components/misc/errors";
 
 interface ChatInputProps {
-  onSendMessage: (
-    message: string,
-    references: Array<{
-      kind: "agent";
-      agentId: Id<"agents">;
-      startIndex: number;
-      endIndex: number;
-    }>,
-  ) => void;
+  conversationId: Id<"conversations">;
 }
 
-export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
+export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   const [message, setMessage] = React.useState("");
   const agents = useQuery(api.agents.public.listMine) ?? [];
+  const sendMessage = useMutation(api.conversationMessages.public.sendFromMe);
+  const apiError = useApiErrorHandler();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
 
@@ -44,7 +39,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
       });
     }
 
-    onSendMessage(message, references);
+    await sendMessage({
+      references,
+      content: message,
+      conversationId: conversationId,
+    }).catch(apiError);
+
     setMessage("");
   };
 

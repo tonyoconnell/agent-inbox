@@ -20,33 +20,6 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const messages = useQuery(api.conversationMessages.public.listFromMe, {
     conversationId,
   });
-  const sendMessage = useMutation(api.conversationMessages.public.sendFromMe);
-
-  // If the conversation is not found, redirect to the home page
-  React.useEffect(() => {
-    if (conversation === undefined) return; // loading
-    if (conversation === null) routes.home().push();
-  }, [conversation]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  React.useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleSendMessage = async (
-    content: string,
-    references: Array<{
-      kind: "agent";
-      agentId: Id<"agents">;
-      startIndex: number;
-      endIndex: number;
-    }> = [],
-  ) => {
-    await sendMessage({ conversationId, content, references });
-  };
 
   return (
     <div className="flex flex-col h-screen bg-background">
@@ -54,7 +27,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
       <div className="relative flex-1">
         <div className="absolute inset-0 flex flex-col-reverse">
           <div className="absolute bottom-0 left-0 right-0">
-            <ChatInput onSendMessage={handleSendMessage} />
+            <ChatInput conversationId={conversationId} />
           </div>
           <div className="overflow-y-auto pb-24">
             <div className="p-4 space-y-4">
