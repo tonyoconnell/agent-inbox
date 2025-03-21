@@ -4,6 +4,7 @@ import * as Users from "../users/model";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
 import { exhaustiveCheck } from "../../shared/misc";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 
 export const addMessageToConversationFromUserOrAgent = async (
   ctx: MutationCtx,
@@ -139,7 +140,7 @@ export const createParticipantJoinedConversationMessage = async (
   const name = args.agentOrUser.name ?? "Unknown";
   await addMessageToConversationFromSystem(db, {
     conversationId: args.conversationId,
-    content: `${name} has joined the conversation.`,
+    content: `👋 ${name} has joined the conversation.`,
   });
 };
 
@@ -147,12 +148,16 @@ export const createParticipantLeftConversationMessage = async (
   db: DatabaseWriter,
   args: {
     conversationId: Id<"conversations">;
-    participant: Doc<"agents"> | Doc<"users">;
+    participant: ParticipantUserOrAgent;
   },
 ) => {
-  const name = args.participant.name ?? "Unknown";
+  const name =
+    args.participant.kind === "user"
+      ? args.participant.user.name
+      : args.participant.agent.name;
+      
   await addMessageToConversationFromSystem(db, {
     conversationId: args.conversationId,
-    content: `${name} has left the conversation.`,
+    content: `🚪 ${name} has left the conversation.`,
   });
 };

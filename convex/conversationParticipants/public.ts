@@ -89,15 +89,22 @@ export const removeParticipant = mutation({
   },
   handler: async (ctx, { conversationId, participantId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
+
+    const participant =
+      await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+        participantId,
+      });
+
+    if (participant.kind == "agent" && participant.agent.kind == "system_agent")
+      throw new Error("Cannot remove system agent from conversation");
+
     await ConversationParticipants.removeParticipant(ctx.db, { participantId });
+
     await ConversationMessages.createParticipantLeftConversationMessage(
       ctx.db,
       {
         conversationId,
-        participant: await ConversationParticipants.getParticipantUserOrAgent(
-          ctx.db,
-          { participantId },
-        ),
+        participant,
       },
     );
 

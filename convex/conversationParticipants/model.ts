@@ -37,14 +37,28 @@ export const getParticipant = async (
 export const getParticipantUserOrAgent = async (
   db: DatabaseReader,
   { participantId }: { participantId: Id<"conversationParticipants"> },
-): Promise<Doc<"agents"> | Doc<"users">> => {
+): Promise<
+  { kind: "agent"; agent: Doc<"agents"> } | { kind: "user"; user: Doc<"users"> }
+> => {
   const participant = await getParticipant(db, { participantId });
+
   if (participant.kind === "agent")
-    return await Agents.get(db, { agentId: participant.agentId });
+    return {
+      kind: "agent" as const,
+      agent: await Agents.get(db, { agentId: participant.agentId }),
+    };
+
   if (participant.kind === "user")
-    return await Users.get(db, { userId: participant.userId });
+    return {
+      kind: "user",
+      user: await Users.get(db, { userId: participant.userId }),
+    };
+
   exhaustiveCheck(participant);
 };
+export type ParticipantUserOrAgent = Awaited<
+  ReturnType<typeof getParticipantUserOrAgent>
+>;
 
 export const addAgent = async (
   db: DatabaseWriter,
