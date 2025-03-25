@@ -32,6 +32,7 @@ import type * as http from "../http.js";
 import type * as mastra_lib_storage from "../mastra/lib/storage.js";
 import type * as mastra_lib_vector from "../mastra/lib/vector.js";
 import type * as mastra_mastra from "../mastra/mastra.js";
+import type * as mastra_referencedAgent from "../mastra/referencedAgent.js";
 import type * as mastra_tools from "../mastra/tools.js";
 import type * as mastra_triage from "../mastra/triage.js";
 import type * as mastra__ from "../mastra/_.js";
@@ -66,6 +67,7 @@ declare const fullApi: ApiFromModules<{
   "mastra/lib/storage": typeof mastra_lib_storage;
   "mastra/lib/vector": typeof mastra_lib_vector;
   "mastra/mastra": typeof mastra_mastra;
+  "mastra/referencedAgent": typeof mastra_referencedAgent;
   "mastra/tools": typeof mastra_tools;
   "mastra/triage": typeof mastra_triage;
   "mastra/_": typeof mastra__;

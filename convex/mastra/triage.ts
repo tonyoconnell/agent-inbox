@@ -9,7 +9,6 @@ import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
-import { zCustomQuery, zid } from "convex-helpers/server/zod";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(

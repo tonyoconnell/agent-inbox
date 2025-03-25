@@ -1,21 +1,20 @@
 import { internalMutation, internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import * as ConversationParticipants from "./model";
-import { conversationParticipantStatusSchemaValidator } from "./schema";
+import {
+  conversationParticipantStatusSchemaValidator,
+  conversationParticipantIdentifierSchemaValidator,
+} from "./schema";
 
 export const updateParticipantStatus = internalMutation({
   args: {
     participantId: v.id("conversationParticipants"),
-    status: conversationParticipantStatusSchemaValidator,
+    status: v.union(v.literal("thinking"), v.literal("inactive")),
   },
-  handler: async (ctx, { participantId, status }) => {
-    const participant = await ConversationParticipants.getParticipant(ctx.db, {
-      participantId,
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.participantId, {
+      status: args.status,
     });
-    if (!participant)
-      throw new Error(`Participant '${participantId}' not found`);
-
-    await ctx.db.patch(participantId, { status });
     return null;
   },
 });
@@ -26,6 +25,19 @@ export const listNonSystemAgentParticipants = internalQuery({
   },
   handler: async (ctx, args) => {
     return await ConversationParticipants.findNonSystemAgentParticipants(
+      ctx.db,
+      args,
+    );
+  },
+});
+
+export const findParticipantByConversationIdAndIdentifier = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+    identifier: conversationParticipantIdentifierSchemaValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
       ctx.db,
       args,
     );

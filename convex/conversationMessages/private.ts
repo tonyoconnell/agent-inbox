@@ -31,3 +31,27 @@ export const sendFromTriageAgent = internalMutation({
     });
   },
 });
+
+export const sendFromAgent = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    agentId: v.id("agents"),
+    content: v.string(),
+    author: v.id("conversationParticipants"),
+  },
+  returns: v.id("conversationMessages"),
+  handler: async (ctx, args) => {
+    return await Messages.addMessageToConversationFromAgent(ctx, args);
+  },
+});
+
+export const sendSystemMessage = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    content: v.string(),
+  },
+  returns: v.id("conversationMessages"),
+  handler: async (ctx, args) => {
+    return await Messages.addMessageToConversationFromSystem(ctx.db, args);
+  },
+});

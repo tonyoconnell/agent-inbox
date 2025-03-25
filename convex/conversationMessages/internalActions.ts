@@ -4,6 +4,7 @@ import schema from "../schema";
 import { triageMessage } from "../mastra/triage";
 import { doc } from "convex-helpers/validators";
 import * as ConversationMessagesModel from "./model";
+import {invokeAgent} from '../mastra/referencedAgent';
 
 export const processMessage = internalAction({
   args: {
@@ -33,8 +34,8 @@ export const processMessage = internalAction({
       });
 
     // Otherwise we should invoke each agent with the message
-    // for (const reference of args.message.references)
-    //   if (reference.kind == "agent")
-    //     await Mastra.invokeAgent(ctx, { message: args.message, reference });
+    for (const reference of references)
+      if (reference.kind == "agent")
+        await invokeAgent(ctx, { message: args.message, reference });
   },
 });

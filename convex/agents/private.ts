@@ -25,3 +25,12 @@ export const createSystemAgent = internalMutation({
     });
   },
 });
+
+export const find = internalQuery({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    return await Agents.find(ctx.db, args);
+  },
+});
