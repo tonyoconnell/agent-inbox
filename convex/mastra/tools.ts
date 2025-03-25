@@ -17,14 +17,17 @@ export const createTools = (ctx: ActionCtx) => {
     execute: async ({ context }) => {
       console.log(`EXECUTING TOOL`, context);
 
-      await ctx.runMutation(
+      const messageId = await ctx.runMutation(
         internal.conversationMessages.private.sendFromTriageAgent,
         {
           conversationId: context.conversationId as Id<"conversations">,
           content: context.content,
         },
       );
-      return {};
+      return {
+        result: "message_sent",
+        messageId,
+      };
     },
   });
 

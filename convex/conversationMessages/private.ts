@@ -9,6 +9,7 @@ export const sendFromTriageAgent = internalMutation({
     conversationId: v.id("conversations"),
     content: v.string(),
   },
+  returns: v.id("conversationMessages"),
   handler: async (ctx, args) => {
     const triageAgent = await Agents.getTriageAgent(ctx.db);
     const triageAgentParticipant =
@@ -22,7 +23,7 @@ export const sendFromTriageAgent = internalMutation({
           },
         },
       );
-    await Messages.addMessageToConversationFromAgent(ctx, {
+    return await Messages.addMessageToConversationFromAgent(ctx, {
       conversationId: args.conversationId,
       content: args.content,
       references: [],

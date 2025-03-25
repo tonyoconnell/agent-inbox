@@ -4,13 +4,13 @@ import { defineTable } from "convex/server";
 export const conversationParticipantStatusSchemaValidator = v.union(
   v.literal("inactive"),
   v.literal("thinking"),
-  v.literal("departed"),
 );
 
 const common = {
   conversationId: v.id("conversations"),
   addedAt: v.number(),
   status: conversationParticipantStatusSchemaValidator,
+  isRemoved: v.boolean(),
 };
 
 export const conversationParticipantIdentifierSchemaValidator = v.union(
@@ -41,6 +41,7 @@ export const conversationParticipantsTable = defineTable(
   conversationParticipantsSchemaValidator,
 )
   .index("by_conversationId", ["conversationId"])
+  .index("by_conversationId_isRemoved", ["conversationId", "isRemoved"])
   .index("by_userId", ["userId"])
   .index("by_conversationId_kind_agentId", [
     "conversationId",

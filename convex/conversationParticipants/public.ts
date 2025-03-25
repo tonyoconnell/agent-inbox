@@ -9,7 +9,7 @@ export const listForMe = query({
   args: { conversationId: v.id("conversations") },
   handler: async (ctx, { conversationId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
-    return ConversationParticipants.getParticipants(ctx.db, {
+    return ConversationParticipants.getNonRemovedParticipants(ctx.db, {
       conversationId,
     });
   },
@@ -19,12 +19,10 @@ export const listAvatars = query({
   args: { conversationId: v.id("conversations") },
   handler: async (ctx, { conversationId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
-    const participants = await ConversationParticipants.getParticipants(
-      ctx.db,
-      {
+    const participants =
+      await ConversationParticipants.getNonRemovedParticipants(ctx.db, {
         conversationId,
-      },
-    );
+      });
 
     const participantPromises = participants.map(async (p) => {
       if (p.kind === "agent") {
@@ -118,12 +116,10 @@ export const listDetailsForMe = query({
     const conversation = await ensureICanAccessConversation(ctx, {
       conversationId,
     });
-    const participants = await ConversationParticipants.getParticipants(
-      ctx.db,
-      {
+    const participants =
+      await ConversationParticipants.getNonRemovedParticipants(ctx.db, {
         conversationId,
-      },
-    );
+      });
 
     const details = await Promise.all(
       participants.map((p) =>

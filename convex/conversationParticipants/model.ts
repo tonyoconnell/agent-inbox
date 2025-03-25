@@ -5,14 +5,14 @@ import * as Users from "../users/model";
 import { exhaustiveCheck } from "../../shared/misc";
 import { conversationParticipantIdentifierSchemaValidator } from "./schema";
 
-export const getParticipants = async (
+export const getNonRemovedParticipants = async (
   db: DatabaseReader,
   { conversationId }: { conversationId: Id<"conversations"> },
 ) => {
   const participants = await db
     .query("conversationParticipants")
-    .withIndex("by_conversationId", (q) =>
-      q.eq("conversationId", conversationId),
+    .withIndex("by_conversationId_isRemoved", (q) =>
+      q.eq("conversationId", conversationId).eq("isRemoved", false),
     )
     .collect();
 
@@ -78,7 +78,14 @@ export const addAgent = async (
     )
     .first();
 
-  if (existing) return existing._id;
+  if (existing) {
+    if (existing.isRemoved)
+      await db.patch(existing._id, {
+        isRemoved: false,
+      });
+
+    return existing._id;
+  }
 
   return db.insert("conversationParticipants", {
     conversationId,
@@ -86,6 +93,7 @@ export const addAgent = async (
     kind: "agent",
     addedAt: Date.now(),
     status: "inactive",
+    isRemoved: false,
   });
 };
 
@@ -114,6 +122,7 @@ export const addUser = async (
     kind: "user",
     addedAt: Date.now(),
     status: "inactive",
+    isRemoved: false,
   });
 };
 
@@ -121,7 +130,9 @@ export const removeParticipant = async (
   db: DatabaseWriter,
   { participantId }: { participantId: Id<"conversationParticipants"> },
 ) => {
-  await db.delete(participantId);
+  await db.patch(participantId, {
+    isRemoved: true,
+  });
 };
 
 export const findParticipantByConversationIdAndIdentifier = async (
@@ -168,7 +179,10 @@ export const getParticipantByConversationIdAndIdentifier = async (
     identifier: typeof conversationParticipantIdentifierSchemaValidator.type;
   },
 ) => {
-  const participant = await findParticipantByConversationIdAndIdentifier(db, args);
+  const participant = await findParticipantByConversationIdAndIdentifier(
+    db,
+    args,
+  );
   if (!participant) throw new Error(`Participant not found ${args.identifier}`);
   return participant;
 };
@@ -266,7 +280,7 @@ export const findNonSystemAgentParticipants = async (
   db: DatabaseReader,
   { conversationId }: { conversationId: Id<"conversations"> },
 ) => {
-  const participants = await getParticipants(db, { conversationId });
+  const participants = await getNonRemovedParticipants(db, { conversationId });
 
   // Filter to only agent participants and get their details
   const agentParticipants = await Promise.all(

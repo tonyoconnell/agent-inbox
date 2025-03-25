@@ -106,6 +106,8 @@ The current conversationId is: ${args.conversation._id}
   
 `;
 
+    console.log(`Triage agent instructions: ${triageAgentInstructions}`);
+
     const triageAgent = new Agent({
       name: "Conversation Triage Agent",
       instructions: triageAgentInstructions,
@@ -113,6 +115,7 @@ The current conversationId is: ${args.conversation._id}
       tools: pick(allTools, "sendMessageToConversation"),
       memory,
     });
+
 
     const mastra = new Mastra({
       agents: { triageAgent },
@@ -127,6 +130,9 @@ The current conversationId is: ${args.conversation._id}
         content: `${args.message.content}`,
       },
     ]);
+
+
+
   } catch (error) {
     // we should add a message to the conversation to notify the user that the triage agent has errored
   } finally {
