@@ -10,6 +10,7 @@ import { useTimeAgo } from "@/components/misc/hooks";
 import { useQuery } from "convex/react";
 import { Doc } from "convex/_generated/dataModel";
 import { api } from "../../../../convex/_generated/api";
+import { MessageMention } from "./MessageMention";
 
 interface Props {
   message: Doc<"conversationMessages">;
@@ -27,8 +28,46 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   );
 
   const participant = participants?.find((p) => p.id === message.author);
+  const agents = useQuery(api.agents.public.listMine) ?? [];
 
   const timeAgo = useTimeAgo(message._creationTime);
+
+  const renderMessageContent = (content: string) => {
+    const mentionRegex = /@\[(.*?)\]\(agent:(.*?)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = mentionRegex.exec(content)) !== null) {
+      // Add text before the mention
+      if (match.index > lastIndex) {
+        parts.push(content.slice(lastIndex, match.index));
+      }
+
+      const [_, display, agentId] = match;
+      const agent = agents.find((a) => a._id === agentId);
+
+      // Add the mention component
+      parts.push(
+        <MessageMention
+          key={`${agentId}-${match.index}`}
+          display={display}
+          agentId={agentId}
+          agent={agent}
+          isInUserMessage={participant?.kind === "user"}
+        />,
+      );
+
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text after last mention
+    if (lastIndex < content.length) {
+      parts.push(content.slice(lastIndex));
+    }
+
+    return parts;
+  };
 
   return (
     <div
@@ -67,7 +106,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
             {participant.name}
           </div>
         )}
-        <div>{message.content}</div>
+        <div className="space-x-1">{renderMessageContent(message.content)}</div>
         <div
           className={`text-xs mt-1 ${
             participant?.kind === "user"

@@ -4,18 +4,20 @@ import { cn } from "@/lib/utils";
 interface AgentAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   avatarUrl: string;
   name: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
 export const AgentAvatar = React.forwardRef<HTMLDivElement, AgentAvatarProps>(
   ({ avatarUrl, name, size = "md", className, ...props }, ref) => {
     const sizeClasses = {
+      xs: "h-4 w-4",
       sm: "h-8 w-8",
       md: "h-12 w-12",
       lg: "h-48 w-48",
     };
 
     const borderClasses = {
+      xs: "border",
       sm: "border-2",
       md: "border-2",
       lg: "border-4",
