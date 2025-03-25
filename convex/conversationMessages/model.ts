@@ -16,14 +16,12 @@ export const addMessageToConversationFromUserOrAgent = async (
     conversationId: Id<"conversations">;
     content: string;
     author: Id<"conversationParticipants">;
-    references: typeof conversationMessageReferencesSchemaValidator.type;
   },
 ) => {
   // Create the message
   const messageId = await ctx.db.insert("conversationMessages", {
     ...args,
     kind: "participant",
-    references: args.references ?? [],
   });
 
   // Update conversation's last message time
@@ -54,7 +52,6 @@ export const addMessageToConversationFromMe = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
-    references: typeof conversationMessageReferencesSchemaValidator.type;
   },
 ) => {
   const participant = await ConversationParticipants.getMyParticipant(ctx, {
@@ -84,19 +81,16 @@ export const addMessageToConversationFromAgent = async (
     author,
     content,
     conversationId,
-    references,
   }: {
     conversationId: Id<"conversations">;
     agentId: Id<"agents">;
     content: string;
     author: Id<"conversationParticipants">;
-    references: typeof conversationMessageReferencesSchemaValidator.type;
   },
 ) => {
   return addMessageToConversationFromUserOrAgent(ctx, {
     conversationId,
     content,
-    references,
     author,
   });
 };
@@ -215,4 +209,38 @@ export const createParticipantLeftConversationMessage = async (
     conversationId: args.conversationId,
     content: `🚪 ${name} has left the conversation.`,
   });
+};
+
+export const parseReferencesFromMessageContent = (content: string) => {
+  /**
+   * Parses message content to extract references to entities like users or agents.
+   *
+   * References are formatted as: @[name](kind:id)
+   * Example: "Hello @[Mike](agent:abc1234)" references a agent with ID abc1234
+   *
+   * @param content - The message content to parse
+   * @returns Array of references found in the message content
+   */
+  const references: typeof conversationMessageReferencesSchemaValidator.type =
+    [];
+
+  // Regular expression to match references in the format @[name](kind:id)
+  const referenceRegex = /@\[([^\]]+)\]\(([^:]+):([^)]+)\)/g;
+
+  let match;
+  while ((match = referenceRegex.exec(content)) !== null) {
+    const [_, name, kind, id] = match;
+
+    // Currently only agent references are supported in the schema
+    if (kind === "agent") {
+      references.push({
+        kind: "agent",
+        agentId: id as Id<"agents">,
+      });
+    }
+    // Note: If we want to support other reference types in the future,
+    // we would need to update the schema validator and add cases here
+  }
+
+  return references;
 };

@@ -5,8 +5,6 @@ export const conversationMessageReferenceSchemaValidator = v.union(
   v.object({
     kind: v.literal("agent"),
     agentId: v.id("agents"),
-    startIndex: v.number(),
-    endIndex: v.number(),
   }),
 );
 
@@ -19,14 +17,15 @@ const common = {
   content: v.string(),
 };
 
+export const conversationParticipantMessageSchemaValidator = v.object({
+  ...common,
+  kind: v.literal("participant"),
+  author: v.id("conversationParticipants"),
+});
+
 export const conversationMessagesTable = defineTable(
   v.union(
-    v.object({
-      ...common,
-      kind: v.literal("participant"),
-      author: v.id("conversationParticipants"),
-      references: conversationMessageReferencesSchemaValidator,
-    }),
+    conversationParticipantMessageSchemaValidator,
     v.object({
       ...common,
       kind: v.literal("system"),

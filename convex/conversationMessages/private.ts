@@ -26,7 +26,6 @@ export const sendFromTriageAgent = internalMutation({
     return await Messages.addMessageToConversationFromAgent(ctx, {
       conversationId: args.conversationId,
       content: args.content,
-      references: [],
       agentId: triageAgent._id,
       author: triageAgentParticipant._id,
     });

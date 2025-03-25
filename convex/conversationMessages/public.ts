@@ -13,14 +13,6 @@ export const sendFromMe = mutation({
   args: {
     conversationId: v.id("conversations"),
     content: v.string(),
-    references: v.array(
-      v.object({
-        kind: v.literal("agent"),
-        agentId: v.id("agents"),
-        startIndex: v.number(),
-        endIndex: v.number(),
-      }),
-    ),
   },
   handler: async (ctx, args) => {
     await Conversations.ensureICanAccessConversation(ctx, {

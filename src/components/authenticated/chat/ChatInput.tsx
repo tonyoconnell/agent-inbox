@@ -3,7 +3,6 @@ import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { Avatar } from "@/components/ui/avatar";
 import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { useApiErrorHandler } from "@/components/misc/errors";
 
@@ -21,31 +20,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
     e.preventDefault();
     if (!message.trim()) return;
 
-    // Extract references from the message
-    const references: Array<{
-      kind: "agent";
-      agentId: Id<"agents">;
-      startIndex: number;
-      endIndex: number;
-    }> = [];
-    const regex = /@\[([^\]]+)\]\(([^)]+)\)/g;
-    let match;
-    while ((match = regex.exec(message)) !== null) {
-      references.push({
-        kind: "agent",
-        agentId: match[2] as Id<"agents">,
-        startIndex: match.index,
-        endIndex: match.index + match[0].length,
-      });
-    }
+    setMessage("");
 
     await sendMessage({
-      references,
       content: message,
       conversationId: conversationId,
     }).catch(apiError);
-
-    setMessage("");
   };
 
   return (
@@ -120,7 +100,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
               display: agent.name,
             }))}
             displayTransform={(id, display) => `@${display}`}
-            markup="@[__display__](__id__)"
+            markup="@[__display__](agent:__id__)"
             appendSpaceOnAdd={true}
             style={{
               backgroundColor: "var(--accent)",
