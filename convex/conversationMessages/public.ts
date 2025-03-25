@@ -30,7 +30,7 @@ export const sendFromMe = mutation({
   },
 });
 
-export const listFromMe = query({
+export const listForMe = query({
   args: {
     conversationId: v.id("conversations"),
     limit: v.optional(v.number()),

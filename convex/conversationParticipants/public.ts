@@ -5,7 +5,7 @@ import { ensureICanAccessConversation } from "../conversations/model";
 import * as ConversationMessages from "../conversationMessages/model";
 import * as Agents from "../agents/model";
 
-export const list = query({
+export const listForMe = query({
   args: { conversationId: v.id("conversations") },
   handler: async (ctx, { conversationId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
@@ -112,7 +112,7 @@ export const removeParticipant = mutation({
   },
 });
 
-export const listDetails = query({
+export const listDetailsForMe = query({
   args: { conversationId: v.id("conversations") },
   handler: async (ctx, { conversationId }) => {
     const conversation = await ensureICanAccessConversation(ctx, {

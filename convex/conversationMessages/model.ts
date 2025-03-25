@@ -3,21 +3,26 @@ import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
-import { exhaustiveCheck } from "../../shared/misc";
-import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+import * as ConversationParticipants from "../conversationParticipants/model";
+import { conversationMessageReferencesSchemaValidator } from "./schema";
+import {
+  ParticipantUserOrAgent,
+  getMyParticipant,
+} from "../conversationParticipants/model";
 
 export const addMessageToConversationFromUserOrAgent = async (
   ctx: MutationCtx,
   args: {
     conversationId: Id<"conversations">;
     content: string;
-    author: Doc<"conversationMessages">["author"];
-    references: Doc<"conversationMessages">["references"];
+    author: Id<"conversationParticipants">;
+    references: typeof conversationMessageReferencesSchemaValidator.type;
   },
 ) => {
   // Create the message
   const messageId = await ctx.db.insert("conversationMessages", {
     ...args,
+    kind: "participant",
     references: args.references ?? [],
   });
 
@@ -49,12 +54,9 @@ export const addMessageToConversationFromSystem = async (
 ) => {
   // Create the message
   return await db.insert("conversationMessages", {
-    author: {
-      kind: "system",
-    },
+    kind: "system",
     conversationId: args.conversationId,
     content: args.content,
-    references: [],
   });
 };
 
@@ -63,36 +65,38 @@ export const addMessageToConversationFromMe = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
-    references: Doc<"conversationMessages">["references"];
+    references: typeof conversationMessageReferencesSchemaValidator.type;
   },
 ) => {
-  const userId = await Users.getMyId(ctx);
+  const participant = await ConversationParticipants.getMyParticipant(ctx, {
+    conversationId: args.conversationId,
+  });
   return addMessageToConversationFromUserOrAgent(ctx, {
     ...args,
-    author: {
-      kind: "user",
-      userId,
-    },
+    author: participant._id,
   });
 };
 
 export const addMessageToConversationFromAgent = async (
   ctx: MutationCtx,
-  args: {
+  {
+    author,
+    content,
+    conversationId,
+    references,
+  }: {
     conversationId: Id<"conversations">;
     agentId: Id<"agents">;
     content: string;
-    references: Doc<"conversationMessages">["references"];
+    author: Id<"conversationParticipants">;
+    references: typeof conversationMessageReferencesSchemaValidator.type;
   },
 ) => {
   return addMessageToConversationFromUserOrAgent(ctx, {
-    conversationId: args.conversationId,
-    content: args.content,
-    references: args.references,
-    author: {
-      kind: "agent",
-      agentId: args.agentId,
-    },
+    conversationId,
+    content,
+    references,
+    author,
   });
 };
 
@@ -114,42 +118,70 @@ export const listMessages = async (
     .order("asc")
     .take(limit);
 
-  // Fetch avatar URLs and names for each message
-  const messagesWithAvatars = await Promise.all(
-    messages.map(async (message) => {
-      if (message.author.kind === "user") {
-        const user = await ctx.db.get(message.author.userId);
-        if (!user) return { ...message, avatarUrl: null };
-        return {
-          ...message,
-          avatarUrl:
-            user.image ??
-            `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
-        };
-      }
-
-      if (message.author.kind === "agent") {
-        const agent = await ctx.db.get(message.author.agentId);
-        if (!agent) return { ...message, avatarUrl: null };
-        return {
-          ...message,
-          avatarUrl: agent.avatarUrl,
-        };
-      }
-
-      if (message.author.kind === "system") {
-        return {
-          ...message,
-          avatarUrl: null,
-        };
-      }
-
-      exhaustiveCheck(message.author);
-    }),
-  );
-
-  return messagesWithAvatars;
+  return messages;
 };
+
+// export const listMessagesAndJoinAuthorDetails = async (
+//   ctx: QueryCtx,
+//   {
+//     conversationId,
+//     limit = 50,
+//   }: {
+//     conversationId: Id<"conversations">;
+//     limit?: number;
+//   },
+// ) => {
+//   const messages = await listMessages(ctx, {
+//     conversationId,
+//     limit,
+//   });
+
+//   const messagesWithAuthorDetails = await Promise.all(
+//     messages.map(async (message) => {
+//       const userOrAgent =
+//         await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+//           participantId: message.author,
+//         });
+//       return { message, author: userOrAgent };
+//     }),
+//   );
+
+//   // Fetch avatar URLs and names for each message
+//   // const messagesWithAvatars = await Promise.all(
+//   //   messages.map(async (message) => {
+//   //     if (message.author.kind === "user") {
+//   //       const user = await ctx.db.get(message.author.userId);
+//   //       if (!user) return { ...message, avatarUrl: null };
+//   //       return {
+//   //         ...message,
+//   //         avatarUrl:
+//   //           user.image ??
+//   //           `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
+//   //       };
+//   //     }
+
+//   //     if (message.author.kind === "agent") {
+//   //       const agent = await ctx.db.get(message.author.agentId);
+//   //       if (!agent) return { ...message, avatarUrl: null };
+//   //       return {
+//   //         ...message,
+//   //         avatarUrl: agent.avatarUrl,
+//   //       };
+//   //     }
+
+//   //     if (message.author.kind === "system") {
+//   //       return {
+//   //         ...message,
+//   //         avatarUrl: null,
+//   //       };
+//   //     }
+
+//   //     exhaustiveCheck(message.author);
+//   //   }),
+//   // );
+
+//   return messages;
+// };
 
 export const createParticipantJoinedConversationMessage = async (
   db: DatabaseWriter,
@@ -159,6 +191,7 @@ export const createParticipantJoinedConversationMessage = async (
   },
 ) => {
   const name = args.agentOrUser.name ?? "Unknown";
+
   await addMessageToConversationFromSystem(db, {
     conversationId: args.conversationId,
     content: `👋 ${name} has joined the conversation.`,

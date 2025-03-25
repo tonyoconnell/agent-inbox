@@ -4,8 +4,23 @@ import { defineTable } from "convex/server";
 const common = {
   conversationId: v.id("conversations"),
   addedAt: v.number(),
-  status: v.union(v.literal("none"), v.literal("thinking")),
+  status: v.union(
+    v.literal("inactive"),
+    v.literal("thinking"),
+    v.literal("departed"),
+  ),
 };
+
+export const conversationParticipantIdentifierSchemaValidator = v.union(
+  v.object({
+    kind: v.literal("agent"),
+    agentId: v.id("agents"),
+  }),
+  v.object({
+    kind: v.literal("user"),
+    userId: v.id("users"),
+  }),
+);
 
 export const conversationParticipantsSchemaValidator = v.union(
   v.object({
@@ -20,7 +35,7 @@ export const conversationParticipantsSchemaValidator = v.union(
   }),
 );
 
-export const conversationParticipantsSchema = defineTable(
+export const conversationParticipantsTable = defineTable(
   conversationParticipantsSchemaValidator,
 )
   .index("by_conversationId", ["conversationId"])

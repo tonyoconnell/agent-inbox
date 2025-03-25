@@ -7,24 +7,20 @@ import {
   TooltipTrigger,
 } from "../../ui/tooltip";
 import { useTimeAgo } from "../../misc/hooks";
+import { Doc } from "convex/_generated/dataModel";
 
 interface ChatMessageProps {
-  id: string;
-  content: string;
-  sender: "user" | "agent" | "system";
-  timestamp: string;
-  agentName?: string;
-  avatarUrl?: string;
+  message: Doc<"conversationMessages">;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({
-  content,
-  sender,
-  timestamp,
-  agentName,
-  avatarUrl,
+  message
 }) => {
+  
+
+
   const timeAgo = useTimeAgo(timestamp);
+
 
   return (
     <div

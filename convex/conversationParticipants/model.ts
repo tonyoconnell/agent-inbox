@@ -1,8 +1,9 @@
-import { DatabaseReader, DatabaseWriter } from "../_generated/server";
+import { DatabaseReader, DatabaseWriter, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 import * as Agents from "../agents/model";
 import * as Users from "../users/model";
 import { exhaustiveCheck } from "../../shared/misc";
+import { conversationParticipantIdentifierSchemaValidator } from "./schema";
 
 export const getParticipants = async (
   db: DatabaseReader,
@@ -84,7 +85,7 @@ export const addAgent = async (
     agentId,
     kind: "agent",
     addedAt: Date.now(),
-    status: "none",
+    status: "inactive",
   });
 };
 
@@ -112,7 +113,7 @@ export const addUser = async (
     userId,
     kind: "user",
     addedAt: Date.now(),
-    status: "none",
+    status: "inactive",
   });
 };
 
@@ -123,27 +124,70 @@ export const removeParticipant = async (
   await db.delete(participantId);
 };
 
-export const findParticipantByConversationIdAndKindAndAgentId = async (
+export const findParticipantByConversationIdAndIdentifier = async (
   db: DatabaseReader,
   {
     conversationId,
-    kind,
-    agentId,
+    identifier,
   }: {
     conversationId: Id<"conversations">;
-    kind: "agent";
-    agentId: Id<"agents">;
+    identifier: typeof conversationParticipantIdentifierSchemaValidator.type;
   },
 ) => {
-  return await db
-    .query("conversationParticipants")
-    .withIndex("by_conversationId_kind_agentId", (q) =>
-      q
-        .eq("conversationId", conversationId)
-        .eq("kind", kind)
-        .eq("agentId", agentId),
-    )
-    .first();
+  if (identifier.kind === "agent") {
+    return await db
+      .query("conversationParticipants")
+      .withIndex("by_conversationId_kind_agentId", (q) =>
+        q
+          .eq("conversationId", conversationId)
+          .eq("kind", "agent")
+          .eq("agentId", identifier.agentId),
+      )
+      .first();
+  }
+
+  if (identifier.kind === "user") {
+    return await db
+      .query("conversationParticipants")
+      .withIndex("by_conversationId_kind_userId", (q) =>
+        q
+          .eq("conversationId", conversationId)
+          .eq("kind", "user")
+          .eq("userId", identifier.userId),
+      )
+      .first();
+  }
+
+  exhaustiveCheck(identifier);
+};
+
+export const findUserParticipantInConversation = async (
+  db: DatabaseReader,
+  {
+    conversationId,
+    userId,
+  }: { conversationId: Id<"conversations">; userId: Id<"users"> },
+) => {
+  return await findParticipantByConversationIdAndIdentifier(db, {
+    conversationId,
+    identifier: { kind: "user", userId },
+  });
+};
+
+export const getMyParticipant = async (
+  ctx: QueryCtx,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const participant = await findParticipantByConversationIdAndIdentifier(
+    ctx.db,
+    {
+      conversationId,
+      identifier: { kind: "user", userId },
+    },
+  );
+  if (!participant) throw new Error(`Participant not found ${userId}`);
+  return participant;
 };
 
 export const doesHaveAgent = async (
@@ -154,10 +198,9 @@ export const doesHaveAgent = async (
   }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
 ) => {
   const conversationParticipant =
-    await findParticipantByConversationIdAndKindAndAgentId(db, {
+    await findParticipantByConversationIdAndIdentifier(db, {
       conversationId,
-      kind: "agent",
-      agentId,
+      identifier: { kind: "agent", agentId },
     });
   return !!conversationParticipant;
 };

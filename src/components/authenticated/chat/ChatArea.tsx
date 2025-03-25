@@ -7,7 +7,7 @@ import { Skeleton } from "../../ui/skeleton";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { routes } from "@/routes";
+import { listDetailsForMe } from "../../../../convex/conversationParticipants/public";
 
 interface ChatAreaProps {
   conversationId: Id<"conversations">;
@@ -18,7 +18,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const conversation = useQuery(api.conversations.public.findMine, {
     conversationId,
   });
-  const messages = useQuery(api.conversationMessages.public.listFromMe, {
+  const messages = useQuery(api.conversationMessages.public.listForMe, {
     conversationId,
   });
 
@@ -55,17 +55,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
               ) : (
                 <>
                   {messages.map((message) => (
-                    <ChatMessage
-                      key={message._id}
-                      id={message._id}
-                      content={message.content}
-                      sender={message.author.kind}
-                      timestamp={new Date(message._creationTime).toISOString()}
-                      agentName={
-                        message.author.kind === "agent" ? "Agent" : undefined
-                      }
-                      avatarUrl={message.avatarUrl ?? undefined}
-                    />
+                    <ChatMessage key={message._id} message={message} />
                   ))}
                   <ThinkingIndicator conversationId={conversationId} />
                 </>

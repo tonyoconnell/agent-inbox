@@ -111,7 +111,7 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
   // If we have the triage agent in the conversation then we can return that
   const triageAgent = await Agents.getTriageAgent(db);
   const triageAgentParticipant =
-    await ConversationParticipants.findParticipantByConversationIdAndKindAndAgentId(
+    await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
       db,
       {
         conversationId,
