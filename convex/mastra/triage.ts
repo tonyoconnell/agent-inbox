@@ -135,7 +135,7 @@ The current conversationId is: ${args.conversation._id}
       internal.conversationParticipants.private.updateParticipantStatus,
       {
         participantId: participant._id,
-        status: "none",
+        status: "inactive",
       },
     );
   }

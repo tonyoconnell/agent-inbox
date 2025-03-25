@@ -1,14 +1,16 @@
 import { v } from "convex/values";
 import { defineTable } from "convex/server";
 
+export const conversationParticipantStatusSchemaValidator = v.union(
+  v.literal("inactive"),
+  v.literal("thinking"),
+  v.literal("departed"),
+);
+
 const common = {
   conversationId: v.id("conversations"),
   addedAt: v.number(),
-  status: v.union(
-    v.literal("inactive"),
-    v.literal("thinking"),
-    v.literal("departed"),
-  ),
+  status: conversationParticipantStatusSchemaValidator,
 };
 
 export const conversationParticipantIdentifierSchemaValidator = v.union(

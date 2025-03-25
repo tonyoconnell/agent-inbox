@@ -161,6 +161,18 @@ export const findParticipantByConversationIdAndIdentifier = async (
   exhaustiveCheck(identifier);
 };
 
+export const getParticipantByConversationIdAndIdentifier = async (
+  db: DatabaseReader,
+  args: {
+    conversationId: Id<"conversations">;
+    identifier: typeof conversationParticipantIdentifierSchemaValidator.type;
+  },
+) => {
+  const participant = await findParticipantByConversationIdAndIdentifier(db, args);
+  if (!participant) throw new Error(`Participant not found ${args.identifier}`);
+  return participant;
+};
+
 export const findUserParticipantInConversation = async (
   db: DatabaseReader,
   {

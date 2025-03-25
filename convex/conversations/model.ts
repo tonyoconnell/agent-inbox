@@ -115,8 +115,10 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
       db,
       {
         conversationId,
-        kind: "agent",
-        agentId: triageAgent._id,
+        identifier: {
+          kind: "agent",
+          agentId: triageAgent._id,
+        },
       },
     );
   if (triageAgentParticipant) return triageAgentParticipant;

@@ -10,7 +10,7 @@ import {
  * Hook that returns a dynamically updating relative time string (e.g. "2 minutes ago")
  * Updates more frequently for recent timestamps and less frequently for older ones.
  */
-export const useTimeAgo = (timestamp: string) => {
+export const useTimeAgo = (timestamp: number) => {
   const [timeAgo, setTimeAgo] = React.useState(() =>
     formatDistanceToNow(new Date(timestamp), { addSuffix: true }),
   );

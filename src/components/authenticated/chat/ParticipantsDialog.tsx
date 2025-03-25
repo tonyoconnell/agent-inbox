@@ -30,7 +30,7 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
   trigger,
 }) => {
   const participants = useQuery(
-    api.conversationParticipants.public.listDetails,
+    api.conversationParticipants.public.listDetailsForMe,
     {
       conversationId: conversation._id,
     },

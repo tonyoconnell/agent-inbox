@@ -1,11 +1,12 @@
 import { internalMutation, internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import * as ConversationParticipants from "./model";
+import { conversationParticipantStatusSchemaValidator } from "./schema";
 
 export const updateParticipantStatus = internalMutation({
   args: {
     participantId: v.id("conversationParticipants"),
-    status: v.union(v.literal("none"), v.literal("thinking")),
+    status: conversationParticipantStatusSchemaValidator,
   },
   handler: async (ctx, { participantId, status }) => {
     const participant = await ConversationParticipants.getParticipant(ctx.db, {
