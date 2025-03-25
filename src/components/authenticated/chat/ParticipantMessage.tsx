@@ -11,6 +11,8 @@ import { useQuery } from "convex/react";
 import { Doc } from "convex/_generated/dataModel";
 import { api } from "../../../../convex/_generated/api";
 import { MessageMention } from "./MessageMention";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Props {
   message: Doc<"conversationMessages">;
@@ -34,39 +36,69 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
 
   const renderMessageContent = (content: string) => {
     const mentionRegex = /@\[(.*?)\]\(agent:(.*?)\)/g;
-    const parts: React.ReactNode[] = [];
+    const parts: {
+      type: "text" | "mention";
+      content: string;
+      mentionData?: { display: string; agentId: string };
+    }[] = [];
     let lastIndex = 0;
     let match;
 
+    // Split content into text and mention parts
     while ((match = mentionRegex.exec(content)) !== null) {
-      // Add text before the mention
       if (match.index > lastIndex) {
-        parts.push(content.slice(lastIndex, match.index));
+        parts.push({
+          type: "text",
+          content: content.slice(lastIndex, match.index),
+        });
       }
 
       const [_, display, agentId] = match;
-      const agent = agents.find((a) => a._id === agentId);
-
-      // Add the mention component
-      parts.push(
-        <MessageMention
-          key={`${agentId}-${match.index}`}
-          display={display}
-          agentId={agentId}
-          agent={agent}
-          isInUserMessage={participant?.kind === "user"}
-        />,
-      );
+      parts.push({
+        type: "mention",
+        content: match[0],
+        mentionData: { display, agentId },
+      });
 
       lastIndex = match.index + match[0].length;
     }
 
-    // Add remaining text after last mention
     if (lastIndex < content.length) {
-      parts.push(content.slice(lastIndex));
+      parts.push({ type: "text", content: content.slice(lastIndex) });
     }
 
-    return parts;
+    // Render parts with Markdown for text and MessageMention for mentions
+    return parts.map((part, index) => {
+      if (part.type === "text") {
+        return (
+          <ReactMarkdown
+            key={index}
+            remarkPlugins={[remarkGfm]}
+            components={{
+              // Ensure links open in new tab
+              a: (props) => (
+                <a {...props} target="_blank" rel="noopener noreferrer" />
+              ),
+              // Preserve the styling of your messages
+              p: (props) => <span {...props} />,
+            }}
+          >
+            {part.content}
+          </ReactMarkdown>
+        );
+      } else {
+        const agent = agents.find((a) => a._id === part.mentionData!.agentId);
+        return (
+          <MessageMention
+            key={`mention-${index}`}
+            display={part.mentionData!.display}
+            agentId={part.mentionData!.agentId}
+            agent={agent}
+            isInUserMessage={participant?.kind === "user"}
+          />
+        );
+      }
+    });
   };
 
   return (
