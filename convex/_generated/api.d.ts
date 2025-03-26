@@ -35,7 +35,7 @@ import type * as mastra_mastra from "../mastra/mastra.js";
 import type * as mastra_referencedAgent from "../mastra/referencedAgent.js";
 import type * as mastra_tools from "../mastra/tools.js";
 import type * as mastra_triage from "../mastra/triage.js";
-import type * as mastra__ from "../mastra/_.js";
+import type * as mastra__imports from "../mastra/_imports.js";
 import type * as users_model from "../users/model.js";
 import type * as users_public from "../users/public.js";
 
@@ -70,7 +70,7 @@ declare const fullApi: ApiFromModules<{
   "mastra/referencedAgent": typeof mastra_referencedAgent;
   "mastra/tools": typeof mastra_tools;
   "mastra/triage": typeof mastra_triage;
-  "mastra/_": typeof mastra__;
+  "mastra/_imports": typeof mastra__imports;
   "users/model": typeof users_model;
   "users/public": typeof users_public;
 }>;
