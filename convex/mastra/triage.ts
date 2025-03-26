@@ -1,7 +1,7 @@
 "use node";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
-import { components, internal } from "../_generated/api";
+import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { storage, memory } from "./mastra";
 import { Mastra } from "@mastra/core/mastra";
@@ -9,8 +9,7 @@ import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
-import { ConvexStorage } from "@convex-dev/mastra/storage";
-import { Memory } from "@mastra/memory";
+import { pick } from "convex-helpers";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -94,7 +93,9 @@ You will be given a conversation message and its up to you to determine what age
 
 You must select one of the agents from the list of agents that I will provide.
 
-If there are no agent provided then you should respond along the lines of "No agents available to handle this message".
+If there are no agent provided then you should respond along the lines of "No agents available to handle this message, would you like me to see if there are any agents you have that might be suited?".
+
+If the user follows up with "yes" then you should respond with "I will check and get back to you" and then you should use the listAgents tool to get the list of agents.
 
 To reference an agent in your response use the following format: @[AGENT_NAME](agent:AGENT_ID) so for example @[John](agent:abc123)
 
@@ -128,6 +129,7 @@ ${JSON.stringify(pastMessages, null, 2)}
       instructions: triageAgentInstructions,
       model: openai("gpt-4o-mini"),
       memory,
+      tools: allTools,
     });
 
     const mastra = new Mastra({
@@ -143,23 +145,22 @@ ${JSON.stringify(pastMessages, null, 2)}
         },
       ],
       {
-        maxRetries: 1,
-        output: z.object({
-          messageContent: z.string(),
-          agentId: z.optional(z.string()),
-        }),
+        // output: z.object({
+        //   messageContent: z.string(),
+        //   agentId: z.optional(z.string()),
+        // }),
       },
     );
 
     console.log(`Triage agent result:`, result);
 
-    await ctx.runMutation(
-      internal.conversationMessages.private.sendFromTriageAgent,
-      {
-        conversationId: args.conversation._id,
-        content: result.object.messageContent,
-      },
-    );
+    // await ctx.runMutation(
+    //   internal.conversationMessages.private.sendFromTriageAgent,
+    //   {
+    //     conversationId: args.conversation._id,
+    //     content: result.object.messageContent,
+    //   },
+    // );
   } catch (error) {
     // we should add a message to the conversation to notify the user that the triage agent has errored
   } finally {

@@ -87,6 +87,17 @@ export const removeMine = async (
   { conversationId }: { conversationId: Id<"conversations"> },
 ) => {
   await ensureICanAccessConversation(ctx, { conversationId });
+
+  // Delete all messages and participants first
+  await ConversationMessages.deleteAllMessagesForConversation(ctx.db, {
+    conversationId,
+  });
+
+  await ConversationParticipants.deleteAllParticipantsForConversation(ctx.db, {
+    conversationId,
+  });
+
+  // Finally delete the conversation itself
   await ctx.db.delete(conversationId);
 };
 

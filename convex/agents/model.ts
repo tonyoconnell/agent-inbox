@@ -51,13 +51,19 @@ export const createSystemAgent = async (
   });
 };
 
-export const listMine = async (ctx: QueryCtx) => {
-  const userId = await Users.getMyId(ctx);
-
-  return await ctx.db
+export const listForUser = async (
+  db: DatabaseReader,
+  { userId }: { userId: Id<"users"> },
+) => {
+  return await db
     .query("agents")
     .withIndex("by_creator", (q) => q.eq("createdBy", userId))
     .collect();
+};
+
+export const listMine = async (ctx: QueryCtx) => {
+  const userId = await Users.getMyId(ctx);
+  return listForUser(ctx.db, { userId });
 };
 
 export const findMine = async (

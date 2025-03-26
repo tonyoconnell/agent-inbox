@@ -4,6 +4,8 @@ import { z } from "zod";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { Id } from "../_generated/dataModel";
+import { sendSystemMessage } from "../conversationMessages/private";
+import { listAgentsForUser } from "../agents/private";
 
 export const createTools = (ctx: ActionCtx) => {
   const sendMessageToConversation = createTool({
@@ -15,7 +17,7 @@ export const createTools = (ctx: ActionCtx) => {
     }),
     outputSchema: z.object({}),
     execute: async ({ context }) => {
-      console.log(`EXECUTING TOOL`, context);
+      console.log(`using tool: sendMessageToConversation`, context);
 
       const messageId = await ctx.runMutation(
         internal.conversationMessages.private.sendFromTriageAgent,
@@ -24,6 +26,7 @@ export const createTools = (ctx: ActionCtx) => {
           content: context.content,
         },
       );
+
       return {
         result: "message_sent",
         messageId,
@@ -31,7 +34,48 @@ export const createTools = (ctx: ActionCtx) => {
     },
   });
 
+  const listAgents = createTool({
+    id: "list-agents",
+    description: "Allows listing of all of a user's agents",
+    inputSchema: z.object({
+      conversationId: z.string(),
+      userId: z.string(),
+    }),
+    outputSchema: z.object({
+      agents: z.array(
+        z.object({
+          _id: z.string(),
+          name: z.string(),
+          description: z.string(),
+          personality: z.string(),
+          tools: z.array(z.string()),
+        }),
+      ),
+    }),
+    execute: async ({ context }) => {
+      console.log(`using tool: listAgents`, context);
+
+      const messageId = await ctx.runMutation(
+        internal.conversationMessages.private.sendSystemMessage,
+        {
+          conversationId: context.conversationId as Id<"conversations">,
+          content: `Searching for agents...`,
+        },
+      );
+
+      const agents = await ctx.runQuery(
+        internal.agents.private.listAgentsForUser,
+        { userId: context.userId as Id<"users"> },
+      );
+
+      return {
+        agents,
+      };
+    },
+  });
+
   return {
     sendMessageToConversation,
+    listAgents,
   };
 };

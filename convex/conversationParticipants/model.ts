@@ -332,3 +332,19 @@ export const getNonSystemAgentParticipants = async (
     );
   return participants;
 };
+
+export const deleteAllParticipantsForConversation = async (
+  db: DatabaseWriter,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await db
+    .query("conversationParticipants")
+    .withIndex("by_conversationId", (q) =>
+      q.eq("conversationId", conversationId),
+    )
+    .collect();
+
+  await Promise.all(
+    participants.map((participant) => db.delete(participant._id)),
+  );
+};

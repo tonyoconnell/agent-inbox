@@ -2,6 +2,7 @@ import { internalMutation, internalQuery } from "../_generated/server";
 import { systemAgentKindValidator, systemAgentValidator } from "./schema";
 import * as Agents from "./model";
 import { v } from "convex/values";
+import { listForUser } from "./model";
 
 export const findSystemAgentByKind = internalQuery({
   args: {
@@ -32,5 +33,14 @@ export const find = internalQuery({
   },
   handler: async (ctx, args) => {
     return await Agents.find(ctx.db, args);
+  },
+});
+
+export const listAgentsForUser = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await Agents.listForUser(ctx.db, { userId: args.userId });
   },
 });
