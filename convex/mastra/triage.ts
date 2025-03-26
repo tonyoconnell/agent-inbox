@@ -131,7 +131,7 @@ ${JSON.stringify(messageHistory, null, 2)}
       instructions: triageAgentInstructions,
       model: openai("gpt-4o-mini"),
       memory,
-      //tools: allTools,
+      tools: allTools,
     });
 
     const mastra = new Mastra({

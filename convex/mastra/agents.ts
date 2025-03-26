@@ -5,19 +5,24 @@ import { openai } from "@ai-sdk/openai";
 import { Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
+import { createTools } from "./tools";
 
 export const createMastraAgentFromAgent = ({
   agent,
   participantId,
   messageHistory,
+  ctx,
 }: {
   agent: Doc<"agents">;
   participantId: Id<"conversationParticipants">;
   messageHistory: any[];
+  ctx: ActionCtx;
 }) => {
   return new Agent({
     name: agent.name,
-    instructions: `# Your Description:
+    instructions: `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You should use the tools provided to you to help you respond to the message.
+    
+# Your Description:
 ${agent.description}      
 
 # Your personality:
@@ -30,6 +35,7 @@ ${participantId}
 ${JSON.stringify(messageHistory, null, 2)}
 `,
     model: openai("gpt-4o-mini"),
+    tools: createTools(ctx),
   });
 };
 

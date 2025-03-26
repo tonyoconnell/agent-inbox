@@ -4,7 +4,6 @@ import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { storage, memory } from "./mastra";
 import { Mastra } from "@mastra/core/mastra";
-import { createTools } from "./tools";
 import { z } from "zod";
 import {
   createMastraAgentFromAgent,
@@ -34,8 +33,6 @@ export const invokeAgent = async (
   );
 
   try {
-    const allTools = createTools(ctx);
-
     const messageHistory = await ctx.runQuery(
       internal.conversationMessages.private
         .listMessagesHistoryForAgentGeneration,
@@ -46,10 +43,11 @@ export const invokeAgent = async (
       agent,
       participantId,
       messageHistory,
+      ctx,
     });
 
     const mastra = new Mastra({
-      agents: { referencedAgent },
+      agents: { referencedAgent },    
       storage,
     });
 
