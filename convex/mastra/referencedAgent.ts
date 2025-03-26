@@ -4,39 +4,12 @@ import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { storage, memory } from "./mastra";
 import { Mastra } from "@mastra/core/mastra";
-import { Agent } from "@mastra/core/agent";
-import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
-import { Tool } from "@mastra/core";
-
-const getAgentAndEnsureItIsJoinedToConversation = async (
-  ctx: ActionCtx,
-  args: {
-    agentId: Id<"agents">;
-    conversationId: Id<"conversations">;
-  },
-) => {
-  // Get the referenced agent
-  const agent = await ctx.runQuery(internal.agents.private.find, {
-    agentId: args.agentId,
-  });
-
-  if (!agent) {
-    throw new Error(`Agent of id '${args.agentId}' could not be found`);
-  }
-
-  // Get or create the participant for this agent in the conversation
-  const participantId = await ctx.runMutation(
-    internal.conversationParticipants.private.addAgent,
-    {
-      conversationId: args.conversationId,
-      agentId: agent._id,
-    },
-  );
-
-  return { agent, participantId };
-};
+import {
+  createMastraAgentFromAgent,
+  getAgentAndEnsureItIsJoinedToConversation,
+} from "./agents";
 
 export const invokeAgent = async (
   ctx: ActionCtx,
@@ -63,29 +36,16 @@ export const invokeAgent = async (
   try {
     const allTools = createTools(ctx);
 
-    const referencedAgent = new Agent({
-      name: agent.name,
-      instructions: `You are:
-${agent.description}      
+    const messageHistory = await ctx.runQuery(
+      internal.conversationMessages.private
+        .listMessagesHistoryForAgentGeneration,
+      { conversationId: args.message.conversationId, count: 10 },
+    );
 
-Your personality is:
-${agent.personality}
-
-Your id is:
-${agent._id}
-`,
-      model: openai("gpt-4o-mini"),
-      memory,
-      // tools: agent.tools.reduce(
-      //   (acc, toolName) => {
-      //     const tool = allTools[toolName as keyof typeof allTools];
-      //     if (!tool) {
-      //       throw new Error(`Tool '${toolName}' not found`);
-      //     }
-      //     return { ...acc, [toolName]: tool };
-      //   },
-      //   {} as Record<string, Tool>,
-      // ),
+    const referencedAgent = createMastraAgentFromAgent({
+      agent,
+      participantId,
+      messageHistory,
     });
 
     const mastra = new Mastra({

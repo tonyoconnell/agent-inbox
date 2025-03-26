@@ -9,7 +9,10 @@ import * as Users from "../users/model";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
 import * as ConversationParticipants from "../conversationParticipants/model";
-import { conversationMessageReferencesSchemaValidator } from "./schema";
+import {
+  conversationMessageReferencesSchemaValidator,
+  conversationAgentMessageSchemaValidator,
+} from "./schema";
 import {
   ParticipantUserOrAgent,
   getMyParticipant,
@@ -93,7 +96,7 @@ export const addMessageToConversationFromAgent = async (
     author: Id<"conversationParticipants">;
   },
 ) => {
-  return addMessageToConversationFromUserOrAgent(ctx, {
+  return await addMessageToConversationFromUserOrAgent(ctx, {
     conversationId,
     content,
     author,
@@ -105,20 +108,30 @@ export const listMessages = async (
   {
     conversationId,
     limit = 50,
+    kind,
   }: {
     conversationId: Id<"conversations">;
+    kind?: typeof conversationAgentMessageSchemaValidator.type.kind;
     limit?: number;
   },
 ) => {
-  const messages = await db
+  if (kind) {
+    return await db
+      .query("conversationMessages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", conversationId),
+      )
+      .order("asc")
+      .take(limit);
+  }
+
+  return await db
     .query("conversationMessages")
     .withIndex("by_conversationId", (q) =>
       q.eq("conversationId", conversationId),
     )
     .order("asc")
     .take(limit);
-
-  return messages;
 };
 
 // export const listMessagesAndJoinAuthorDetails = async (

@@ -5,7 +5,7 @@ import {
   conversationParticipantStatusSchemaValidator,
   conversationParticipantIdentifierSchemaValidator,
 } from "./schema";
-import {addAgentAndSendJoinMessage} from './model';
+import { addAgentAndSendJoinMessage } from "./model";
 
 export const updateParticipantStatus = internalMutation({
   args: {
@@ -53,6 +53,34 @@ export const addAgent = internalMutation({
   returns: v.id("conversationParticipants"),
   handler: async (ctx, args) => {
     return ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
+      conversationId: args.conversationId,
+      agentId: args.agentId,
+    });
+  },
+});
+
+export const addAgentIfNotAlreadyJoined = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    agentId: v.id("agents"),
+  },
+  returns: v.id("conversationParticipants"),
+  handler: async (ctx, args) => {
+    const participant =
+      await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
+        ctx.db,
+        {
+          conversationId: args.conversationId,
+          identifier: {
+            kind: "agent",
+            agentId: args.agentId,
+          },
+        },
+      );
+
+    if (participant && participant.isRemoved == false) return participant._id;
+
+    return await ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
       conversationId: args.conversationId,
       agentId: args.agentId,
     });

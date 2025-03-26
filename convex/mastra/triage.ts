@@ -10,6 +10,7 @@ import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
 import { pick } from "convex-helpers";
+import { createLogger } from "@mastra/core/logger";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -80,8 +81,9 @@ export const triageMessage = async (
       { conversationId: args.conversation._id },
     );
 
-    const pastMessages = await ctx.runQuery(
-      internal.conversationMessages.private.listMessages,
+    const messageHistory = await ctx.runQuery(
+      internal.conversationMessages.private
+        .listMessagesHistoryForAgentGeneration,
       { conversationId: args.conversation._id, count: 10 },
     );
 
@@ -91,11 +93,11 @@ export const triageMessage = async (
   
 You will be given a conversation message and its up to you to determine what agent you should route this message to.
 
+YOU SHOULD NOT RESPOND TO THE QUERY DIRECTLY, ONLY TRIAGE THE MESSAGE.
+
 You must select one of the agents from the list of agents that I will provide.
 
 If there are no agent provided then you should respond along the lines of "No agents available to handle this message, would you like me to see if there are any agents you have that might be suited?".
-
-If the user follows up with "yes" then you should respond with "I will check and get back to you" and then you should use the listAgents tool to get the list of agents.
 
 To reference an agent in your response use the following format: @[AGENT_NAME](agent:AGENT_ID) so for example @[John](agent:abc123)
 
@@ -117,24 +119,28 @@ ${JSON.stringify(
 
 The current conversationId is: ${args.conversation._id}
 
-This is the past 10 messages in the conversation:
-${JSON.stringify(pastMessages, null, 2)}
-  
+Here is the conversation history:
+${JSON.stringify(messageHistory, null, 2)}
 `;
 
     console.log(`Triage agent instructions: ${triageAgentInstructions}`);
+    console.log(`Triage agent history`, messageHistory);
 
     const triageAgent = new Agent({
       name: "Conversation Triage Agent",
       instructions: triageAgentInstructions,
       model: openai("gpt-4o-mini"),
       memory,
-      tools: allTools,
+      //tools: allTools,
     });
 
     const mastra = new Mastra({
       agents: { triageAgent },
       storage,
+      logger: createLogger({
+        level: "debug",
+        name: "triage-agent-mastra",
+      }),
     });
 
     const result = await mastra.getAgent("triageAgent").generate(
@@ -145,22 +151,22 @@ ${JSON.stringify(pastMessages, null, 2)}
         },
       ],
       {
-        // output: z.object({
-        //   messageContent: z.string(),
-        //   agentId: z.optional(z.string()),
-        // }),
+        output: z.object({
+          messageContent: z.string(),
+          agentId: z.optional(z.string()),
+        }),
       },
     );
 
     console.log(`Triage agent result:`, result);
 
-    // await ctx.runMutation(
-    //   internal.conversationMessages.private.sendFromTriageAgent,
-    //   {
-    //     conversationId: args.conversation._id,
-    //     content: result.object.messageContent,
-    //   },
-    // );
+    await ctx.runMutation(
+      internal.conversationMessages.private.sendFromTriageAgent,
+      {
+        conversationId: args.conversation._id,
+        content: result.object.messageContent,
+      },
+    );
   } catch (error) {
     // we should add a message to the conversation to notify the user that the triage agent has errored
   } finally {

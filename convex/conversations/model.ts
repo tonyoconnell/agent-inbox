@@ -135,15 +135,68 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
   if (triageAgentParticipant) return triageAgentParticipant;
 
   // Otherwise we add the triage agent to the conversation
-  const participantId = await ConversationParticipants.addAgent(db, {
-    conversationId,
-    agentId: agent._id,
-  });
+  const participantId = await ConversationParticipants.addAgentOrReactivate(
+    db,
+    {
+      conversationId,
+      agentId: agent._id,
+    },
+  );
 
   // We also create a message to notify the user that the triage agent has joined the conversation
   await ConversationMessages.createParticipantJoinedConversationMessage(db, {
     conversationId,
     agentOrUser: triageAgent,
+  });
+
+  return ConversationParticipants.getParticipant(db, { participantId });
+};
+
+export const joinAgentToConversationIfNotAlreadyJoined = async (
+  db: DatabaseWriter,
+  {
+    conversationId,
+    agentId,
+  }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+) => {
+  const agent = await db.get(agentId);
+  if (!agent) throw new Error(`Agent of id '${agentId}' could not be found`);
+
+  const conversation = await db.get(conversationId);
+  if (!conversation)
+    throw new Error(
+      `Conversation of id '${conversationId}' could not be found`,
+    );
+
+  // Check if the agent is already a participant in the conversation
+  const existingParticipant =
+    await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
+      db,
+      {
+        conversationId,
+        identifier: {
+          kind: "agent",
+          agentId,
+        },
+      },
+    );
+
+
+  if (existingParticipant) return existingParticipant;
+
+  // Add the agent to the conversation
+  const participantId = await ConversationParticipants.addAgentOrReactivate(
+    db,
+    {
+      conversationId,
+      agentId,
+    },
+  );
+
+  // Create a message to notify that the agent has joined the conversation
+  await ConversationMessages.createParticipantJoinedConversationMessage(db, {
+    conversationId,
+    agentOrUser: agent,
   });
 
   return ConversationParticipants.getParticipant(db, { participantId });

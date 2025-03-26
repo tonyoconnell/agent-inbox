@@ -23,12 +23,16 @@ export const conversationParticipantMessageSchemaValidator = v.object({
   author: v.id("conversationParticipants"),
 });
 
+export const conversationAgentMessageSchemaValidator = v.union(
+  conversationParticipantMessageSchemaValidator,
+  v.object({
+    ...common,
+    kind: v.literal("system"),
+  }),
+);
+
 export const conversationMessagesTable = defineTable(
-  v.union(
-    conversationParticipantMessageSchemaValidator,
-    v.object({
-      ...common,
-      kind: v.literal("system"),
-    }),
-  ),
-).index("by_conversationId", ["conversationId"]);
+  conversationAgentMessageSchemaValidator,
+)
+  .index("by_conversationId", ["conversationId"])
+  .index("by_conversationId_kind", ["conversationId", "kind"]);

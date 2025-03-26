@@ -29,6 +29,7 @@ import type * as conversations_model from "../conversations/model.js";
 import type * as conversations_private from "../conversations/private.js";
 import type * as conversations_public from "../conversations/public.js";
 import type * as http from "../http.js";
+import type * as mastra_agents from "../mastra/agents.js";
 import type * as mastra_lib_storage from "../mastra/lib/storage.js";
 import type * as mastra_lib_vector from "../mastra/lib/vector.js";
 import type * as mastra_mastra from "../mastra/mastra.js";
@@ -64,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   "conversations/private": typeof conversations_private;
   "conversations/public": typeof conversations_public;
   http: typeof http;
+  "mastra/agents": typeof mastra_agents;
   "mastra/lib/storage": typeof mastra_lib_storage;
   "mastra/lib/vector": typeof mastra_lib_vector;
   "mastra/mastra": typeof mastra_mastra;

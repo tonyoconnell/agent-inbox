@@ -4,7 +4,6 @@ import * as Agents from "../agents/model";
 import * as Users from "../users/model";
 import { exhaustiveCheck } from "../../shared/misc";
 import { conversationParticipantIdentifierSchemaValidator } from "./schema";
-import * as ConversationParticipants from "./model";
 import * as ConversationMessages from "../conversationMessages/model";
 import { get } from "../agents/model";
 
@@ -64,7 +63,7 @@ export type ParticipantUserOrAgent = Awaited<
   ReturnType<typeof getParticipantUserOrAgent>
 >;
 
-export const addAgent = async (
+export const addAgentOrReactivate = async (
   db: DatabaseWriter,
   {
     conversationId,
@@ -107,7 +106,10 @@ export const addAgentAndSendJoinMessage = async (
     agentId,
   }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
 ) => {
-  const participantId = await addAgent(db, { conversationId, agentId });
+  const participantId = await addAgentOrReactivate(db, {
+    conversationId,
+    agentId,
+  });
   const agent = await Agents.get(db, { agentId });
   await ConversationMessages.createParticipantJoinedConversationMessage(db, {
     conversationId,
