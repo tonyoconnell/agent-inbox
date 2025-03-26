@@ -4,6 +4,9 @@ import * as Agents from "../agents/model";
 import * as Users from "../users/model";
 import { exhaustiveCheck } from "../../shared/misc";
 import { conversationParticipantIdentifierSchemaValidator } from "./schema";
+import * as ConversationParticipants from "./model";
+import * as ConversationMessages from "../conversationMessages/model";
+import { get } from "../agents/model";
 
 export const getNonRemovedParticipants = async (
   db: DatabaseReader,
@@ -95,6 +98,22 @@ export const addAgent = async (
     status: "inactive",
     isRemoved: false,
   });
+};
+
+export const addAgentAndSendJoinMessage = async (
+  db: DatabaseWriter,
+  {
+    conversationId,
+    agentId,
+  }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+) => {
+  const participantId = await addAgent(db, { conversationId, agentId });
+  const agent = await Agents.get(db, { agentId });
+  await ConversationMessages.createParticipantJoinedConversationMessage(db, {
+    conversationId,
+    agentOrUser: agent,
+  });
+  return participantId;
 };
 
 export const addUser = async (

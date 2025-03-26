@@ -81,6 +81,14 @@ export const getMine = async (
   return agent;
 };
 
+export const ensureICanAccessAgent = async (
+  ctx: QueryCtx,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  const agent = await getMine(ctx, { agentId });
+  if (!agent) throw new Error("Access denied");
+};
+
 export const updateMine = async (
   ctx: MutationCtx,
   {

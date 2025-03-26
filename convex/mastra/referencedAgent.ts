@@ -10,6 +10,34 @@ import { createTools } from "./tools";
 import { z } from "zod";
 import { Tool } from "@mastra/core";
 
+const getAgentAndEnsureItIsJoinedToConversation = async (
+  ctx: ActionCtx,
+  args: {
+    agentId: Id<"agents">;
+    conversationId: Id<"conversations">;
+  },
+) => {
+  // Get the referenced agent
+  const agent = await ctx.runQuery(internal.agents.private.find, {
+    agentId: args.agentId,
+  });
+
+  if (!agent) {
+    throw new Error(`Agent of id '${args.agentId}' could not be found`);
+  }
+
+  // Get or create the participant for this agent in the conversation
+  const participantId = await ctx.runMutation(
+    internal.conversationParticipants.private.addAgent,
+    {
+      conversationId: args.conversationId,
+      agentId: agent._id,
+    },
+  );
+
+  return { agent, participantId };
+};
+
 export const invokeAgent = async (
   ctx: ActionCtx,
   args: {
@@ -17,41 +45,17 @@ export const invokeAgent = async (
     reference: { kind: "agent"; agentId: Id<"agents"> };
   },
 ) => {
-  // Get the referenced agent
-  const agent = await ctx.runQuery(internal.agents.private.find, {
-    agentId: args.reference.agentId,
-  });
-
-  if (!agent) {
-    throw new Error(
-      `Agent of id '${args.reference.agentId}' referenced in message could not be found`,
-    );
-  }
-
-  // Get the participant for this agent in the conversation
-  const participant = await ctx.runQuery(
-    internal.conversationParticipants.private
-      .findParticipantByConversationIdAndIdentifier,
-    {
+  const { agent, participantId } =
+    await getAgentAndEnsureItIsJoinedToConversation(ctx, {
+      agentId: args.reference.agentId,
       conversationId: args.message.conversationId,
-      identifier: {
-        kind: "agent",
-        agentId: agent._id,
-      },
-    },
-  );
-
-  if (!participant) {
-    throw new Error(
-      `Agent ${agent.name} is not a participant in conversation ${args.message.conversationId}`,
-    );
-  }
+    });
 
   // Set the agent's status to thinking
   await ctx.runMutation(
     internal.conversationParticipants.private.updateParticipantStatus,
     {
-      participantId: participant._id,
+      participantId,
       status: "thinking",
     },
   );
@@ -110,7 +114,7 @@ ${agent._id}
       conversationId: args.message.conversationId,
       agentId: agent._id,
       content: result.object.messageContent,
-      author: participant._id,
+      author: participantId,
     });
   } catch (error: unknown) {
     console.error("Error in referenced agent:", error);
@@ -127,7 +131,7 @@ ${agent._id}
     await ctx.runMutation(
       internal.conversationParticipants.private.updateParticipantStatus,
       {
-        participantId: participant._id,
+        participantId,
         status: "inactive",
       },
     );

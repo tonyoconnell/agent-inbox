@@ -4,7 +4,7 @@ import schema from "../schema";
 import { triageMessage } from "../mastra/triage";
 import { doc } from "convex-helpers/validators";
 import * as ConversationMessagesModel from "./model";
-import {invokeAgent} from '../mastra/referencedAgent';
+import { invokeAgent } from "../mastra/referencedAgent";
 
 export const processMessage = internalAction({
   args: {

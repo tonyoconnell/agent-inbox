@@ -4,6 +4,8 @@ import * as ConversationParticipants from "./model";
 import { ensureICanAccessConversation } from "../conversations/model";
 import * as ConversationMessages from "../conversationMessages/model";
 import * as Agents from "../agents/model";
+import { ensureICanAccessAgent } from "../agents/model";
+import { addAgentAndSendJoinMessage } from "./model";
 
 export const listForMe = query({
   args: { conversationId: v.id("conversations") },
@@ -53,19 +55,11 @@ export const addAgent = mutation({
   },
   handler: async (ctx, { conversationId, agentId }) => {
     await ensureICanAccessConversation(ctx, { conversationId });
-    const agent = await Agents.getMine(ctx, { agentId });
-    const participantId = await ConversationParticipants.addAgent(ctx.db, {
+    await ensureICanAccessAgent(ctx, { agentId });
+    return ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
       conversationId,
       agentId,
     });
-    await ConversationMessages.createParticipantJoinedConversationMessage(
-      ctx.db,
-      {
-        conversationId,
-        agentOrUser: agent,
-      },
-    );
-    return participantId;
   },
 });
 
