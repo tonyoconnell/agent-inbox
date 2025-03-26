@@ -3,9 +3,15 @@ import { createTool } from "@mastra/core";
 import { z } from "zod";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
-import { Id } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 
-export const createTools = (ctx: ActionCtx) => {
+export const createTools = ({
+  ctx,
+  agent,
+}: {
+  ctx: ActionCtx;
+  agent: Doc<"agents">;
+}) => {
   const sendMessageToConversation = createTool({
     id: "send-message-to-conversation",
     description: "Allows sending of a message to a conversation",
@@ -57,7 +63,7 @@ export const createTools = (ctx: ActionCtx) => {
         internal.conversationMessages.private.sendSystemMessage,
         {
           conversationId: context.conversationId as Id<"conversations">,
-          content: `Searching for agents...`,
+          content: `${agent.name} is searching for agents...`,
         },
       );
 

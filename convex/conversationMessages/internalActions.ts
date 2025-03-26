@@ -42,6 +42,6 @@ export const processMessage = internalAction({
     // Otherwise we should invoke each agent with the message
     for (const reference of references)
       if (reference.kind == "agent")
-        await invokeAgent(ctx, { message: args.message, reference });
+        await invokeAgent(ctx, { message: args.message, reference, });
   },
 });

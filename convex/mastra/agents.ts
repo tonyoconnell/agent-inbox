@@ -6,17 +6,16 @@ import { Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { createTools } from "./tools";
+import { ToolsInput } from "@mastra/core/agent";
+
+
 
 export const createMastraAgentFromAgent = ({
   agent,
-  participantId,
-  messageHistory,
-  ctx,
+  tools,
 }: {
   agent: Doc<"agents">;
-  participantId: Id<"conversationParticipants">;
-  messageHistory: any[];
-  ctx: ActionCtx;
+  tools: any;
 }) => {
   return new Agent({
     name: agent.name,
@@ -27,15 +26,9 @@ ${agent.description}
 
 # Your personality:
 ${agent.personality}
-
-# Your Participant ID:
-${participantId}
-
-# Message History:
-${JSON.stringify(messageHistory, null, 2)}
 `,
     model: openai("gpt-4o-mini"),
-    tools: createTools(ctx),
+    tools,
   });
 };
 

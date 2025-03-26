@@ -65,6 +65,7 @@ export const addMessageToConversationFromMe = async (
   const participant = await ConversationParticipants.getMyParticipant(ctx, {
     conversationId: args.conversationId,
   });
+  
   const messageId = await addMessageToConversationFromUserOrAgent(ctx, {
     ...args,
     author: participant._id,

@@ -87,7 +87,7 @@ export const triageMessage = async (
       { conversationId: args.conversation._id, count: 10 },
     );
 
-    const allTools = createTools(ctx);
+    const allTools = createTools({ ctx, agent });
 
     const triageAgentInstructions = `You are a helpful agent that triages conversations.
   
@@ -131,7 +131,6 @@ ${JSON.stringify(messageHistory, null, 2)}
       instructions: triageAgentInstructions,
       model: openai("gpt-4o-mini"),
       memory,
-      tools: allTools,
     });
 
     const mastra = new Mastra({

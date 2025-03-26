@@ -126,3 +126,17 @@ export const listMessagesHistoryForAgentGeneration = internalQuery({
     );
   },
 });
+
+export const getMessageAuthor = internalQuery({
+  args: {
+    messageId: v.id("conversationMessages"),
+  },
+  handler: async (ctx, args) => {
+    const message = await ctx.db.get(args.messageId).then(ensureFP());
+    if (message.kind == "system")
+      throw new Error("Message is a system message");
+    return await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+      participantId: message.author,
+    });
+  },
+});
