@@ -1,4 +1,4 @@
-import { DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
+import { DatabaseReader, DatabaseWriter, MutationCtx, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import { internal } from "../_generated/api";
@@ -96,7 +96,7 @@ export const addMessageToConversationFromAgent = async (
 };
 
 export const listMessages = async (
-  ctx: QueryCtx,
+  db: DatabaseReader,
   {
     conversationId,
     limit = 50,
@@ -105,7 +105,7 @@ export const listMessages = async (
     limit?: number;
   },
 ) => {
-  const messages = await ctx.db
+  const messages = await db
     .query("conversationMessages")
     .withIndex("by_conversationId", (q) =>
       q.eq("conversationId", conversationId),

@@ -31,6 +31,6 @@ export const listForMe = query({
     await Conversations.ensureICanAccessConversation(ctx, {
       conversationId: args.conversationId,
     });
-    return Messages.listMessages(ctx, args);
+    return Messages.listMessages(ctx.db, args);
   },
 });

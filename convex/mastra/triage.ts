@@ -1,7 +1,7 @@
 "use node";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
-import { internal } from "../_generated/api";
+import { components, internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { storage, memory } from "./mastra";
 import { Mastra } from "@mastra/core/mastra";
@@ -9,6 +9,8 @@ import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
+import { ConvexStorage } from "@convex-dev/mastra/storage";
+import { Memory } from "@mastra/memory";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -79,6 +81,11 @@ export const triageMessage = async (
       { conversationId: args.conversation._id },
     );
 
+    const pastMessages = await ctx.runQuery(
+      internal.conversationMessages.private.listMessages,
+      { conversationId: args.conversation._id, count: 10 },
+    );
+
     const allTools = createTools(ctx);
 
     const triageAgentInstructions = `You are a helpful agent that triages conversations.
@@ -108,6 +115,9 @@ ${JSON.stringify(
 )}
 
 The current conversationId is: ${args.conversation._id}
+
+This is the past 10 messages in the conversation:
+${JSON.stringify(pastMessages, null, 2)}
   
 `;
 

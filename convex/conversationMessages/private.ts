@@ -1,4 +1,8 @@
-import { internalAction, internalMutation } from "../_generated/server";
+import {
+  internalAction,
+  internalMutation,
+  internalQuery,
+} from "../_generated/server";
 import { v } from "convex/values";
 import * as Messages from "./model";
 import * as Agents from "../agents/model";
@@ -53,5 +57,18 @@ export const sendSystemMessage = internalMutation({
   returns: v.id("conversationMessages"),
   handler: async (ctx, args) => {
     return await Messages.addMessageToConversationFromSystem(ctx.db, args);
+  },
+});
+
+export const listMessages = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+    count: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await Messages.listMessages(ctx.db, {
+      conversationId: args.conversationId,
+      limit: args.count,
+    });
   },
 });
