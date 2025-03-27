@@ -14,6 +14,7 @@ import { AgentMention } from "./AgentMention";
 import { UserMention } from "./UserMention";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { splitMessageContent } from "../../../../shared/mentions";
 
 interface Props {
   message: Doc<"conversationMessages">;
@@ -37,39 +38,8 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   const timeAgo = useTimeAgo(message._creationTime);
 
   const renderMessageContent = (content: string) => {
-    const mentionRegex = /@\[(.*?)\]\((agent|user):(.*?)\)/g;
-    const parts: {
-      type: "text" | "mention";
-      content: string;
-      mentionData?: { display: string; type: "agent" | "user"; id: string };
-    }[] = [];
-    let lastIndex = 0;
-    let match;
+    const parts = splitMessageContent(content);
 
-    // Split content into text and mention parts
-    while ((match = mentionRegex.exec(content)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push({
-          type: "text",
-          content: content.slice(lastIndex, match.index),
-        });
-      }
-
-      const [_, display, type, id] = match;
-      parts.push({
-        type: "mention",
-        content: match[0],
-        mentionData: { display, type: type as "agent" | "user", id },
-      });
-
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < content.length) {
-      parts.push({ type: "text", content: content.slice(lastIndex) });
-    }
-
-    // Render parts with Markdown for text and MessageMention for mentions
     return parts.map((part, index) => {
       if (part.type === "text") {
         return (
@@ -98,13 +68,13 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
           </ReactMarkdown>
         );
       } else {
-        const mentionData = part.mentionData!;
-        if (mentionData.type === "agent") {
+        const reference = part.reference;
+        if (reference.kind === "agent") {
           return (
             <AgentMention
               key={`mention-${index}`}
-              display={mentionData.display}
-              agentId={mentionData.id as Id<"agents">}
+              display={reference.display}
+              agentId={reference.agentId}
               isInUserMessage={participant?.kind === "user"}
             />
           );
@@ -112,8 +82,8 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
           return (
             <UserMention
               key={`mention-${index}`}
-              display={mentionData.display}
-              userId={mentionData.id as Id<"users">}
+              display={reference.display}
+              userId={reference.userId}
               isInUserMessage={participant?.kind === "user"}
             />
           );

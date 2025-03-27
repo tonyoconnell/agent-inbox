@@ -5,14 +5,10 @@ import {
   QueryCtx,
 } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
-import * as Users from "../users/model";
 import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
 import * as ConversationParticipants from "../conversationParticipants/model";
-import {
-  conversationMessageReferencesSchemaValidator,
-  conversationAgentMessageSchemaValidator,
-} from "./schema";
+import { conversationAgentMessageSchemaValidator } from "./schema";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 
 export const addMessageToConversationFromUserOrAgent = async (
@@ -225,43 +221,6 @@ export const createParticipantLeftConversationMessage = async (
     conversationId: args.conversationId,
     content: `🚪 ${name} has left the conversation.`,
   });
-};
-
-export const parseReferencesFromMessageContent = (content: string) => {
-  /**
-   * Parses message content to extract references to entities like users or agents.
-   *
-   * References are formatted as: @[name](kind:id)
-   * Example: "Hello @[Mike](agent:abc1234)" references an agent with ID abc1234
-   * Example: "Hello @[John](user:xyz789)" references a user with ID xyz789
-   *
-   * @param content - The message content to parse
-   * @returns Array of references found in the message content
-   */
-  const references: typeof conversationMessageReferencesSchemaValidator.type =
-    [];
-
-  // Regular expression to match references in the format @[name](kind:id)
-  const referenceRegex = /@\[([^\]]+)\]\(([^:]+):([^)]+)\)/g;
-
-  let match;
-  while ((match = referenceRegex.exec(content)) !== null) {
-    const [_, name, kind, id] = match;
-
-    if (kind === "agent") {
-      references.push({
-        kind: "agent",
-        agentId: id as Id<"agents">,
-      });
-    } else if (kind === "user") {
-      references.push({
-        kind: "user",
-        userId: id as Id<"users">,
-      });
-    }
-  }
-
-  return references;
 };
 
 export const deleteAllMessagesForConversation = async (

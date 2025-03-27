@@ -7,6 +7,7 @@ import * as ConversationMessagesModel from "./model";
 import { agentReplyToMessage } from "../ai/agentReplyToMessage";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
+import { parseMentionsFromMessageContent } from "../../shared/mentions";
 
 export const processMessage = internalAction({
   args: {
@@ -21,10 +22,7 @@ export const processMessage = internalAction({
 
     console.log(`Processing Message..`, args.message);
 
-    const references =
-      ConversationMessagesModel.parseReferencesFromMessageContent(
-        args.message.content,
-      );
+    const references = parseMentionsFromMessageContent(args.message.content);
 
     console.log(`Detected references`, references);
 

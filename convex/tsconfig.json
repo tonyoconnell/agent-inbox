@@ -20,6 +20,6 @@
     "isolatedModules": true,
     "noEmit": true
   },
-  "include": ["./**/*"],
+  "include": ["./**/*", "../shared/mentions.test.ts"],
   "exclude": ["./_generated"]
 }
