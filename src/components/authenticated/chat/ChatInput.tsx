@@ -37,6 +37,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
     }).catch(apiError);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
   const suggestions: CustomSuggestionData[] = [
     ...agents.map((agent) => ({
       id: `agent:${agent._id}`,
@@ -52,102 +59,106 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
         onSubmit={handleSubmit}
         className="flex gap-2 bg-card shadow-lg p-2 rounded-lg border border-border"
       >
-        <MentionsInput
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          className="mentions"
-          style={{
-            control: {
-              backgroundColor: "transparent",
-              fontSize: 16,
-              fontWeight: "normal",
-            },
-            input: {
-              margin: 0,
-              padding: "8px 12px",
-              overflow: "auto",
-              height: "40px",
-              border: "none",
-              borderRadius: 6,
-              backgroundColor: "transparent",
-              color: "inherit",
-              outline: "none",
-            },
-            suggestions: {
-              list: {
-                backgroundColor: "var(--background)",
-                border: "1px solid var(--border)",
-                borderRadius: "0.375rem",
-                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-                fontSize: "14px",
-                maxHeight: "300px",
-                overflow: "auto",
-                width: "300px",
-                minWidth: "100%",
-                position: "absolute" as const,
-                bottom: "100%",
-                left: 0,
-                right: 0,
-                marginBottom: "0.5rem",
-                zIndex: 1000,
+        <div className="flex-1 min-w-0">
+          <MentionsInput
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="mentions"
+            style={{
+              control: {
+                backgroundColor: "transparent",
+                fontSize: 16,
+                fontWeight: "normal",
               },
-              item: {
+              input: {
+                margin: 0,
                 padding: "8px 12px",
-                borderBottom: "1px solid var(--border)",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                cursor: "pointer",
-                transition: "background-color 0.2s",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                "&focused": {
-                  backgroundColor: "var(--accent)",
+                overflow: "auto",
+                minHeight: "40px",
+                maxHeight: "120px",
+                border: "none",
+                borderRadius: 6,
+                backgroundColor: "transparent",
+                color: "inherit",
+                outline: "none",
+              },
+              suggestions: {
+                list: {
+                  backgroundColor: "var(--background)",
+                  border: "1px solid var(--border)",
+                  borderRadius: "0.375rem",
+                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                  fontSize: "14px",
+                  maxHeight: "300px",
+                  overflow: "auto",
+                  width: "300px",
+                  minWidth: "100%",
+                  position: "absolute" as const,
+                  bottom: "100%",
+                  left: 0,
+                  right: 0,
+                  marginBottom: "0.5rem",
+                  zIndex: 1000,
+                },
+                item: {
+                  padding: "8px 12px",
+                  borderBottom: "1px solid var(--border)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  cursor: "pointer",
+                  transition: "background-color 0.2s",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  "&focused": {
+                    backgroundColor: "var(--accent)",
+                  },
                 },
               },
-            },
-          }}
-          placeholder="Type a message... Use @ to mention agents or users"
-          singleLine={true}
-          allowSpaceInQuery={true}
-        >
-          <Mention
-            trigger="@"
-            data={suggestions}
-            displayTransform={(id, display) => `@${display}`}
-            markup="@[__display__](__id__)"
-            appendSpaceOnAdd={true}
-            style={{
-              backgroundColor: "var(--accent)",
-              borderRadius: "6px",
             }}
-            renderSuggestion={
-              ((
-                suggestion: CustomSuggestionData,
-                search: string,
-                highlightedDisplay: ReactNode,
-              ) => (
-                <div className="flex items-center gap-2 p-0 hover:bg-accent cursor-pointer">
-                  {suggestion.type === "agent" ? (
-                    <AgentAvatar
-                      size="sm"
-                      avatarUrl={suggestion.avatarUrl ?? ""}
-                      name={suggestion.display}
-                    />
-                  ) : (
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={suggestion.avatarUrl} />
-                      <AvatarFallback>
-                        {(suggestion.display?.[0] ?? "U").toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
-                  <span>{highlightedDisplay}</span>
-                </div>
-              )) as any
-            }
-          />
-        </MentionsInput>
+            placeholder="Type a message... Use @ to mention agents or users"
+            singleLine={false}
+            allowSpaceInQuery={true}
+          >
+            <Mention
+              trigger="@"
+              data={suggestions}
+              displayTransform={(id, display) => `@${display}`}
+              markup="@[__display__](__id__)"
+              appendSpaceOnAdd={true}
+              style={{
+                backgroundColor: "var(--accent)",
+                borderRadius: "6px",
+              }}
+              renderSuggestion={
+                ((
+                  suggestion: CustomSuggestionData,
+                  search: string,
+                  highlightedDisplay: ReactNode,
+                ) => (
+                  <div className="flex items-center gap-2 p-0 hover:bg-accent cursor-pointer">
+                    {suggestion.type === "agent" ? (
+                      <AgentAvatar
+                        size="sm"
+                        avatarUrl={suggestion.avatarUrl ?? ""}
+                        name={suggestion.display}
+                      />
+                    ) : (
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={suggestion.avatarUrl} />
+                        <AvatarFallback>
+                          {(suggestion.display?.[0] ?? "U").toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <span>{highlightedDisplay}</span>
+                  </div>
+                )) as any
+              }
+            />
+          </MentionsInput>
+        </div>
         <button
           type="submit"
           className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
