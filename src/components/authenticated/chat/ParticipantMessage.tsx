@@ -79,7 +79,16 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
             components={{
               // Ensure links open in new tab
               a: (props) => (
-                <a {...props} target="_blank" rel="noopener noreferrer" />
+                <a
+                  {...props}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${
+                    participant?.kind === "user"
+                      ? "text-primary-foreground  decoration-primary-foreground/70 hover:decoration-primary-foreground hover:text-orange-200"
+                      : "text-blue-600 dark:text-blue-400 font-medium  decoration-blue-600/70 dark:decoration-blue-400/70 hover:text-orange-500 dark:hover:text-orange-400"
+                  } transition-all`}
+                />
               ),
               // Preserve the styling of your messages
               p: (props) => <span {...props} />,
