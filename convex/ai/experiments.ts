@@ -47,7 +47,6 @@ ${JSON.stringify(args, null, 2)}
           content: args.messageContent,
         },
       ],
-      toolChoice: "required",
       tools: {
         listConversationParticipants: tool({
           description: "A tool for listing the participants in a conversation.",
@@ -91,7 +90,7 @@ ${JSON.stringify(args, null, 2)}
             return [
               {
                 _id: "abc123",
-                name: "John",
+                name: "DaveBot",
                 description:
                   "A helpful agent that can help with general queries.",
                 personality: "Friendly and helpful.",
@@ -100,7 +99,7 @@ ${JSON.stringify(args, null, 2)}
               },
               {
                 _id: "abc123",
-                name: "John",
+                name: "TweetBot",
                 description: "An agent dedicated to building tweets",
                 personality: "Friendly and helpful.",
                 tools: [],
@@ -110,22 +109,22 @@ ${JSON.stringify(args, null, 2)}
           },
         }),
 
-        sendMessageToChannel: tool({
-          description: "A tool for sending a message to a channel.",
-          parameters: z.object({
-            messageContent: z.string(),
-            channelId: z.string(),
-          }),
-          execute: async ({ messageContent, channelId }) => {
-            console.log(`calling sendMessageToChannel tool`, {
-              messageContent,
-              channelId,
-            });
-            return {
-              sentMessageId: `${Math.random()}`,
-            };
-          },
-        }),
+        // sendMessageToChannel: tool({
+        //   description: "A tool for sending a message to a channel.",
+        //   parameters: z.object({
+        //     messageContent: z.string(),
+        //     channelId: z.string(),
+        //   }),
+        //   execute: async ({ messageContent, channelId }) => {
+        //     console.log(`calling sendMessageToChannel tool`, {
+        //       messageContent,
+        //       channelId,
+        //     });
+        //     return {
+        //       sentMessageId: `${Math.random()}`,
+        //     };
+        //   },
+        // }),
       },
     });
 
@@ -133,6 +132,8 @@ ${JSON.stringify(args, null, 2)}
     console.log(JSON.stringify(result.toolCalls, null, 2));
 
     console.log(`FINAL RESULT:`);
-    console.log(JSON.stringify(result.toolCalls, null, 2));
+    console.log(JSON.stringify(result));
+
+    return result.text;
   },
 });

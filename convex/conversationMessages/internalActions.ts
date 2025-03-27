@@ -1,10 +1,10 @@
 "use node";
 import { internalAction } from "../_generated/server";
 import schema from "../schema";
-import { triageMessage } from "../ai/triage";
+import { triageMessage } from "../ai/triageMessage";
 import { doc } from "convex-helpers/validators";
 import * as ConversationMessagesModel from "./model";
-import { invokeAgent } from "../ai/agents";
+import { agentReplyToMessage } from "../ai/agentReplyToMessage";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 
@@ -42,12 +42,24 @@ export const processMessage = internalAction({
       await triageMessage(ctx, {
         message: args.message,
         conversation: args.conversation,
+        messageAuthor: author,
       });
     }
 
     // Otherwise we should invoke each agent with the message
-    for (const reference of references)
-      if (reference.kind == "agent")
-        await invokeAgent(ctx, { message: args.message, reference });
+    for (const reference of references) {
+      if (reference.kind == "agent") {
+        const author = await ctx.runQuery(
+          internal.conversationParticipants.private.getParticipantUserOrAgent,
+          { participantId: args.message.author },
+        );
+        await agentReplyToMessage(ctx, {
+          message: args.message,
+          agentId: reference.agentId,
+          conversation: args.conversation,
+          messageAuthor: author,
+        });
+      }
+    }
   },
 });

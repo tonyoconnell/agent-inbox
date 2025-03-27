@@ -4,72 +4,88 @@ import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { tool } from "ai";
+import { sendMessageToConversation } from "./utils";
+import { listNonSystemAgentParticipantsWithJoinedDetails } from "../conversationParticipants/private";
 
 export const createTools = ({
   ctx,
   agent,
-  agentParticipantId,
+  conversation,
+  agentParticipant,
 }: {
   ctx: ActionCtx;
   agent: Doc<"agents">;
-  agentParticipantId: Id<"conversationParticipants">;
+  agentParticipant: Doc<"conversationParticipants">;
+  conversation: Doc<"conversations">;
 }) => ({
-  sendMessageToConversation: tool({
-    description: `Allows sending of a message to a conversation. You can reference another agent by using the @[AGENT_NAME](agent:AGENT_ID) syntax for for example: "Hey @[AGENT_NAME](agent:abc123) can you take a look at this?" would reference agent with id abc123`,
+  listConversationParticipants: tool({
+    description: "A tool for listing the participants in a conversation.",
     parameters: z.object({
-      conversationId: z
-        .string()
-        .describe("The ID of the conversation to send the message to"),
-      content: z.string().describe("The content of the message to send"),
+      conversationId: z.string(),
     }),
-    execute: async ({ conversationId, content }) => {
-      console.log(`using tool: sendMessageToConversation`, {
+    execute: async ({ conversationId }) => {
+      console.log(`calling listConversationParticipants tool`, {
         conversationId,
-        content,
       });
-
-      const messageId = await ctx.runMutation(
-        internal.conversationMessages.private.sendFromAgent,
+      await sendMessageToConversation(ctx, {
+        content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
+        conversationId: conversation._id,
+      });
+      return ctx.runQuery(
+        internal.conversationParticipants.private
+          .listNonSystemAgentParticipantsWithJoinedDetails,
         {
           conversationId: conversationId as Id<"conversations">,
-          content,
-          agentId: agent._id,
-          author: agentParticipantId,
         },
       );
-
-      return {
-        result: "message_sent",
-        messageId,
-      };
     },
   }),
+
+  // sendMessageToConversation: tool({
+  //   description: `Allows sending of a message to a conversation. You can reference another agent by using the @[AGENT_NAME](agent:AGENT_ID) syntax for for example: "Hey @[AGENT_NAME](agent:abc123) can you take a look at this?" would reference agent with id abc123`,
+  //   parameters: z.object({
+  //     conversationId: z.string(),
+  //     content: z.string(),
+  //   }),
+  //   execute: async ({ conversationId, content }) => {
+  //     console.log(`using tool: sendMessageToConversation`, {
+  //       conversationId,
+  //       content,
+  //     });
+
+  //     const messageId = await ctx.runMutation(
+  //       internal.conversationMessages.private.sendFromAgent,
+  //       {
+  //         conversationId: conversationId as Id<"conversations">,
+  //         content,
+  //         agentId: agent._id,
+  //         author: agentParticipant._id,
+  //       },
+  //     );
+
+  //     return {
+  //       result: "message_sent",
+  //       messageId,
+  //     };
+  //   },
+  // }),
 
   listAgents: tool({
     description: "Allows listing of all of a user's agents",
     parameters: z.object({
-      conversationId: z.string().describe("The ID of the conversation"),
-      userId: z.string().describe("The ID of the user whose agents to list"),
+      userId: z.string(),
     }),
-    execute: async ({ conversationId, userId }) => {
-      console.log(`using tool: listAgents`, { conversationId, userId });
+    execute: async ({ userId }) => {
+      console.log(`using tool: listAgents`, { userId });
 
-      const messageId = await ctx.runMutation(
-        internal.conversationMessages.private.sendSystemMessage,
-        {
-          conversationId: conversationId as Id<"conversations">,
-          content: `${agent.name} is searching for agents...`,
-        },
-      );
+      await sendMessageToConversation(ctx, {
+        content: `${agent.name} is listing the users agents ${conversation._id}`,
+        conversationId: conversation._id,
+      });
 
-      const agents = await ctx.runQuery(
-        internal.agents.private.listAgentsForUser,
-        { userId: userId as Id<"users"> },
-      );
-
-      return {
-        agents,
-      };
+      return await ctx.runQuery(internal.agents.private.listAgentsForUser, {
+        userId: userId as Id<"users">,
+      });
     },
   }),
 });

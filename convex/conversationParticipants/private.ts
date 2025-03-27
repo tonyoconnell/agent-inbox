@@ -5,7 +5,11 @@ import {
   conversationParticipantStatusSchemaValidator,
   conversationParticipantIdentifierSchemaValidator,
 } from "./schema";
-import { addAgentAndSendJoinMessage } from "./model";
+import {
+  addAgentAndSendJoinMessage,
+  listParticipantsWithJoinedDetails,
+  getParticipant,
+} from "./model";
 
 export const updateParticipantStatus = internalMutation({
   args: {
@@ -25,10 +29,30 @@ export const listNonSystemAgentParticipants = internalQuery({
     conversationId: v.id("conversations"),
   },
   handler: async (ctx, args) => {
-    return await ConversationParticipants.findNonSystemAgentParticipants(
+    return await ConversationParticipants.listNonSystemAgentParticipants(
       ctx.db,
       args,
     );
+  },
+});
+
+export const listNonSystemAgentParticipantsWithJoinedDetails = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const participants =
+      await ConversationParticipants.listParticipantsWithJoinedDetails(
+        ctx.db,
+        args,
+      );
+
+    return participants
+      .filter((p) => {
+        if (p.agent && p.agent.kind == "system_agent") return null;
+        return p;
+      })
+      .filter((p) => p !== null);
   },
 });
 
@@ -64,7 +88,6 @@ export const addAgentIfNotAlreadyJoined = internalMutation({
     conversationId: v.id("conversations"),
     agentId: v.id("agents"),
   },
-  returns: v.id("conversationParticipants"),
   handler: async (ctx, args) => {
     const participant =
       await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
@@ -78,11 +101,16 @@ export const addAgentIfNotAlreadyJoined = internalMutation({
         },
       );
 
-    if (participant && participant.isRemoved == false) return participant._id;
+    if (participant && participant.isRemoved == false) return participant;
 
-    return await ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
-      conversationId: args.conversationId,
-      agentId: args.agentId,
+    const participantId =
+      await ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
+        conversationId: args.conversationId,
+        agentId: args.agentId,
+      });
+
+    return ConversationParticipants.getParticipant(ctx.db, {
+      participantId: participantId,
     });
   },
 });

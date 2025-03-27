@@ -297,7 +297,7 @@ export const getParticipantDetails = async (
   }
 };
 
-export const findNonSystemAgentParticipants = async (
+export const listNonSystemAgentParticipants = async (
   db: DatabaseReader,
   { conversationId }: { conversationId: Id<"conversations"> },
 ) => {
@@ -323,11 +323,38 @@ export const findNonSystemAgentParticipants = async (
   );
 };
 
+export const listParticipantsWithJoinedDetails = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await getNonRemovedParticipants(db, { conversationId });
+
+  const participantsWithDetails = await Promise.all(
+    participants.map(async (participant) => {
+      if (participant.kind === "agent")
+        return {
+          participant,
+          agent: await Agents.get(db, { agentId: participant.agentId }),
+        };
+
+      if (participant.kind === "user")
+        return {
+          participant,
+          user: await Users.get(db, { userId: participant.userId }),
+        };
+
+      exhaustiveCheck(participant);
+    }),
+  );
+
+  return participantsWithDetails;
+};
+
 export const getNonSystemAgentParticipants = async (
   db: DatabaseReader,
   args: { conversationId: Id<"conversations"> },
 ) => {
-  const participants = await findNonSystemAgentParticipants(db, args);
+  const participants = await listNonSystemAgentParticipants(db, args);
   if (!participants)
     throw new Error(
       `No non-system agent participants found for conversation '${args.conversationId}'`,
