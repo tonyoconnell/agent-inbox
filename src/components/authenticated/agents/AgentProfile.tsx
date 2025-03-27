@@ -11,15 +11,52 @@ import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { AgentDescription } from "./AgentDescription";
 import { AgentPersonality } from "./AgentPersonality";
 import { AgentTools } from "./AgentTools";
-import { Loader2, Shuffle } from "lucide-react";
+import { Loader2, Shuffle, Pencil, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const agent = useQuery(api.agents.public.findMine, { agentId });
   const deleteAgent = useMutation(api.agents.public.removeMine);
   const shuffleAvatar = useMutation(api.agents.public.shuffleAvatar);
+  const updateAgent = useMutation(api.agents.public.updateMine);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [editedName, setEditedName] = React.useState("");
   const [isShufflingAvatar, setIsShufflingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
+
+  React.useEffect(() => {
+    if (agent?.name) setEditedName(agent.name);
+  }, [agent?.name]);
+
+  const handleNameSubmit = async () => {
+    if (!editedName.trim() || editedName === agent?.name) {
+      setIsEditingName(false);
+      return;
+    }
+
+    if (!agent) return;
+
+    await updateAgent({
+      agentId,
+      name: editedName,
+      description: agent.description,
+      personality: agent.personality,
+      tools: agent.tools,
+    })
+      .catch(onApiError)
+      .finally(() => setIsEditingName(false));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleNameSubmit();
+    } else if (e.key === "Escape") {
+      setIsEditingName(false);
+      setEditedName(agent?.name ?? "");
+    }
+  };
 
   if (!agent)
     return (
@@ -67,7 +104,33 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
               )}
             </Button>
           </div>
-          <h1 className="text-3xl font-bold mb-2">{agent.name}</h1>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            {isEditingName ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="text-2xl font-bold text-center w-64"
+                  autoFocus
+                />
+                <Button variant="ghost" size="icon" onClick={handleNameSubmit}>
+                  <Check className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-3xl font-bold">{agent.name}</h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsEditingName(true)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </>
+            )}
+          </div>
         </div>
         <AgentDescription
           agentId={agent._id}
