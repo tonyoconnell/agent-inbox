@@ -67,13 +67,13 @@ export const shuffleAvatar = mutation({
   },
 });
 
-export const getForMention = query({
+export const findMention = query({
   args: {
     agentId: v.id("agents"),
   },
   handler: async (ctx, args) => {
     const agent = await ctx.db.get(args.agentId);
-    if (!agent) throw new Error("Agent not found");
+    if (!agent) return null;
     return pick(agent, ["name", "_id", "avatarUrl"]);
   },
 });

@@ -8,7 +8,7 @@ export const getMe = query({
   handler: async (ctx) => Users.getMe(ctx),
 });
 
-export const getForMention = query({
+export const findMention = query({
   args: {
     userId: v.id("users"),
   },

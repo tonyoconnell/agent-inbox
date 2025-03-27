@@ -8,6 +8,7 @@ import {
 import { v } from "convex/values";
 import * as Messages from "./model";
 import * as Conversations from "../conversations/model";
+import {pick} from 'convex-helpers';
 
 export const sendFromMe = mutation({
   args: {
@@ -34,3 +35,4 @@ export const listForMe = query({
     return Messages.listMessages(ctx.db, args);
   },
 });
+

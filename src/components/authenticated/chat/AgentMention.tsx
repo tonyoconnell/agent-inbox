@@ -19,7 +19,7 @@ export const AgentMention: React.FC<AgentMentionProps> = ({
 }) => {
   console.log(`ATTEMPTING TO GET agentId`, agentId);
 
-  const agent = useQuery(api.agents.public.getForMention, { agentId });
+  const agent = useQuery(api.agents.public.findMention, { agentId });
   if (!agent) return null;
 
   const handleClick = () => {

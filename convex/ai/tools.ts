@@ -78,7 +78,7 @@ export const createTools = ({
     }),
     execute: async ({ query }) => {
       await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is searching the web for: ${query}`,
+        content: `${agent.name} is searching the web for "${query}"`,
         conversationId: conversation._id,
       });
       const result = await exa.answer(query, { text: true });
