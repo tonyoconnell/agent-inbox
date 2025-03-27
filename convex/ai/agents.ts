@@ -7,28 +7,6 @@ import { internal } from "../_generated/api";
 import { createTools } from "./tools";
 import { generateText } from "ai";
 
-export const createMastraAgentFromAgent = ({
-  agent,
-  tools,
-}: {
-  agent: Doc<"agents">;
-  tools: any;
-}) => {
-  return {
-    name: agent.name,
-    instructions: `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You should use the tools provided to you to help you respond to the message.
-    
-# Your Description:
-${agent.description}      
-
-# Your personality:
-${agent.personality}
-`,
-    model: openai("gpt-4o-mini"),
-    tools,
-  };
-};
-
 export const getAgentAndEnsureItIsJoinedToConversation = async (
   ctx: ActionCtx,
   args: {
@@ -105,22 +83,13 @@ export const invokeAgent = async (
           role: "system",
           content: `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You should use the tools provided to you to help you respond to the message.
       
-If there is another agent that could potentially assist with the message then you should use the tools provided to you to find that agent then message them. 
-      
-You dont need to reply with any output if you messaged them.
-    
-# Your Description:
-${agent.description}      
-
-# Your personality:
-${agent.personality}
-
 Here is some other context you might need: 
 ${JSON.stringify(
   {
     messageAuthor,
     conversationId: args.message.conversationId,
     yourConversationParticipantId: participantId,
+    you: agent,
     messageHistory,
   },
   null,

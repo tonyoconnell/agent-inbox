@@ -124,10 +124,14 @@ ${JSON.stringify(
   2,
 )}
 
-The current conversationId is: ${args.conversation._id}
-
-Here is the conversation history:
-${JSON.stringify(messageHistory, null, 2)}`,
+The current conversationId is: ${args.conversation._id}`,
+        },
+        {
+          role: "assistant",
+          content: "",
+          annotations: [{
+            sdfsd: ""
+          }]
         },
         {
           role: "user",

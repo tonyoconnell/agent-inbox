@@ -1,10 +1,10 @@
 "use node";
 import { internalAction } from "../_generated/server";
 import schema from "../schema";
-import { triageMessage } from "../mastra/triage";
+import { triageMessage } from "../ai/triage";
 import { doc } from "convex-helpers/validators";
 import * as ConversationMessagesModel from "./model";
-import { invokeAgent } from "../mastra/agents";
+import { invokeAgent } from "../ai/agents";
 import { v } from "convex/values";
 import { internal } from "../_generated/api";
 
