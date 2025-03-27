@@ -10,6 +10,7 @@ import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 import { constructTriageInstructions } from "./instructions";
 import { getMessageHistory } from "./history";
 import { getTriageAgentAndEnsureItIsJoinedToConversation } from "./utils";
+import { gatherMessages } from "./messages";
 
 export const triageMessage = async (
   ctx: ActionCtx,
@@ -35,12 +36,6 @@ export const triageMessage = async (
   );
 
   try {
-    const messageHistory = await getMessageHistory(ctx, {
-      conversationId: args.conversation._id,
-      messageId: args.message._id,
-      count: 20,
-    });
-
     const tools = pick(
       createTools({
         ctx,
@@ -51,37 +46,22 @@ export const triageMessage = async (
       ["listAgents", "listConversationParticipants"],
     );
 
-    const messages: CoreMessage[] = [
-      {
-        role: "system",
-        content: constructTriageInstructions({
+    const result = await generateText({
+      model: openai("gpt-4o-mini"),
+      tools,
+      maxSteps: 5,
+      messages: await gatherMessages(ctx, {
+        systemMessage: constructTriageInstructions({
           conversation: args.conversation,
           message: args.message,
           messageAuthor: args.messageAuthor,
           agent,
           participant,
         }),
-      },
-      ...messageHistory.map(
-        (m) =>
-          ({
-            role: m.author?.kind === "user" ? "user" : "assistant",
-            content: `${JSON.stringify(m.message, null, 2)}`,
-          }) as const,
-      ),
-      {
-        role: "user",
-        content: `${JSON.stringify({ message: args.message, author: args.messageAuthor }, null, 2)}`,
-      },
-    ];
-
-    console.log(`Triage agent messages:`, messages);
-
-    const result = await generateText({
-      model: openai("gpt-4o-mini"),
-      tools,
-      maxSteps: 3,
-      messages,
+        conversation: args.conversation,
+        message: args.message,
+        messageAuthor: args.messageAuthor,
+      }),
     });
 
     console.log(`Triage agent result:`, result);

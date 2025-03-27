@@ -116,22 +116,20 @@ export const createTools = ({
     },
   }),
 
-  scheduleMessage: tool({
-    description: "Allows scheduling of a message to be sent at a later time.",
+  scheduleTask: tool({
+    description: "Allows scheduling of a task to be completed at a later time.",
     parameters: z.object({
-      targetAgentId: z.string(),
-      targetAgentName: z.string(),
+      target: z.object({
+        agentId: z.string(),
+        agentName: z.string(),
+      }),
+      title: z.string(),
       content: z.string(),
       secondsFromNow: z.number(),
     }),
-    execute: async ({
-      content,
-      secondsFromNow,
-      targetAgentName,
-      targetAgentId,
-    }) => {
+    execute: async ({ content, secondsFromNow, target, title }) => {
       await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} scheduled a message to be sent in ${secondsFromNow} seconds`,
+        content: `${agent.name} scheduled a task "${title}" to be sent in ${secondsFromNow} seconds`,
         conversationId: conversation._id,
       });
 
@@ -140,7 +138,7 @@ export const createTools = ({
         internal.conversationMessages.private.sendFromAgent,
         {
           conversationId: conversation._id,
-          content: `@[${targetAgentName}](agent:${targetAgentId}) ${content}`,
+          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
           agentId: agent._id,
           authorParticipantId: agentParticipant._id,
         },

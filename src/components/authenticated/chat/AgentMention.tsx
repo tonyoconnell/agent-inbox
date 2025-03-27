@@ -17,6 +17,8 @@ export const AgentMention: React.FC<AgentMentionProps> = ({
   agentId,
   isInUserMessage,
 }) => {
+  console.log(`ATTEMPTING TO GET agentId`, agentId);
+
   const agent = useQuery(api.agents.public.getForMention, { agentId });
   if (!agent) return null;
 

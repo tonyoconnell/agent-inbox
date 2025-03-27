@@ -21,6 +21,7 @@ import type * as ai_agentReplyToMessage from "../ai/agentReplyToMessage.js";
 import type * as ai_experiments from "../ai/experiments.js";
 import type * as ai_history from "../ai/history.js";
 import type * as ai_instructions from "../ai/instructions.js";
+import type * as ai_messages from "../ai/messages.js";
 import type * as ai_tools from "../ai/tools.js";
 import type * as ai_triageMessage from "../ai/triageMessage.js";
 import type * as ai_utils from "../ai/utils.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   "ai/experiments": typeof ai_experiments;
   "ai/history": typeof ai_history;
   "ai/instructions": typeof ai_instructions;
+  "ai/messages": typeof ai_messages;
   "ai/tools": typeof ai_tools;
   "ai/triageMessage": typeof ai_triageMessage;
   "ai/utils": typeof ai_utils;

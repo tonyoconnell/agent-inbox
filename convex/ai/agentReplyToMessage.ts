@@ -6,13 +6,17 @@ import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { createTools } from "./tools";
 import { generateText, CoreMessage } from "ai";
-import { constructAgentReplyInstructions } from "./instructions";
+import {
+  constructAgentReplyInstructions,
+  constructTriageInstructions,
+} from "./instructions";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 import { getMessageHistory } from "./history";
 import {
   getAgentAndEnsureItIsJoinedToConversation,
   sendSystemMessageToConversation,
 } from "./utils";
+import { gatherMessages } from "./messages";
 
 export const agentReplyToMessage = async (
   ctx: ActionCtx,
@@ -39,38 +43,6 @@ export const agentReplyToMessage = async (
   );
 
   try {
-    const messageHistory = await getMessageHistory(ctx, {
-      conversationId: args.conversation._id,
-      messageId: args.message._id,
-      count: 20,
-    });
-
-    const messages: CoreMessage[] = [
-      {
-        role: "system",
-        content: constructAgentReplyInstructions({
-          conversation: args.conversation,
-          message: args.message,
-          messageAuthor: args.messageAuthor,
-          agent,
-          participant,
-        }),
-      },
-      ...messageHistory.map(
-        (m) =>
-          ({
-            role: m.author?.kind === "user" ? "user" : "assistant",
-            content: `${JSON.stringify(m, null, 2)}`,
-          }) as const,
-      ),
-      {
-        role: "user",
-        content: `${JSON.stringify({ message: args.message, author: args.messageAuthor }, null, 2)}`,
-      },
-    ];
-
-    console.log(`messages`, messages);
-
     const result = await generateText({
       model: openai("gpt-4o-mini"),
       tools: createTools({
@@ -79,8 +51,19 @@ export const agentReplyToMessage = async (
         agentParticipant: participant,
         conversation: args.conversation,
       }),
-      maxSteps: 5,
-      messages,
+      maxSteps: 10,
+      messages: await gatherMessages(ctx, {
+        systemMessage: constructAgentReplyInstructions({
+          conversation: args.conversation,
+          message: args.message,
+          messageAuthor: args.messageAuthor,
+          agent,
+          participant,
+        }),
+        conversation: args.conversation,
+        message: args.message,
+        messageAuthor: args.messageAuthor,
+      }),
     });
 
     console.log(`Agent result:`, result);
