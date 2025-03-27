@@ -3,14 +3,10 @@ import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
 import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
-import { storage, memory } from "./mastra";
-import { Mastra } from "@mastra/core/mastra";
-import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
 import { pick } from "convex-helpers";
-import { createLogger } from "@mastra/core/logger";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(

@@ -1,14 +1,10 @@
 "use node";
 import { Doc } from "../_generated/dataModel";
-import { Agent } from "@mastra/core";
 import { openai } from "@ai-sdk/openai";
 import { Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { createTools } from "./tools";
-import { ToolsInput } from "@mastra/core/agent";
-import { storage } from "./mastra";
-import { Mastra } from "@mastra/core/mastra";
 
 export const createMastraAgentFromAgent = ({
   agent,
