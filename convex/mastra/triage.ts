@@ -7,6 +7,7 @@ import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
 import { z } from "zod";
 import { pick } from "convex-helpers";
+import { generateText } from "ai";
 
 const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
@@ -83,9 +84,19 @@ export const triageMessage = async (
       { conversationId: args.conversation._id, count: 10 },
     );
 
-    //const allTools = createTools({ ctx, agent });
+    const tools = pick(
+      createTools({ ctx, agent, agentParticipantId: participant._id }),
+      ["listAgents"],
+    );
 
-    const triageAgentInstructions = `You are a helpful agent that triages conversations.
+    const result = await generateText({
+      model: openai("gpt-4o-mini"),
+      tools,
+      maxSteps: 3,
+      messages: [
+        {
+          role: "system",
+          content: `You are a helpful agent that triages conversations.
   
 You will be given a conversation message and its up to you to determine what agent you should route this message to.
 
@@ -116,58 +127,36 @@ ${JSON.stringify(
 The current conversationId is: ${args.conversation._id}
 
 Here is the conversation history:
-${JSON.stringify(messageHistory, null, 2)}
-`;
-
-    console.log(`Triage agent instructions: ${triageAgentInstructions}`);
-    console.log(`Triage agent history`, messageHistory);
-
-    const triageAgent = new Agent({
-      name: "Conversation Triage Agent",
-      instructions: triageAgentInstructions,
-      model: openai("gpt-4o-mini"),
-      memory,
-      tools: pick(
-        createTools({ ctx, agent, agentParticipantId: participant._id }),
-        ["listAgents"],
-      ),
-    });
-
-    const mastra = new Mastra({
-      agents: { triageAgent },
-      storage,
-      logger: createLogger({
-        level: "debug",
-        name: "triage-agent-mastra",
-      }),
-    });
-
-    const result = await mastra.getAgent("triageAgent").generate(
-      [
+${JSON.stringify(messageHistory, null, 2)}`,
+        },
         {
           role: "user",
-          content: `${args.message.content}`,
+          content: args.message.content,
         },
       ],
-      {
-        output: z.object({
-          messageContent: z.string(),
-          agentId: z.optional(z.string()),
-        }),
-      },
-    );
+    });
 
     console.log(`Triage agent result:`, result);
 
+    if (result.text.trim()) {
+      await ctx.runMutation(
+        internal.conversationMessages.private.sendFromTriageAgent,
+        {
+          conversationId: args.conversation._id,
+          content: result.text,
+        },
+      );
+    }
+  } catch (error) {
+    console.error("When triaging message:", error);
+    // Send error message to conversation
     await ctx.runMutation(
-      internal.conversationMessages.private.sendFromTriageAgent,
+      internal.conversationMessages.private.sendSystemMessage,
       {
         conversationId: args.conversation._id,
-        content: result.object.messageContent,
+        content: `Sorry, I encountered an error while triaging your message: ${error instanceof Error ? error.message : "Unknown error"}`,
       },
     );
-  } catch (error) {
-    // we should add a message to the conversation to notify the user that the triage agent has errored
   } finally {
     // No longer thinking
     await ctx.runMutation(

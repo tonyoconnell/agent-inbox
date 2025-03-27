@@ -5,6 +5,7 @@ import { Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { createTools } from "./tools";
+import { generateText } from "ai";
 
 export const createMastraAgentFromAgent = ({
   agent,
@@ -13,7 +14,7 @@ export const createMastraAgentFromAgent = ({
   agent: Doc<"agents">;
   tools: any;
 }) => {
-  return new Agent({
+  return {
     name: agent.name,
     instructions: `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You should use the tools provided to you to help you respond to the message.
     
@@ -25,7 +26,7 @@ ${agent.personality}
 `,
     model: openai("gpt-4o-mini"),
     tools,
-  });
+  };
 };
 
 export const getAgentAndEnsureItIsJoinedToConversation = async (
@@ -89,34 +90,32 @@ export const invokeAgent = async (
       { messageId: args.message._id },
     );
 
-    const referencedAgent = new Agent({
-      name: agent.name,
-      instructions: `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You should use the tools provided to you to help you respond to the message.
+    const tools = createTools({
+      ctx,
+      agent,
+      agentParticipantId: participantId,
+    });
+
+    const result = await generateText({
+      model: openai("gpt-4o-mini"),
+      tools,
+      maxSteps: 5,
+      messages: [
+        {
+          role: "system",
+          content: `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You should use the tools provided to you to help you respond to the message.
       
-      If there is another agent that could potentially assist with the message then you should use the tools provided to you to find that agent then message them. 
+If there is another agent that could potentially assist with the message then you should use the tools provided to you to find that agent then message them. 
       
-      You dont need to reply with any output if you messaged them." 
+You dont need to reply with any output if you messaged them.
     
 # Your Description:
 ${agent.description}      
 
 # Your personality:
 ${agent.personality}
-`,
-      model: openai("gpt-4o-mini"),
-      tools: createTools({ ctx, agent, agentParticipantId: participantId }),
-    });
 
-    const mastra = new Mastra({
-      agents: { referencedAgent },
-      storage,
-    });
-
-    const result = await mastra.getAgent("referencedAgent").generate(
-      [
-        {
-          role: "system",
-          content: `Here is some other context you might need: 
+Here is some other context you might need: 
 ${JSON.stringify(
   {
     messageAuthor,
@@ -133,32 +132,21 @@ ${JSON.stringify(
           content: args.message.content,
         },
       ],
-      {
-        // async onStepFinish(step) {
-        //   console.log(`Step finished:`, step);
-        //   await ctx.runMutation(
-        //     internal.conversationMessages.private.sendSystemMessage,
-        //     {
-        //       conversationId: args.message.conversationId,
-        //       content: `Agent '${agent.name}' just finished a step: ${step}`,
-        //     },
-        //   );
-        // },
-        // toolChoice: "required",
-        // output: z.object({
-        //   messageContent: z.string(),
-        // }),
-      },
-    );
-
-    console.log(`Referenced agent result:`, result);
-
-    await ctx.runMutation(internal.conversationMessages.private.sendFromAgent, {
-      conversationId: args.message.conversationId,
-      agentId: agent._id,
-      content: result.text,
-      author: participantId,
     });
+
+    console.log(`Agent result:`, result);
+
+    if (result.text.trim()) {
+      await ctx.runMutation(
+        internal.conversationMessages.private.sendFromAgent,
+        {
+          conversationId: args.message.conversationId,
+          agentId: agent._id,
+          content: result.text,
+          author: participantId,
+        },
+      );
+    }
   } catch (error: unknown) {
     console.error("When invoking agent:", error);
     // Send error message to conversation
