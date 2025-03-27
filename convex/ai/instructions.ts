@@ -1,5 +1,6 @@
 import { Doc } from "../_generated/dataModel";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+import { MessageHistory } from "./history";
 
 const referenceAgentInstructions = `You can reference an agent in your output using the following special syntax: 
 @[AGENT_NAME](agent:AGENT_ID) 
@@ -27,19 +28,23 @@ ${referenceAgentInstructions}
 You should respond with a reference to another agent if asked or if you think the other agent could help.
 `;
 
+type Args = {
+  message: Doc<"conversationMessages">;
+  messageAuthor: ParticipantUserOrAgent;
+  conversation: Doc<"conversations">;
+  agent: Doc<"agents">;
+  participant: Doc<"conversationParticipants">;
+  messageHistory: any[];
+};
+
 export const constructAdditionalInstructionContext = ({
   conversation,
   message,
   messageAuthor,
   agent,
   participant,
-}: {
-  message: Doc<"conversationMessages">;
-  messageAuthor: ParticipantUserOrAgent;
-  conversation: Doc<"conversations">;
-  agent: Doc<"agents">;
-  participant: Doc<"conversationParticipants">;
-}) => `Here is some extra info about you the agent:
+  messageHistory,
+}: Args) => `Here is some extra info about you the agent:
 ${JSON.stringify(agent, null, 2)}
 
 Here is some extra info about you as a participant in the conversation:
@@ -53,21 +58,13 @@ ${JSON.stringify(messageAuthor, null, 2)}
 
 Here is some information about the conversation:
 ${JSON.stringify(conversation, null, 2)}
+
+Here is the message history:
+${JSON.stringify(messageHistory, null, 2)}
 `;
 
-export const constructTriageInstructions = (args: {
-  conversation: Doc<"conversations">;
-  message: Doc<"conversationMessages">;
-  messageAuthor: ParticipantUserOrAgent;
-  agent: Doc<"agents">;
-  participant: Doc<"conversationParticipants">;
-}) => `${triageInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
+export const constructTriageInstructions = (args: Args) =>
+  `${triageInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
 
-export const constructAgentReplyInstructions = (args: {
-  conversation: Doc<"conversations">;
-  message: Doc<"conversationMessages">;
-  messageAuthor: ParticipantUserOrAgent;
-  agent: Doc<"agents">;
-  participant: Doc<"conversationParticipants">;
-}) =>
+export const constructAgentReplyInstructions = (args: Args) =>
   `${agentReplyInstructions}\n\n${constructAdditionalInstructionContext(args)}`;

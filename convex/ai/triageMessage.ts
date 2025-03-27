@@ -63,9 +63,9 @@ export const triageMessage = async (
           messageAuthor: args.messageAuthor,
           agent,
           participant,
+          messageHistory
         }),
       },
-      ...messageHistory,
     ];
 
     console.log(`Triage agent messages:`, messages);

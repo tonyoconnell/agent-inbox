@@ -20,7 +20,7 @@ export const addMessageToConversationFromUserOrAgent = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
-    author: Id<"conversationParticipants">;
+    authorParticipantId: Id<"conversationParticipants">;
   },
 ) => {
   // Create the message
@@ -75,7 +75,7 @@ export const addMessageToConversationFromMe = async (
 
   const messageId = await addMessageToConversationFromUserOrAgent(ctx, {
     ...args,
-    author: participant._id,
+    authorParticipantId: participant._id,
   });
 
   return messageId;
@@ -84,20 +84,20 @@ export const addMessageToConversationFromMe = async (
 export const addMessageToConversationFromAgent = async (
   ctx: MutationCtx,
   {
-    author,
+    authorParticipantId,
     content,
     conversationId,
   }: {
     conversationId: Id<"conversations">;
     agentId: Id<"agents">;
     content: string;
-    author: Id<"conversationParticipants">;
+    authorParticipantId: Id<"conversationParticipants">;
   },
 ) => {
   return await addMessageToConversationFromUserOrAgent(ctx, {
     conversationId,
     content,
-    author,
+    authorParticipantId,
   });
 };
 

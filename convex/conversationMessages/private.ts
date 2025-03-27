@@ -8,6 +8,8 @@ import * as Messages from "./model";
 import * as Agents from "../agents/model";
 import * as ConversationParticipants from "../conversationParticipants/model";
 import { ensureFP } from "../../shared/ensure";
+import { pick } from "convex-helpers";
+import { exhaustiveCheck } from "../../shared/misc";
 
 export const sendFromTriageAgent = internalMutation({
   args: {
@@ -34,7 +36,7 @@ export const sendFromTriageAgent = internalMutation({
       conversationId: args.conversationId,
       content: args.content,
       agentId: triageAgent._id,
-      author: triageAgentParticipant._id,
+      authorParticipantId: triageAgentParticipant._id,
     });
 
     return messageId;
@@ -46,7 +48,7 @@ export const sendFromAgent = internalMutation({
     conversationId: v.id("conversations"),
     agentId: v.id("agents"),
     content: v.string(),
-    author: v.id("conversationParticipants"),
+    authorParticipantId: v.id("conversationParticipants"),
   },
   returns: v.id("conversationMessages"),
   handler: async (ctx, args) => {
@@ -96,24 +98,39 @@ export const listMessagesHistoryForAgentGeneration = internalQuery({
         .map(async (message) => {
           const userOrAgent =
             await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
-              participantId: message.author,
+              participantId: message.authorParticipantId,
             });
-          return { message, author: userOrAgent };
+
+          if (userOrAgent.kind == "agent")
+            return {
+              message,
+              agent: pick(userOrAgent.agent, ["name", "_id"]),
+            };
+
+          if (userOrAgent.kind == "user")
+            return {
+              message,
+              agent: pick(userOrAgent.user, ["name", "_id"]),
+            };
+
+          exhaustiveCheck(userOrAgent);
         }),
     );
 
-    return messagesWithAuthorDetails.map(
-      ({ author, message }) =>
-        ({
-          id: message._id,
-          author: {
-            name: author.kind == "agent" ? author.agent.name : author.user.name,
-            kind: author.kind,
-          },
-          role: author.kind == "agent" ? "assistant" : "user",
-          content: message.content,
-        }) as const,
-    );
+    return messagesWithAuthorDetails;
+
+    // return messagesWithAuthorDetails.map(
+    //   ({ author, message }) =>
+    //     ({
+    //       id: message._id,
+    //       author: {
+    //         name: author.kind == "agent" ? author.agent.name : author.user.name,
+    //         kind: author.kind,
+    //       },
+    //       role: author.kind == "agent" ? "assistant" : "user",
+    //       content: message.content,
+    //     }) as const,
+    // );
   },
 });
 
@@ -126,7 +143,7 @@ export const getMessageAuthor = internalQuery({
     if (message.kind == "system")
       throw new Error("Message is a system message");
     return await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
-      participantId: message.author,
+      participantId: message.authorParticipantId,
     });
   },
 });

@@ -20,7 +20,7 @@ const common = {
 export const conversationParticipantMessageSchemaValidator = v.object({
   ...common,
   kind: v.literal("participant"),
-  author: v.id("conversationParticipants"),
+  authorParticipantId: v.id("conversationParticipants"),
 });
 
 export const conversationAgentMessageSchemaValidator = v.union(

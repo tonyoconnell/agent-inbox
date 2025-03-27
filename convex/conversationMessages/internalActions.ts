@@ -31,7 +31,7 @@ export const processMessage = internalAction({
     if (references.length == 0) {
       const author = await ctx.runQuery(
         internal.conversationParticipants.private.getParticipantUserOrAgent,
-        { participantId: args.message.author },
+        { participantId: args.message.authorParticipantId },
       );
 
       if (author.kind != "user") {
@@ -51,7 +51,7 @@ export const processMessage = internalAction({
       if (reference.kind == "agent") {
         const author = await ctx.runQuery(
           internal.conversationParticipants.private.getParticipantUserOrAgent,
-          { participantId: args.message.author },
+          { participantId: args.message.authorParticipantId },
         );
         await agentReplyToMessage(ctx, {
           message: args.message,

@@ -48,13 +48,13 @@ export const agentReplyToMessage = async (
           messageAuthor: args.messageAuthor,
           agent,
           participant,
+          messageHistory: await getMessageHistory(ctx, {
+            conversationId: args.conversation._id,
+            messageId: args.message._id,
+            count: 10,
+          }),
         }),
       },
-      ...(await getMessageHistory(ctx, {
-        conversationId: args.conversation._id,
-        messageId: args.message._id,
-        count: 10,
-      })),
     ];
 
     console.log(`messages`, messages);
@@ -77,7 +77,7 @@ export const agentReplyToMessage = async (
       conversationId: args.message.conversationId,
       agentId: agent._id,
       content: result.text,
-      author: participant._id,
+      authorParticipantId: participant._id,
     });
   } catch (error: unknown) {
     console.error("Error while replying to message:", error);

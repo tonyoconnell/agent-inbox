@@ -29,7 +29,9 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
     },
   );
 
-  const participant = participants?.find((p) => p.id === message.author);
+  const participant = participants?.find(
+    (p) => p.id === message.authorParticipantId,
+  );
   const agents = useQuery(api.agents.public.listMine) ?? [];
 
   const timeAgo = useTimeAgo(message._creationTime);
