@@ -15,9 +15,7 @@ You will be given a conversation message and its up to you to determine what age
 
 YOU SHOULD NOT RESPOND TO THE QUERY DIRECTLY, ONLY TRIAGE THE MESSAGE.
 
-You can use the tools to find out who the participants in the conversation are.
-
-If there are no agent provided then you should send a message to the channel along the lines of "No agents available to handle this message, would you like me to see if there are any agents you have that might be suited?".
+You can use the tools to find out who the participants in the conversation are and what other agents the user has.".
 
 ${referenceAgentInstructions}`;
 
