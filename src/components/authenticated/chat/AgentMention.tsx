@@ -5,6 +5,8 @@ import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { routes } from "@/routes";
 import { BaseMention } from "./BaseMention";
+import { Bot } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface AgentMentionProps {
   display: string;
@@ -17,8 +19,6 @@ export const AgentMention: React.FC<AgentMentionProps> = ({
   agentId,
   isInUserMessage,
 }) => {
-  console.log(`ATTEMPTING TO GET agentId`, agentId);
-
   const agent = useQuery(api.agents.public.findMention, { agentId });
   if (!agent) return null;
 
@@ -28,16 +28,24 @@ export const AgentMention: React.FC<AgentMentionProps> = ({
 
   return (
     <BaseMention
-      display={display}
+      display={agent?.name ?? display}
       isInUserMessage={isInUserMessage}
-      onClick={handleClick}
+      onClick={agent?._id ? handleClick : undefined}
       avatar={
-        <AgentAvatar
-          size="xs"
-          avatarUrl={agent.avatarUrl}
-          name={agent.name ?? display}
-          className="translate-y-[1px]"
-        />
+        agent ? (
+          <AgentAvatar
+            size="xs"
+            avatarUrl={agent.avatarUrl}
+            name={agent.name ?? display}
+            className="translate-y-[1px]"
+          />
+        ) : (
+          <Avatar className="h-4 w-4 translate-y-[1px]">
+            <AvatarFallback className="bg-muted">
+              <Bot className="h-3 w-3" />
+            </AvatarFallback>
+          </Avatar>
+        )
       }
     />
   );

@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { BaseMention } from "./BaseMention";
+import { Ghost } from "lucide-react";
 
 interface UserMentionProps {
   display: string;
@@ -17,16 +18,20 @@ export const UserMention: React.FC<UserMentionProps> = ({
   isInUserMessage,
 }) => {
   const user = useQuery(api.users.public.findMention, { userId });
-  if (!user) return null;
 
   return (
     <BaseMention
-      display={display}
+      display={user?.name ?? display}
       isInUserMessage={isInUserMessage}
       avatar={
         <Avatar className="h-4 w-4 translate-y-[1px]">
-          <AvatarImage src={user.image} />
-          <AvatarFallback>{display[0]?.toUpperCase()}</AvatarFallback>
+          {user?.image ? (
+            <AvatarImage src={user.image} />
+          ) : (
+            <AvatarFallback className="bg-muted">
+              <Ghost className="h-3 w-3" />
+            </AvatarFallback>
+          )}
         </Avatar>
       }
     />
