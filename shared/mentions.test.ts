@@ -3,6 +3,7 @@ import { Id } from "../convex/_generated/dataModel";
 import {
   parseMentionsFromMessageContent,
   splitMessageContent,
+  createMentionString,
 } from "./mentions";
 
 describe("parseReferencesFromMessageContent", () => {
@@ -217,6 +218,74 @@ describe("splitMessageContent", () => {
           agentId: agentId2,
           display: "Agent2",
         },
+      },
+    ]);
+  });
+});
+
+describe("createMentionString", () => {
+  test("should create agent mention string", () => {
+    const agentId = "abc123" as Id<"agents">;
+    const reference = {
+      kind: "agent" as const,
+      agentId,
+      name: "Agent Smith",
+    };
+
+    const result = createMentionString(reference);
+    expect(result).toBe(`@[Agent Smith](agent:${agentId})`);
+
+    // Verify the generated string can be parsed back correctly
+    const parsed = parseMentionsFromMessageContent(result);
+    expect(parsed).toEqual([
+      {
+        kind: "agent",
+        agentId,
+        display: "Agent Smith",
+      },
+    ]);
+  });
+
+  test("should create user mention string", () => {
+    const userId = "xyz789" as Id<"users">;
+    const reference = {
+      kind: "user" as const,
+      userId,
+      name: "John Doe",
+    };
+
+    const result = createMentionString(reference);
+    expect(result).toBe(`@[John Doe](user:${userId})`);
+
+    // Verify the generated string can be parsed back correctly
+    const parsed = parseMentionsFromMessageContent(result);
+    expect(parsed).toEqual([
+      {
+        kind: "user",
+        userId,
+        display: "John Doe",
+      },
+    ]);
+  });
+
+  test("should handle special characters in names", () => {
+    const agentId = "abc123" as Id<"agents">;
+    const reference = {
+      kind: "agent" as const,
+      agentId,
+      name: "Agent Smith-Jones (AI)",
+    };
+
+    const result = createMentionString(reference);
+    expect(result).toBe(`@[Agent Smith-Jones (AI)](agent:${agentId})`);
+
+    // Verify the generated string can be parsed back correctly
+    const parsed = parseMentionsFromMessageContent(result);
+    expect(parsed).toEqual([
+      {
+        kind: "agent",
+        agentId,
+        display: "Agent Smith-Jones (AI)",
       },
     ]);
   });

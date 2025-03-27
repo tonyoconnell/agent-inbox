@@ -9,6 +9,24 @@ export type MessagePart =
 const MENTION_REGEX = /@\[([^\]]+)\]\(([^:]+):([^)]+)\)/g;
 
 /**
+ * Creates a mention string for a user or agent.
+ *
+ * @param reference - The reference object containing user or agent details
+ * @returns A string in the format "@[name](kind:id)"
+ */
+export const createMentionString = (
+  reference:
+    | { kind: "user"; userId: Id<"users">; name: string }
+    | { kind: "agent"; agentId: Id<"agents">; name: string },
+): string => {
+  if (reference.kind === "agent") {
+    return `@[${reference.name}](agent:${reference.agentId})`;
+  } else {
+    return `@[${reference.name}](user:${reference.userId})`;
+  }
+};
+
+/**
  * Splits message content into an array of text and mention parts.
  * Text parts contain regular text content, while mention parts contain the reference data.
  *
