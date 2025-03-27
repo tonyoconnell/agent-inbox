@@ -232,7 +232,8 @@ export const parseReferencesFromMessageContent = (content: string) => {
    * Parses message content to extract references to entities like users or agents.
    *
    * References are formatted as: @[name](kind:id)
-   * Example: "Hello @[Mike](agent:abc1234)" references a agent with ID abc1234
+   * Example: "Hello @[Mike](agent:abc1234)" references an agent with ID abc1234
+   * Example: "Hello @[John](user:xyz789)" references a user with ID xyz789
    *
    * @param content - The message content to parse
    * @returns Array of references found in the message content
@@ -247,15 +248,17 @@ export const parseReferencesFromMessageContent = (content: string) => {
   while ((match = referenceRegex.exec(content)) !== null) {
     const [_, name, kind, id] = match;
 
-    // Currently only agent references are supported in the schema
     if (kind === "agent") {
       references.push({
         kind: "agent",
         agentId: id as Id<"agents">,
       });
+    } else if (kind === "user") {
+      references.push({
+        kind: "user",
+        userId: id as Id<"users">,
+      });
     }
-    // Note: If we want to support other reference types in the future,
-    // we would need to update the schema validator and add cases here
   }
 
   return references;

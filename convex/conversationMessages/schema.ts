@@ -6,6 +6,10 @@ export const conversationMessageReferenceSchemaValidator = v.union(
     kind: v.literal("agent"),
     agentId: v.id("agents"),
   }),
+  v.object({
+    kind: v.literal("user"),
+    userId: v.id("users"),
+  }),
 );
 
 export const conversationMessageReferencesSchemaValidator = v.array(

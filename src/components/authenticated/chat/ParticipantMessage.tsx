@@ -8,9 +8,10 @@ import {
 } from "@/components/ui/tooltip";
 import { useTimeAgo } from "@/components/misc/hooks";
 import { useQuery } from "convex/react";
-import { Doc } from "convex/_generated/dataModel";
+import { Doc, Id } from "convex/_generated/dataModel";
 import { api } from "../../../../convex/_generated/api";
-import { MessageMention } from "./MessageMention";
+import { AgentMention } from "./AgentMention";
+import { UserMention } from "./UserMention";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -32,16 +33,15 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   const participant = participants?.find(
     (p) => p.id === message.authorParticipantId,
   );
-  const agents = useQuery(api.agents.public.listMine) ?? [];
 
   const timeAgo = useTimeAgo(message._creationTime);
 
   const renderMessageContent = (content: string) => {
-    const mentionRegex = /@\[(.*?)\]\(agent:(.*?)\)/g;
+    const mentionRegex = /@\[(.*?)\]\((agent|user):(.*?)\)/g;
     const parts: {
       type: "text" | "mention";
       content: string;
-      mentionData?: { display: string; agentId: string };
+      mentionData?: { display: string; type: "agent" | "user"; id: string };
     }[] = [];
     let lastIndex = 0;
     let match;
@@ -55,11 +55,11 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
         });
       }
 
-      const [_, display, agentId] = match;
+      const [_, display, type, id] = match;
       parts.push({
         type: "mention",
         content: match[0],
-        mentionData: { display, agentId },
+        mentionData: { display, type: type as "agent" | "user", id },
       });
 
       lastIndex = match.index + match[0].length;
@@ -89,16 +89,26 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
           </ReactMarkdown>
         );
       } else {
-        const agent = agents.find((a) => a._id === part.mentionData!.agentId);
-        return (
-          <MessageMention
-            key={`mention-${index}`}
-            display={part.mentionData!.display}
-            agentId={part.mentionData!.agentId}
-            agent={agent}
-            isInUserMessage={participant?.kind === "user"}
-          />
-        );
+        const mentionData = part.mentionData!;
+        if (mentionData.type === "agent") {
+          return (
+            <AgentMention
+              key={`mention-${index}`}
+              display={mentionData.display}
+              agentId={mentionData.id as Id<"agents">}
+              isInUserMessage={participant?.kind === "user"}
+            />
+          );
+        } else {
+          return (
+            <UserMention
+              key={`mention-${index}`}
+              display={mentionData.display}
+              userId={mentionData.id as Id<"users">}
+              isInUserMessage={participant?.kind === "user"}
+            />
+          );
+        }
       }
     });
   };

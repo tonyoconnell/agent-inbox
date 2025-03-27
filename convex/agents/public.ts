@@ -1,6 +1,7 @@
 import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
 import * as Agents from "./model";
+import { pick } from "convex-helpers";
 
 export const create = mutation({
   args: {},
@@ -63,5 +64,16 @@ export const shuffleAvatar = mutation({
     return await ctx.db.patch(args.agentId, {
       avatarUrl: Agents.createAgentAvatarUrl(`${agent.name}-${Date.now()}`),
     });
+  },
+});
+
+export const getForMention = query({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) throw new Error("Agent not found");
+    return pick(agent, ["name", "_id", "avatarUrl"]);
   },
 });

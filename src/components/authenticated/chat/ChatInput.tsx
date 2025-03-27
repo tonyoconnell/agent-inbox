@@ -4,7 +4,16 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { AgentAvatar } from "@/components/ui/agent-avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useApiErrorHandler } from "@/components/misc/errors";
+import { ReactNode } from "react";
+
+// Define our custom suggestion data type
+interface CustomSuggestionData extends SuggestionDataItem {
+  type: "agent" | "user";
+  avatarUrl?: string;
+  display: string;
+}
 
 interface ChatInputProps {
   conversationId: Id<"conversations">;
@@ -27,6 +36,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
       conversationId: conversationId,
     }).catch(apiError);
   };
+
+  const suggestions: CustomSuggestionData[] = [
+    ...agents.map((agent) => ({
+      id: `agent:${agent._id}`,
+      display: agent.name ?? "",
+      type: "agent" as const,
+      avatarUrl: agent.avatarUrl,
+    })),
+  ];
 
   return (
     <div className="p-4 sticky bottom-0 z-10">
@@ -89,38 +107,45 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
               },
             },
           }}
-          placeholder="Type a message... Use @ to mention agents"
+          placeholder="Type a message... Use @ to mention agents or users"
           singleLine={true}
           allowSpaceInQuery={true}
         >
           <Mention
             trigger="@"
-            data={agents.map((agent) => ({
-              id: agent._id,
-              display: agent.name,
-            }))}
+            data={suggestions}
             displayTransform={(id, display) => `@${display}`}
-            markup="@[__display__](agent:__id__)"
+            markup="@[__display__](__id__)"
             appendSpaceOnAdd={true}
             style={{
               backgroundColor: "var(--accent)",
               borderRadius: "6px",
             }}
-            renderSuggestion={(
-              suggestion: SuggestionDataItem,
-              search,
-              highlightedDisplay,
-              index,
-            ) => (
-              <div className="flex items-center gap-2 p-0 hover:bg-accent cursor-pointer">
-                <AgentAvatar
-                  size="sm"
-                  avatarUrl={agents[index].avatarUrl}
-                  name={agents[index].name}
-                />
-                <span>{highlightedDisplay}</span>
-              </div>
-            )}
+            renderSuggestion={
+              ((
+                suggestion: CustomSuggestionData,
+                search: string,
+                highlightedDisplay: ReactNode,
+              ) => (
+                <div className="flex items-center gap-2 p-0 hover:bg-accent cursor-pointer">
+                  {suggestion.type === "agent" ? (
+                    <AgentAvatar
+                      size="sm"
+                      avatarUrl={suggestion.avatarUrl ?? ""}
+                      name={suggestion.display}
+                    />
+                  ) : (
+                    <Avatar className="h-6 w-6">
+                      <AvatarImage src={suggestion.avatarUrl} />
+                      <AvatarFallback>
+                        {(suggestion.display?.[0] ?? "U").toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  <span>{highlightedDisplay}</span>
+                </div>
+              )) as any
+            }
           />
         </MentionsInput>
         <button

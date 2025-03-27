@@ -4,8 +4,12 @@ import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { tool } from "ai";
-import { sendMessageToConversation } from "./utils";
-import { listNonSystemAgentParticipantsWithJoinedDetails } from "../conversationParticipants/private";
+import { sendSystemMessageToConversation } from "./utils";
+import { openai } from "@ai-sdk/openai";
+import Exa from "exa-js";
+import { pick } from "convex-helpers";
+
+const exa = new Exa(process.env.EXA_API_KEY);
 
 export const createTools = ({
   ctx,
@@ -27,7 +31,7 @@ export const createTools = ({
       console.log(`calling listConversationParticipants tool`, {
         conversationId,
       });
-      await sendMessageToConversation(ctx, {
+      await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
         conversationId: conversation._id,
       });
@@ -78,7 +82,7 @@ export const createTools = ({
     execute: async ({ userId }) => {
       console.log(`using tool: listAgents`, { userId });
 
-      await sendMessageToConversation(ctx, {
+      await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is listing the users agents ${conversation._id}`,
         conversationId: conversation._id,
       });
@@ -86,6 +90,66 @@ export const createTools = ({
       return await ctx.runQuery(internal.agents.private.listAgentsForUser, {
         userId: userId as Id<"users">,
       });
+    },
+  }),
+
+  noOutput: tool({
+    description: "Use this tool if you dont want to return any output",
+    parameters: z.object({
+      reasoning: z.string(),
+    }),
+  }),
+
+  webSearch: tool({
+    description: "Use this tool to search the web for information",
+    parameters: z.object({
+      query: z.string(),
+    }),
+    execute: async ({ query }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is searching the web for: ${query}`,
+        conversationId: conversation._id,
+      });
+      const result = await exa.answer(query, { text: true });
+      console.log(`webSearch result:`, result);
+      return pick(result, ["answer", "citations"]);
+    },
+  }),
+
+  scheduleMessage: tool({
+    description: "Allows scheduling of a message to be sent at a later time.",
+    parameters: z.object({
+      targetAgentId: z.string(),
+      targetAgentName: z.string(),
+      content: z.string(),
+      secondsFromNow: z.number(),
+    }),
+    execute: async ({
+      content,
+      secondsFromNow,
+      targetAgentName,
+      targetAgentId,
+    }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} scheduled a message to be sent in ${secondsFromNow} seconds`,
+        conversationId: conversation._id,
+      });
+
+      const scheduledMessageId = await ctx.scheduler.runAfter(
+        secondsFromNow * 1000,
+        internal.conversationMessages.private.sendFromAgent,
+        {
+          conversationId: conversation._id,
+          content: `@[${targetAgentName}](agent:${targetAgentId}) ${content}`,
+          agentId: agent._id,
+          authorParticipantId: agentParticipant._id,
+        },
+      );
+
+      return {
+        result: "message_sent",
+        scheduledMessageId,
+      };
     },
   }),
 });

@@ -3,7 +3,7 @@ import { Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
 
-export const sendMessageToConversation = async (
+export const sendSystemMessageToConversation = async (
   ctx: ActionCtx,
   args: {
     conversationId: Id<"conversations">;

@@ -32,6 +32,7 @@
     "convex": "^1.21.0",
     "convex-helpers": "^0.1.73",
     "date-fns": "^4.1.0",
+    "exa-js": "^1.5.12",
     "lucide-react": "^0.482.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

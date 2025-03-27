@@ -1,14 +1,11 @@
 "use node";
 import { ActionCtx } from "../_generated/server";
-import * as Agents from "../agents/model";
 import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { openai } from "@ai-sdk/openai";
 import { createTools } from "./tools";
-import { z } from "zod";
 import { omit, pick } from "convex-helpers";
 import { CoreMessage, generateText } from "ai";
-import { isNotNullOrUndefined } from "../../shared/filter";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 import { constructTriageInstructions } from "./instructions";
 import { getMessageHistory } from "./history";
@@ -41,7 +38,7 @@ export const triageMessage = async (
     const messageHistory = await getMessageHistory(ctx, {
       conversationId: args.conversation._id,
       messageId: args.message._id,
-      count: 10,
+      count: 20,
     });
 
     const tools = pick(
@@ -63,15 +60,25 @@ export const triageMessage = async (
           messageAuthor: args.messageAuthor,
           agent,
           participant,
-          messageHistory
         }),
+      },
+      ...messageHistory.map(
+        (m) =>
+          ({
+            role: m.author?.kind === "user" ? "user" : "assistant",
+            content: `${JSON.stringify(m.message, null, 2)}`,
+          }) as const,
+      ),
+      {
+        role: "user",
+        content: `${JSON.stringify({ message: args.message, author: args.messageAuthor }, null, 2)}`,
       },
     ];
 
     console.log(`Triage agent messages:`, messages);
 
     const result = await generateText({
-      model: openai("gpt-4o"),
+      model: openai("gpt-4o-mini"),
       tools,
       maxSteps: 3,
       messages,

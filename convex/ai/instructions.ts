@@ -25,7 +25,11 @@ const agentReplyInstructions = `You are an agent that is part of a conversation.
 
 ${referenceAgentInstructions}
 
+You should look at the supplied message history for added context that might be important when providing your response.
+
 You should respond with a reference to another agent if asked or if you think the other agent could help.
+
+If there is nothing for you to particularly do, use the noOutput tool. For example if you were referenced by another agent but your output would not be useful to the user. If the user directly asked you a question, you should respond.
 `;
 
 type Args = {
@@ -34,7 +38,6 @@ type Args = {
   conversation: Doc<"conversations">;
   agent: Doc<"agents">;
   participant: Doc<"conversationParticipants">;
-  messageHistory: any[];
 };
 
 export const constructAdditionalInstructionContext = ({
@@ -43,7 +46,6 @@ export const constructAdditionalInstructionContext = ({
   messageAuthor,
   agent,
   participant,
-  messageHistory,
 }: Args) => `Here is some extra info about you the agent:
 ${JSON.stringify(agent, null, 2)}
 
@@ -58,10 +60,12 @@ ${JSON.stringify(messageAuthor, null, 2)}
 
 Here is some information about the conversation:
 ${JSON.stringify(conversation, null, 2)}
+`;
 
+/*
 Here is the message history:
 ${JSON.stringify(messageHistory, null, 2)}
-`;
+*/
 
 export const constructTriageInstructions = (args: Args) =>
   `${triageInstructions}\n\n${constructAdditionalInstructionContext(args)}`;

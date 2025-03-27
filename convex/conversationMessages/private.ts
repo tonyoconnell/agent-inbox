@@ -10,6 +10,7 @@ import * as ConversationParticipants from "../conversationParticipants/model";
 import { ensureFP } from "../../shared/ensure";
 import { pick } from "convex-helpers";
 import { exhaustiveCheck } from "../../shared/misc";
+import { conversationAgentMessageSchemaValidator } from "./schema";
 
 export const sendFromTriageAgent = internalMutation({
   args: {
@@ -104,13 +105,19 @@ export const listMessagesHistoryForAgentGeneration = internalQuery({
           if (userOrAgent.kind == "agent")
             return {
               message,
-              agent: pick(userOrAgent.agent, ["name", "_id"]),
+              author: {
+                ...pick(userOrAgent.agent, ["name", "_id"]),
+                kind: "agent",
+              } as const,
             };
 
           if (userOrAgent.kind == "user")
             return {
               message,
-              agent: pick(userOrAgent.user, ["name", "_id"]),
+              author: {
+                ...pick(userOrAgent.user, ["name", "_id"]),
+                kind: "user",
+              } as const,
             };
 
           exhaustiveCheck(userOrAgent);
@@ -118,19 +125,6 @@ export const listMessagesHistoryForAgentGeneration = internalQuery({
     );
 
     return messagesWithAuthorDetails;
-
-    // return messagesWithAuthorDetails.map(
-    //   ({ author, message }) =>
-    //     ({
-    //       id: message._id,
-    //       author: {
-    //         name: author.kind == "agent" ? author.agent.name : author.user.name,
-    //         kind: author.kind,
-    //       },
-    //       role: author.kind == "agent" ? "assistant" : "user",
-    //       content: message.content,
-    //     }) as const,
-    // );
   },
 });
 

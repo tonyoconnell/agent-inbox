@@ -6,13 +6,13 @@ import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { createTools } from "./tools";
 import { generateText, CoreMessage } from "ai";
-import {
-  constructTriageInstructions,
-  constructAgentReplyInstructions,
-} from "./instructions";
+import { constructAgentReplyInstructions } from "./instructions";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 import { getMessageHistory } from "./history";
-import { getAgentAndEnsureItIsJoinedToConversation } from "./utils";
+import {
+  getAgentAndEnsureItIsJoinedToConversation,
+  sendSystemMessageToConversation,
+} from "./utils";
 
 export const agentReplyToMessage = async (
   ctx: ActionCtx,
@@ -39,6 +39,12 @@ export const agentReplyToMessage = async (
   );
 
   try {
+    const messageHistory = await getMessageHistory(ctx, {
+      conversationId: args.conversation._id,
+      messageId: args.message._id,
+      count: 20,
+    });
+
     const messages: CoreMessage[] = [
       {
         role: "system",
@@ -48,19 +54,25 @@ export const agentReplyToMessage = async (
           messageAuthor: args.messageAuthor,
           agent,
           participant,
-          messageHistory: await getMessageHistory(ctx, {
-            conversationId: args.conversation._id,
-            messageId: args.message._id,
-            count: 10,
-          }),
         }),
+      },
+      ...messageHistory.map(
+        (m) =>
+          ({
+            role: m.author?.kind === "user" ? "user" : "assistant",
+            content: `${JSON.stringify(m, null, 2)}`,
+          }) as const,
+      ),
+      {
+        role: "user",
+        content: `${JSON.stringify({ message: args.message, author: args.messageAuthor }, null, 2)}`,
       },
     ];
 
     console.log(`messages`, messages);
 
     const result = await generateText({
-      model: openai("gpt-4o"),
+      model: openai("gpt-4o-mini"),
       tools: createTools({
         ctx,
         agent,
@@ -72,13 +84,26 @@ export const agentReplyToMessage = async (
     });
 
     console.log(`Agent result:`, result);
+    console.log(`Tool Calls:`, result.toolCalls);
 
-    await ctx.runMutation(internal.conversationMessages.private.sendFromAgent, {
-      conversationId: args.message.conversationId,
-      agentId: agent._id,
-      content: result.text,
-      authorParticipantId: participant._id,
-    });
+    if (result.text != "")
+      await ctx.runMutation(
+        internal.conversationMessages.private.sendFromAgent,
+        {
+          conversationId: args.message.conversationId,
+          agentId: agent._id,
+          content: result.text,
+          authorParticipantId: participant._id,
+        },
+      );
+    else {
+      const noOp = result.toolCalls.find((t) => t.toolName == "noOutput");
+      if (noOp)
+        await sendSystemMessageToConversation(ctx, {
+          conversationId: args.message.conversationId,
+          content: `Agent ${agent.name} decided not to respond to the message because: "${noOp.args.reasoning}"`,
+        });
+    }
   } catch (error: unknown) {
     console.error("Error while replying to message:", error);
     // Send error message to conversation
