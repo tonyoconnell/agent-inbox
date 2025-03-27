@@ -24,6 +24,8 @@ export const gatherMessages = async (
     count: 20,
   });
 
+  console.log(`messageHistory:`, messageHistory);
+
   const messages: CoreMessage[] = [
     {
       role: "system",
@@ -32,7 +34,7 @@ export const gatherMessages = async (
     ...messageHistory.map(
       (m) =>
         ({
-          role: m.author?.kind === "user" ? "user" : "assistant",
+          role: "user", //m.author?.kind === "user" ? "user" : "assistant",
           content: `${m.author.name} said: ${m.message.content}`,
         }) as const,
     ),

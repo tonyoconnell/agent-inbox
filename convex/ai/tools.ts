@@ -45,35 +45,6 @@ export const createTools = ({
     },
   }),
 
-  // sendMessageToConversation: tool({
-  //   description: `Allows sending of a message to a conversation. You can reference another agent by using the @[AGENT_NAME](agent:AGENT_ID) syntax for for example: "Hey @[AGENT_NAME](agent:abc123) can you take a look at this?" would reference agent with id abc123`,
-  //   parameters: z.object({
-  //     conversationId: z.string(),
-  //     content: z.string(),
-  //   }),
-  //   execute: async ({ conversationId, content }) => {
-  //     console.log(`using tool: sendMessageToConversation`, {
-  //       conversationId,
-  //       content,
-  //     });
-
-  //     const messageId = await ctx.runMutation(
-  //       internal.conversationMessages.private.sendFromAgent,
-  //       {
-  //         conversationId: conversationId as Id<"conversations">,
-  //         content,
-  //         agentId: agent._id,
-  //         author: agentParticipant._id,
-  //       },
-  //     );
-
-  //     return {
-  //       result: "message_sent",
-  //       messageId,
-  //     };
-  //   },
-  // }),
-
   listAgents: tool({
     description: "Allows listing of all of a user's agents",
     parameters: z.object({

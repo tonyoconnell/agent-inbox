@@ -9,7 +9,10 @@ so for example:
 
 A referenced agent will then pick that up later. They will be able to see the message history and the message that referenced them.`;
 
-const otherCommonInstructions = `When you are asked to do something at a future date you should use the scheduleTask tool and NOT do it immediately.`;
+const otherCommonInstructions = `When you are asked to do something at a future date you should use the scheduleTask tool and NOT do it immediately.
+
+If you need more context to answer the question you should respond asking the user or another agent for more information.
+`;
 
 const triageInstructions = `You are a helpful agent that triages conversations.
 
@@ -23,7 +26,11 @@ ${otherCommonInstructions}
 
 ${referenceAgentInstructions}`;
 
-const agentReplyInstructions = `You are an agent that is part of a conversation. You will be given a message and your job is to respond to the message. You can use the tools provided to you to help you respond to the message.
+const agentReplyInstructions = `You are an agent that is part of a conversation with yourself, other agents and other users. 
+
+You will be given the history of the conversation where each message is prefixed with the participant who sent it. You should look at the history to see if you can find any information that might be relevant to the message you are responding to.
+
+You can use the tools provided to you to help you respond to the message.
 
 ${referenceAgentInstructions}
 
@@ -34,6 +41,8 @@ You should look at the supplied message history for added context that might be 
 You should respond with a reference to another agent if asked or if you think the other agent could help.
 
 If there is nothing for you to particularly do, use the noOutput tool. For example if you were referenced by another agent but your output would not be useful to the user. If the user directly asked you a question, you should respond.
+
+
 `;
 
 export type InstructionsArgs = {
@@ -52,12 +61,6 @@ export const constructAdditionalInstructionContext = ({
   participant,
 }: InstructionsArgs) => `Here is some extra info about you the agent:
 ${JSON.stringify(agent, null, 2)}
-
-Here is some extra info about you as a participant in the conversation:
-${JSON.stringify(participant, null, 2)}
-
-Here is the message:
-${JSON.stringify(message, null, 2)}
 
 Here is some information about the message author:
 ${JSON.stringify(messageAuthor, null, 2)}
