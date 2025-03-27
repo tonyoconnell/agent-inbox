@@ -18,6 +18,7 @@ import type * as agents_model from "../agents/model.js";
 import type * as agents_private from "../agents/private.js";
 import type * as agents_public from "../agents/public.js";
 import type * as ai_agents from "../ai/agents.js";
+import type * as ai_experiments from "../ai/experiments.js";
 import type * as ai_tools from "../ai/tools.js";
 import type * as ai_triage from "../ai/triage.js";
 import type * as auth from "../auth.js";
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   "agents/private": typeof agents_private;
   "agents/public": typeof agents_public;
   "ai/agents": typeof ai_agents;
+  "ai/experiments": typeof ai_experiments;
   "ai/tools": typeof ai_tools;
   "ai/triage": typeof ai_triage;
   auth: typeof auth;
