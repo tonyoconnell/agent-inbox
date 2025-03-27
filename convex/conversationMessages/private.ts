@@ -7,7 +7,6 @@ import { v } from "convex/values";
 import * as Messages from "./model";
 import * as Agents from "../agents/model";
 import * as ConversationParticipants from "../conversationParticipants/model";
-import { internal } from "../_generated/api";
 import { ensureFP } from "../../shared/ensure";
 
 export const sendFromTriageAgent = internalMutation({
@@ -18,6 +17,7 @@ export const sendFromTriageAgent = internalMutation({
   returns: v.id("conversationMessages"),
   handler: async (ctx, args) => {
     const triageAgent = await Agents.getTriageAgent(ctx.db);
+
     const triageAgentParticipant =
       await ConversationParticipants.getParticipantByConversationIdAndIdentifier(
         ctx.db,
@@ -29,23 +29,13 @@ export const sendFromTriageAgent = internalMutation({
           },
         },
       );
+
     const messageId = await Messages.addMessageToConversationFromAgent(ctx, {
       conversationId: args.conversationId,
       content: args.content,
       agentId: triageAgent._id,
       author: triageAgentParticipant._id,
     });
-
-    // Schedule a task to process the message
-    await ctx.scheduler.runAfter(
-      0,
-      internal.conversationMessages.internalActions.processMessage,
-      {
-        message: await ctx.db.get(messageId).then(ensureFP()),
-        conversation: await ctx.db.get(args.conversationId).then(ensureFP()),
-        disableTriage: true,
-      },
-    );
 
     return messageId;
   },

@@ -8,13 +8,15 @@ import { Doc, Id } from "../_generated/dataModel";
 export const createTools = ({
   ctx,
   agent,
+  agentParticipantId,
 }: {
   ctx: ActionCtx;
   agent: Doc<"agents">;
+  agentParticipantId: Id<"conversationParticipants">;
 }) => {
   const sendMessageToConversation = createTool({
     id: "send-message-to-conversation",
-    description: "Allows sending of a message to a conversation",
+    description: `Allows sending of a message to a conversation, You can reference another agent by using the @[AGENT_NAME](agent:AGENT_ID) syntax for for example: "Hey @[AGENT_NAME](agent:abc123) can you take a look at this?" would reference agent with id abc123`,
     inputSchema: z.object({
       conversationId: z.string(),
       content: z.string(),
@@ -24,10 +26,12 @@ export const createTools = ({
       console.log(`using tool: sendMessageToConversation`, context);
 
       const messageId = await ctx.runMutation(
-        internal.conversationMessages.private.sendFromTriageAgent,
+        internal.conversationMessages.private.sendFromAgent,
         {
           conversationId: context.conversationId as Id<"conversations">,
           content: context.content,
+          agentId: agent._id,
+          author: agentParticipantId,
         },
       );
 

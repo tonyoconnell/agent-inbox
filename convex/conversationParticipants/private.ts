@@ -86,3 +86,14 @@ export const addAgentIfNotAlreadyJoined = internalMutation({
     });
   },
 });
+
+export const getParticipantUserOrAgent = internalQuery({
+  args: {
+    participantId: v.id("conversationParticipants"),
+  },
+  handler: async (ctx, args) => {
+    return await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+      participantId: args.participantId,
+    });
+  },
+});

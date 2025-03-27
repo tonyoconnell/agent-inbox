@@ -13,10 +13,7 @@ import {
   conversationMessageReferencesSchemaValidator,
   conversationAgentMessageSchemaValidator,
 } from "./schema";
-import {
-  ParticipantUserOrAgent,
-  getMyParticipant,
-} from "../conversationParticipants/model";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 
 export const addMessageToConversationFromUserOrAgent = async (
   ctx: MutationCtx,
@@ -36,6 +33,16 @@ export const addMessageToConversationFromUserOrAgent = async (
   await ctx.db.patch(args.conversationId, {
     lastMessageTime: Date.now(),
   });
+
+  // Schedule a task to process the message
+  await ctx.scheduler.runAfter(
+    0,
+    internal.conversationMessages.internalActions.processMessage,
+    {
+      message: await ctx.db.get(messageId).then(ensureFP()),
+      conversation: await ctx.db.get(args.conversationId).then(ensureFP()),
+    },
+  );
 
   return messageId;
 };
@@ -65,21 +72,11 @@ export const addMessageToConversationFromMe = async (
   const participant = await ConversationParticipants.getMyParticipant(ctx, {
     conversationId: args.conversationId,
   });
-  
+
   const messageId = await addMessageToConversationFromUserOrAgent(ctx, {
     ...args,
     author: participant._id,
   });
-
-  // Schedule a task to process the message
-  await ctx.scheduler.runAfter(
-    0,
-    internal.conversationMessages.internalActions.processMessage,
-    {
-      message: await ctx.db.get(messageId).then(ensureFP()),
-      conversation: await ctx.db.get(args.conversationId).then(ensureFP()),
-    },
-  );
 
   return messageId;
 };

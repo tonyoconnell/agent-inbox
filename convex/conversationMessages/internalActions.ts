@@ -4,14 +4,14 @@ import schema from "../schema";
 import { triageMessage } from "../mastra/triage";
 import { doc } from "convex-helpers/validators";
 import * as ConversationMessagesModel from "./model";
-import { invokeAgent } from "../mastra/referencedAgent";
+import { invokeAgent } from "../mastra/agents";
 import { v } from "convex/values";
+import { internal } from "../_generated/api";
 
 export const processMessage = internalAction({
   args: {
     message: doc(schema, "conversationMessages"),
     conversation: doc(schema, "conversations"),
-    disableTriage: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     // Dont handle system
@@ -29,10 +29,16 @@ export const processMessage = internalAction({
     console.log(`Detected references`, references);
 
     if (references.length == 0) {
-      if (args.disableTriage) {
-        console.log(`Triage disabled, skipping triage`);
+      const author = await ctx.runQuery(
+        internal.conversationParticipants.private.getParticipantUserOrAgent,
+        { participantId: args.message.author },
+      );
+
+      if (author.kind != "user") {
+        console.log(`Not triaging agent messages`);
         return;
       }
+
       await triageMessage(ctx, {
         message: args.message,
         conversation: args.conversation,
@@ -42,6 +48,6 @@ export const processMessage = internalAction({
     // Otherwise we should invoke each agent with the message
     for (const reference of references)
       if (reference.kind == "agent")
-        await invokeAgent(ctx, { message: args.message, reference, });
+        await invokeAgent(ctx, { message: args.message, reference });
   },
 });
