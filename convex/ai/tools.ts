@@ -1,11 +1,9 @@
 "use node";
-import { z } from "zod";
 import { ActionCtx } from "../_generated/server";
 import { internal, api } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { tool } from "ai";
 import { sendSystemMessageToConversation } from "./utils";
-import { openai } from "@ai-sdk/openai";
 import Exa from "exa-js";
 import { pick } from "convex-helpers";
 import { Resend } from "resend";
@@ -14,7 +12,6 @@ import {
   AgentToolName,
   alwaysIncludedTools,
 } from "../../shared/tools";
-import { addAgentIfNotAlreadyJoined } from "../conversationParticipants/private";
 
 const exa = new Exa(process.env.EXA_API_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -43,7 +40,7 @@ export const createTools = ({
         },
       });
       const participants = await ctx.runQuery(
-        internal.conversationParticipants.private
+        internal.conversationParticipants.internalQueries
           .listNonSystemAgentParticipantsWithJoinedDetails,
         {
           conversationId: conversationId as Id<"conversations">,
@@ -87,9 +84,12 @@ export const createTools = ({
         meta: { toolName: "listAgents", userId, agentName: agent.name },
       });
 
-      return await ctx.runQuery(internal.agents.private.listAgentsForUser, {
-        userId: userId as Id<"users">,
-      });
+      return await ctx.runQuery(
+        internal.agents.internalQueries.listAgentsForUser,
+        {
+          userId: userId as Id<"users">,
+        },
+      );
     },
   }),
 
@@ -98,7 +98,7 @@ export const createTools = ({
     parameters: toolDefinitions.messageAnotherAgent.parameters,
     execute: async ({ target, content }) => {
       return await ctx.runMutation(
-        internal.conversationMessages.private.sendFromAgent,
+        internal.conversationMessages.internalMutations.sendFromAgent,
         {
           conversationId: conversation._id,
           content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
@@ -133,7 +133,7 @@ export const createTools = ({
     description: toolDefinitions.updateConversationTitle.description,
     parameters: toolDefinitions.updateConversationTitle.parameters,
     execute: async ({ title }) => {
-      await ctx.runMutation(internal.conversations.private.update, {
+      await ctx.runMutation(internal.conversations.internalMutations.update, {
         conversationId: conversation._id,
         title,
       });
@@ -174,7 +174,7 @@ export const createTools = ({
 
       const scheduledMessageId = await ctx.scheduler.runAfter(
         secondsFromNow * 1000,
-        internal.conversationMessages.private.sendFromAgent,
+        internal.conversationMessages.internalMutations.sendFromAgent,
         {
           conversationId: conversation._id,
           content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
@@ -246,7 +246,8 @@ export const createTools = ({
         });
 
         const participant = await ctx.runMutation(
-          internal.conversationParticipants.private.addAgentIfNotAlreadyJoined,
+          internal.conversationParticipants.internalMutations
+            .addAgentIfNotAlreadyJoined,
           {
             conversationId: conversation._id,
             agentId: agentId as Id<"agents">,

@@ -69,7 +69,7 @@ export const agentReplyToMessage = async (
         participant,
         sendMessage: async (text) => {
           await ctx.runMutation(
-            internal.conversationMessages.private.sendFromAgent,
+            internal.conversationMessages.internalMutations.sendFromAgent,
             {
               conversationId: args.message.conversationId,
               agentId: agent._id,

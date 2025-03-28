@@ -26,7 +26,8 @@ export const processMessage = internalAction({
 
     if (references.length == 0) {
       const author = await ctx.runQuery(
-        internal.conversationParticipants.private.getParticipantUserOrAgent,
+        internal.conversationParticipants.internalQueries
+          .getParticipantUserOrAgent,
         { participantId: args.message.authorParticipantId },
       );
 
@@ -46,7 +47,8 @@ export const processMessage = internalAction({
     for (const reference of references) {
       if (reference.kind == "agent") {
         const author = await ctx.runQuery(
-          internal.conversationParticipants.private.getParticipantUserOrAgent,
+          internal.conversationParticipants.internalQueries
+            .getParticipantUserOrAgent,
           { participantId: args.message.authorParticipantId },
         );
         await agentReplyToMessage(ctx, {

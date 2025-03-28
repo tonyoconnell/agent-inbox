@@ -2,8 +2,6 @@ import { internal } from "../_generated/api";
 import { isNotNullOrUndefined } from "../../shared/filter";
 import { Id } from "../_generated/dataModel";
 import { ActionCtx, QueryCtx } from "../_generated/server";
-import { pick } from "convex-helpers";
-import { iife } from "../../shared/misc";
 
 export const getMessageHistory = async (
   ctx: ActionCtx,
@@ -15,7 +13,7 @@ export const getMessageHistory = async (
 ) => {
   return await ctx
     .runQuery(
-      internal.conversationMessages.private
+      internal.conversationMessages.internalQueries
         .listMessagesHistoryForAgentGeneration,
       { conversationId: args.conversationId, count: args.count },
     )
@@ -29,4 +27,3 @@ export const getMessageHistory = async (
 export type MessageHistory = Awaited<
   ReturnType<typeof getMessageHistory>
 >[number];
-

@@ -13,11 +13,14 @@ export const sendSystemMessageToConversation = async (
     meta?: any;
   },
 ) =>
-  ctx.runMutation(internal.conversationMessages.private.sendSystemMessage, {
-    conversationId: args.conversationId as Id<"conversations">,
-    content: args.content,
-    meta: args.meta,
-  });
+  ctx.runMutation(
+    internal.conversationMessages.internalMutations.sendSystemMessage,
+    {
+      conversationId: args.conversationId as Id<"conversations">,
+      content: args.content,
+      meta: args.meta,
+    },
+  );
 
 export const getAgentAndEnsureItIsJoinedToConversation = async (
   ctx: ActionCtx,
@@ -27,7 +30,7 @@ export const getAgentAndEnsureItIsJoinedToConversation = async (
   },
 ) => {
   // Get the referenced agent
-  const agent = await ctx.runQuery(internal.agents.private.find, {
+  const agent = await ctx.runQuery(internal.agents.internalQueries.find, {
     agentId: args.agentId,
   });
 
@@ -36,7 +39,8 @@ export const getAgentAndEnsureItIsJoinedToConversation = async (
 
   // Get or create the participant for this agent in the conversation
   const participant = await ctx.runMutation(
-    internal.conversationParticipants.private.addAgentIfNotAlreadyJoined,
+    internal.conversationParticipants.internalMutations
+      .addAgentIfNotAlreadyJoined,
     {
       conversationId: args.conversationId,
       agentId: agent._id,
@@ -48,20 +52,23 @@ export const getAgentAndEnsureItIsJoinedToConversation = async (
 
 export const getTriageAgent = async (ctx: ActionCtx) => {
   const agent = await ctx.runQuery(
-    internal.agents.private.findSystemAgentByKind,
+    internal.agents.internalQueries.findSystemAgentByKind,
     { systemAgentKind: "triage" },
   );
   if (agent) return agent;
-  return await ctx.runMutation(internal.agents.private.createSystemAgent, {
-    systemAgentKind: "triage",
-    name: "System Triage Agent",
-    description: `Triage messages to the correct agent`,
-    personality: `Helpful, concise`,
-    avatarUrl: Agents.createAgentAvatarUrl(`system-triage`),
-    tools: [],
-    lastActiveTime: Date.now(),
-    kind: "system_agent",
-  });
+  return await ctx.runMutation(
+    internal.agents.internalMutations.createSystemAgent,
+    {
+      systemAgentKind: "triage",
+      name: "System Triage Agent",
+      description: `Triage messages to the correct agent`,
+      personality: `Helpful, concise`,
+      avatarUrl: Agents.createAgentAvatarUrl(`system-triage`),
+      tools: [],
+      lastActiveTime: Date.now(),
+      kind: "system_agent",
+    },
+  );
 };
 
 export const getTriageAgentAndEnsureItIsJoinedToConversation = async (
@@ -71,7 +78,7 @@ export const getTriageAgentAndEnsureItIsJoinedToConversation = async (
   const agent = await getTriageAgent(ctx);
 
   const participant = await ctx.runMutation(
-    internal.conversations.private
+    internal.conversations.internalMutations
       .joinTriageAgentToConversationIfNotAlreadyJoined,
     {
       conversationId,
@@ -100,7 +107,7 @@ export const runAgentAIGeneration = async <T>(
 ) => {
   // Set the agent's status to thinking
   await ctx.runMutation(
-    internal.conversationParticipants.private.updateParticipantStatus,
+    internal.conversationParticipants.internalMutations.updateParticipantStatus,
     {
       participantId: args.participant._id,
       status: "thinking",
@@ -119,7 +126,7 @@ export const runAgentAIGeneration = async <T>(
   } finally {
     // No longer thinking
     await ctx.runMutation(
-      internal.conversationParticipants.private.updateParticipantStatus,
+      internal.conversationParticipants.internalMutations.updateParticipantStatus,
       {
         participantId: args.participant._id,
         status: "inactive",

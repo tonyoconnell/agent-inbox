@@ -67,7 +67,7 @@ export const triageMessage = async (
         participant,
         sendMessage: async (text) => {
           await ctx.runMutation(
-            internal.conversationMessages.private.sendFromTriageAgent,
+            internal.conversationMessages.internalMutations.sendFromTriageAgent,
             {
               conversationId: args.conversation._id,
               content: text,
