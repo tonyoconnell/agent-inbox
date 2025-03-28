@@ -18,6 +18,7 @@ import { splitMessageContent } from "../../../../shared/mentions";
 import { ReplyIcon } from "lucide-react";
 import { createMentionString } from "../../../../shared/mentions";
 import { useChatContext } from "./ChatContext";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   message: Doc<"conversationMessages">;
@@ -27,7 +28,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   if (message.kind != "participant")
     throw new Error("Message is not a participant message");
 
-  const { setReplyToMention } = useChatContext();
+  const { setReplyToMention, setShouldFocusInput } = useChatContext();
   const [isHovered, setIsHovered] = React.useState(false);
 
   const participants = useQuery(
@@ -57,6 +58,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
         name: participant.name ?? "Agent",
       });
       setReplyToMention(mentionText + " ");
+      setShouldFocusInput(true);
     }
   };
 
@@ -170,13 +172,15 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
         </div>
 
         {participant?.kind === "agent" && matchingAgent && isHovered && (
-          <button
+          <Button
             onClick={handleReply}
-            className="absolute -right-10 top-2 p-1.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Reply"
+            variant="ghost"
+            size="icon"
+            className="absolute -right-10 top-1/2 -translate-y-1/2 hover:bg-accent rounded-full"
+            aria-label="Reply to agent"
           >
-            <ReplyIcon size={16} />
-          </button>
+            <ReplyIcon className="h-4 w-4" />
+          </Button>
         )}
       </div>
     </div>

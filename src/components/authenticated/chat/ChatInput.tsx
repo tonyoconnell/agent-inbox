@@ -25,7 +25,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   const agents = useQuery(api.agents.public.listMine) ?? [];
   const sendMessage = useMutation(api.conversationMessages.public.sendFromMe);
   const apiError = useApiErrorHandler();
-  const { replyToMention, setReplyToMention } = useChatContext();
+  const {
+    replyToMention,
+    setReplyToMention,
+    shouldFocusInput,
+    setShouldFocusInput,
+  } = useChatContext();
+  const mentionsRef = React.useRef<HTMLDivElement>(null);
 
   // Apply the reply mention when it changes
   React.useEffect(() => {
@@ -34,6 +40,20 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
       setReplyToMention(null); // Clear after applying
     }
   }, [replyToMention, setReplyToMention]);
+
+  // Handle focus when triggered
+  React.useEffect(() => {
+    if (shouldFocusInput && mentionsRef.current) {
+      // Focus the input element inside the mentions wrapper
+      const input =
+        mentionsRef.current.querySelector("textarea") ||
+        mentionsRef.current.querySelector("input");
+      if (input) {
+        input.focus();
+        setShouldFocusInput(false);
+      }
+    }
+  }, [shouldFocusInput, setShouldFocusInput]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +89,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
         onSubmit={handleSubmit}
         className="flex gap-2 bg-card shadow-lg p-2 rounded-lg border border-border"
       >
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0" ref={mentionsRef}>
           <MentionsInput
             value={message}
             onChange={(e) => setMessage(e.target.value)}
