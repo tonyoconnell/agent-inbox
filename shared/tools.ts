@@ -84,6 +84,15 @@ export const toolDefinitions = {
         .describe("Optional from address, defaults to the system default"),
     }),
   },
+  addParticipantToConversation: {
+    name: "addParticipantToConversation",
+    description: "Adds an agent to the current conversation",
+    parameters: z.object({
+      agentId: z
+        .string()
+        .describe("The ID of the agent to add to the conversation"),
+    }),
+  },
 } as const;
 
 export type AgentToolName = keyof typeof toolDefinitions;
@@ -103,6 +112,7 @@ export const alwaysIncludedTools = pick(toolDefinitions, [
   "messageAnotherAgent",
   "noOutput",
   "updateConversationTitle",
+  "addParticipantToConversation",
 ]);
 
 export type AlwaysIncludedToolName = keyof typeof alwaysIncludedTools;

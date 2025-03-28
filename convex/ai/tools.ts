@@ -1,7 +1,7 @@
 "use node";
 import { z } from "zod";
 import { ActionCtx } from "../_generated/server";
-import { internal } from "../_generated/api";
+import { internal, api } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { tool } from "ai";
 import { sendSystemMessageToConversation } from "./utils";
@@ -224,6 +224,43 @@ export const createTools = ({
         console.error("Failed to send email:", error);
         throw new Error(
           `Failed to send email: ${error?.message ?? "Unknown error"}`,
+        );
+      }
+    },
+  }),
+
+  [toolDefinitions.addParticipantToConversation.name]: tool({
+    description: toolDefinitions.addParticipantToConversation.description,
+    parameters: toolDefinitions.addParticipantToConversation.parameters,
+    execute: async ({ agentId }) => {
+      try {
+        await sendSystemMessageToConversation(ctx, {
+          content: `${agent.name} is adding an agent with ID ${agentId} to the conversation`,
+          conversationId: conversation._id,
+          meta: {
+            toolName: "addParticipantToConversation",
+            agentId,
+            agentName: agent.name,
+          },
+        });
+
+        const participant = await ctx.runMutation(
+          internal.conversationParticipants.private.addAgent,
+          {
+            conversationId: conversation._id,
+            agentId: agentId as Id<"agents">,
+          },
+        );
+
+        return {
+          result: "participant_added",
+          participantId: participant,
+          type: "agent",
+        };
+      } catch (error: any) {
+        console.error("Failed to add agent:", error);
+        throw new Error(
+          `Failed to add agent: ${error?.message ?? "Unknown error"}`,
         );
       }
     },
