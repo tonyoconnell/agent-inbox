@@ -117,6 +117,27 @@ export const createTools = ({
     },
   }),
 
+  [toolDefinitions.updateConversationTitle.name]: tool({
+    description: toolDefinitions.updateConversationTitle.description,
+    parameters: toolDefinitions.updateConversationTitle.parameters,
+    execute: async ({ title }) => {
+      await ctx.runMutation(internal.conversations.private.update, {
+        conversationId: conversation._id,
+        title,
+      });
+
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} updated the conversation title to "${title}"`,
+        conversationId: conversation._id,
+      });
+
+      return {
+        result: "title_updated",
+        newTitle: title,
+      };
+    },
+  }),
+
   [toolDefinitions.scheduleTask.name]: tool({
     description: toolDefinitions.scheduleTask.description,
     parameters: toolDefinitions.scheduleTask.parameters,

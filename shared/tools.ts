@@ -63,6 +63,14 @@ export const toolDefinitions = {
         .describe("When to schedule the task for (in seconds from now)"),
     }),
   },
+  updateConversationTitle: {
+    name: "updateConversationTitle",
+    description:
+      "Updates the title of the current conversation to better reflect its content",
+    parameters: z.object({
+      title: z.string().describe("The new title for the conversation"),
+    }),
+  },
 } as const;
 
 export type AgentToolName = keyof typeof toolDefinitions;
@@ -79,6 +87,7 @@ export const alwaysIncludedTools = pick(toolDefinitions, [
   "listAgents",
   "messageAnotherAgent",
   "noOutput",
+  "updateConversationTitle",
 ]);
 
 export type AlwaysIncludedToolName = keyof typeof alwaysIncludedTools;

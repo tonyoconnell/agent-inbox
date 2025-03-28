@@ -2,7 +2,7 @@ import { Doc } from "../_generated/dataModel";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 import { MessageHistory } from "./history";
 
-const referenceAgentInstructions = `You can reference an agent in your output using the following special syntax: 
+const referenceAgentInstructions = `You can reference an agent using the following special syntax: 
 @[AGENT_NAME](agent:AGENT_ID) 
 so for example:
 "Hey @[John](agent:abc123) can you take a look at this?"
@@ -14,6 +14,8 @@ const otherCommonInstructions = `When you are asked to do something at a future 
 If you need more context to answer the question you should respond asking the user or another agent for more information.
 
 You should not use the messageAnotherAgent tool to send a message to yourself.
+
+You should update the conversation title if you notice that the current conversation has evolved to focus on a different topic or if the current title is too generic. For example, if a conversation titled "New Chat" starts focusing on "Project Planning for Q2", you should update the title accordingly.
 `;
 
 const triageInstructions = `You are a helpful agent that triages conversations.
@@ -79,4 +81,3 @@ export const constructTriageInstructions = (args: InstructionsArgs) =>
 
 export const constructAgentReplyInstructions = (args: InstructionsArgs) =>
   `${agentReplyInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
-

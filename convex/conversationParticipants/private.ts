@@ -1,15 +1,7 @@
 import { internalMutation, internalQuery } from "../_generated/server";
 import { v } from "convex/values";
 import * as ConversationParticipants from "./model";
-import {
-  conversationParticipantStatusSchemaValidator,
-  conversationParticipantIdentifierSchemaValidator,
-} from "./schema";
-import {
-  addAgentAndSendJoinMessage,
-  listParticipantsWithJoinedDetails,
-  getParticipant,
-} from "./model";
+import { conversationParticipantIdentifierSchemaValidator } from "./schema";
 
 export const updateParticipantStatus = internalMutation({
   args: {

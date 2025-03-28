@@ -3,9 +3,7 @@ import { internalAction } from "../_generated/server";
 import schema from "../schema";
 import { triageMessage } from "../ai/triageMessage";
 import { doc } from "convex-helpers/validators";
-import * as ConversationMessagesModel from "./model";
 import { agentReplyToMessage } from "../ai/agentReplyToMessage";
-import { v } from "convex/values";
 import { internal } from "../_generated/api";
 import { parseMentionsFromMessageContent } from "../../shared/mentions";
 

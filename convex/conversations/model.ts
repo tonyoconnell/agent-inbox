@@ -71,6 +71,16 @@ export const getMine = async (
   return conversation;
 };
 
+export const update = async (
+  ctx: MutationCtx,
+  {
+    conversationId,
+    title,
+  }: { conversationId: Id<"conversations">; title: string },
+) => {
+  return await ctx.db.patch(conversationId, { title });
+};
+
 export const updateMine = async (
   ctx: MutationCtx,
   {
@@ -79,7 +89,7 @@ export const updateMine = async (
   }: { conversationId: Id<"conversations">; title: string },
 ) => {
   await ensureICanAccessConversation(ctx, { conversationId });
-  return await ctx.db.patch(conversationId, { title });
+  return update(ctx, { conversationId, title });
 };
 
 export const removeMine = async (
@@ -180,7 +190,6 @@ export const joinAgentToConversationIfNotAlreadyJoined = async (
         },
       },
     );
-
 
   if (existingParticipant) return existingParticipant;
 

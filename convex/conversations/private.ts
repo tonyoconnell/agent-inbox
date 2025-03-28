@@ -1,4 +1,8 @@
-import { internalMutation, internalQuery } from "../_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  mutation,
+} from "../_generated/server";
 import { v } from "convex/values";
 import * as Conversations from "./model";
 
@@ -24,3 +28,11 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = internalMutation(
     },
   },
 );
+
+export const update = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => Conversations.update(ctx, args),
+});
