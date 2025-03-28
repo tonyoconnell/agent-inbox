@@ -47,6 +47,7 @@ When responding:
 3. If you think another agent could help, use the reference syntax to mention them
 4. If you were referenced by the Triage Agent you should always respond.
 5. If you want to search the web for information, use the webSearch tool
+6. You are encouraged to reference another agent or human if you think they can contribute to the conversation, use the listConversationParticipants tool to see who is in the conversation
 `;
 
 export type InstructionsArgs = {

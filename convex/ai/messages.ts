@@ -22,7 +22,7 @@ export const gatherMessages = async (
   const messageHistory = await getMessageHistory(ctx, {
     conversationId: conversation._id,
     messageId: message._id,
-    count: 20,
+    count: 30,
   });
 
   console.log(`messageHistory:`, messageHistory);

@@ -12,7 +12,6 @@ import {
   toolDefinitions,
   AgentToolName,
   alwaysIncludedTools,
-  AlwaysIncludedToolName,
 } from "../../shared/tools";
 
 const exa = new Exa(process.env.EXA_API_KEY);
@@ -49,15 +48,19 @@ export const createTools = ({
         if (p.agent)
           return {
             kind: "agent",
-            agentId: p.agent._id,
-            name: p.agent.name,
+            ...pick(p.agent, [
+              "_id",
+              "name",
+              "description",
+              "personality",
+              "tools",
+            ]),
           };
 
         if (p.user)
           return {
             kind: "user",
-            userId: p.user._id,
-            name: p.user.name,
+            ...pick(p.user, ["_id", "name", "email"]),
           };
 
         return null;
