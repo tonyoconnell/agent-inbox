@@ -12,15 +12,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AvailableToolName } from "shared/tools";
-import { toolDefinitions } from "../../../../shared/tools";
+import { UserChoosableToolName, userChoosableToolDefinitions, toolDefinitions, AgentToolName } from "../../../../shared/tools";
 
 interface AgentToolsProps {
   agentId: Id<"agents">;
   name: string;
   description: string;
   personality: string;
-  tools: AvailableToolName[];
+  tools: AgentToolName[];
 }
 
 export const AgentTools: React.FC<AgentToolsProps> = ({
@@ -33,7 +32,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
   const updateAgent = useMutation(api.agents.public.updateMine);
   const [isEditing, setIsEditing] = React.useState(false);
 
-  const handleRemoveTool = async (toolToRemove: AvailableToolName) => {
+  const handleRemoveTool = async (toolToRemove: AgentToolName) => {
     await updateAgent({
       agentId,
       name,
@@ -43,7 +42,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
     });
   };
 
-  const handleAddTool = async (toolToAdd: AvailableToolName) => {
+  const handleAddTool = async (toolToAdd: UserChoosableToolName) => {
     if (tools.includes(toolToAdd)) return;
     await updateAgent({
       agentId,
@@ -55,9 +54,15 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
   };
 
   // Get available tools that aren't already added
-  const availableTools = Object.entries(toolDefinitions).filter(
-    ([key]) => !tools.includes(key as AvailableToolName),
-  );
+  const availableTools: Array<[UserChoosableToolName, typeof toolDefinitions[UserChoosableToolName]]> = [];
+  
+  // Only include tools from userChoosableToolDefinitions
+  Object.keys(userChoosableToolDefinitions).forEach((key) => {
+    const toolKey = key as UserChoosableToolName;
+    if (!tools.includes(toolKey)) {
+      availableTools.push([toolKey, toolDefinitions[toolKey]]);
+    }
+  });
 
   return (
     <Card className="p-6">
@@ -100,10 +105,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {availableTools.map(([key, tool]) => (
-                <DropdownMenuItem
-                  key={key}
-                  onClick={() => handleAddTool(key as AvailableToolName)}
-                >
+                <DropdownMenuItem key={key} onClick={() => handleAddTool(key)}>
                   <div>
                     <div className="font-medium">{tool.name}</div>
                     <div className="text-xs text-muted-foreground">

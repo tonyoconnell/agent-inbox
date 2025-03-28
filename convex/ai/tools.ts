@@ -8,7 +8,7 @@ import { sendSystemMessageToConversation } from "./utils";
 import { openai } from "@ai-sdk/openai";
 import Exa from "exa-js";
 import { pick } from "convex-helpers";
-import { toolDefinitions } from "../../shared/tools";
+import { toolDefinitions, AgentToolName } from "../../shared/tools";
 
 const exa = new Exa(process.env.EXA_API_KEY);
 
@@ -139,3 +139,22 @@ export const createTools = ({
     },
   }),
 });
+
+export const createToolsForAgent = ({
+  ctx,
+  agent,
+  conversation,
+  agentParticipant,
+}: {
+  ctx: ActionCtx;
+  agent: Doc<"agents">;
+  agentParticipant: Doc<"conversationParticipants">;
+  conversation: Doc<"conversations">;
+}) => {
+  const allTools = createTools({ ctx, agent, conversation, agentParticipant });
+  // Filter out any invalid tool names and cast to AvailableToolName
+  const validTools = agent.tools.filter((tool): tool is AgentToolName =>
+    Object.keys(toolDefinitions).includes(tool),
+  );
+  return pick(allTools, validTools);
+};

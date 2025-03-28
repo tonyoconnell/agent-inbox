@@ -6,9 +6,7 @@ const common = {
   description: v.string(),
   personality: v.string(),
   avatarUrl: v.string(),
-  tools: v.array(
-    v.union(...Object.keys(toolDefinitions).map((key) => v.literal(key))),
-  ),
+  tools: v.array(v.string()),
   lastActiveTime: v.number(),
 };
 

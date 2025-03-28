@@ -4,7 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
-import { createTools } from "./tools";
+import { createToolsForAgent } from "./tools";
 import { generateText, CoreMessage } from "ai";
 import {
   constructAgentReplyInstructions,
@@ -45,7 +45,7 @@ export const agentReplyToMessage = async (
   try {
     const result = await generateText({
       model: openai("gpt-4o-mini"),
-      tools: createTools({
+      tools: createToolsForAgent({
         ctx,
         agent,
         agentParticipant: participant,

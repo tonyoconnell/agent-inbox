@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Id } from "../convex/_generated/dataModel";
+import { pick } from "convex-helpers";
 
 export const toolDefinitions = {
   listConversationParticipants: {
@@ -64,4 +65,11 @@ export const toolDefinitions = {
   },
 } as const;
 
-export type AvailableToolName = keyof typeof toolDefinitions;
+export type AgentToolName = keyof typeof toolDefinitions;
+
+// Define the subset of tools that users can choose from
+export const userChoosableToolDefinitions = pick(toolDefinitions, [
+  "webSearch",
+]);
+
+export type UserChoosableToolName = keyof typeof userChoosableToolDefinitions;

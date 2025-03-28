@@ -1,10 +1,10 @@
-import { AvailableToolName } from "../../shared/tools";
+import { AgentToolName } from "../../shared/tools";
 
 export type PredefinedAgent = {
   name: string;
   description: string;
   personality: string;
-  tools: AvailableToolName[];
+  tools: AgentToolName[];
 };
 
 export const predefinedAgents: PredefinedAgent[] = [

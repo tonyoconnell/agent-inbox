@@ -3,7 +3,7 @@ import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { openai } from "@ai-sdk/openai";
-import { createTools } from "./tools";
+import { createToolsForAgent } from "./tools";
 import { omit, pick } from "convex-helpers";
 import { CoreMessage, generateText } from "ai";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
@@ -36,19 +36,14 @@ export const triageMessage = async (
   );
 
   try {
-    const tools = pick(
-      createTools({
+    const result = await generateText({
+      model: openai("gpt-4o-mini"),
+      tools: createToolsForAgent({
         ctx,
         agent,
         agentParticipant: participant,
         conversation: args.conversation,
       }),
-      ["listAgents", "listConversationParticipants"],
-    );
-
-    const result = await generateText({
-      model: openai("gpt-4o-mini"),
-      tools,
       maxSteps: 5,
       messages: await gatherMessages(ctx, {
         systemMessage: constructTriageInstructions({
