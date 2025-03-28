@@ -44,7 +44,7 @@ export const ConversationList = () => {
               conversation._id === currentConversationId ? "bg-accent" : ""
             }`}
           >
-            <div className="font-medium text-primary-foreground">
+            <div className="font-medium text-primary-foreground truncate">
               {conversation.title}
             </div>
             <div className="text-sm text-muted-foreground/80 truncate">
