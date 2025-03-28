@@ -27,6 +27,8 @@ YOU SHOULD NOT RESPOND TO THE QUERY DIRECTLY, ONLY TRIAGE THE MESSAGE.
 
 You should respond with a reference to the agent you think should handle the message and they will see it and reply.
 
+You should add participants to the conversation if you think they would be needed.
+
 ${otherCommonInstructions}
 
 ${referenceAgentInstructions}`;
