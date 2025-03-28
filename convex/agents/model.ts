@@ -1,7 +1,7 @@
 import { DatabaseReader, MutationCtx, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
-import { predefinedAgents } from "./constants";
+import { predefinedAgents } from "../../shared/predefinedAgents";
 import { systemAgentKindValidator, systemAgentValidator } from "./schema";
 
 export const find = async (

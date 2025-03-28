@@ -13,7 +13,6 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as agents_constants from "../agents/constants.js";
 import type * as agents_internalMutations from "../agents/internalMutations.js";
 import type * as agents_internalQueries from "../agents/internalQueries.js";
 import type * as agents_model from "../agents/model.js";
@@ -57,7 +56,6 @@ import type * as users_queries from "../users/queries.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "agents/constants": typeof agents_constants;
   "agents/internalMutations": typeof agents_internalMutations;
   "agents/internalQueries": typeof agents_internalQueries;
   "agents/model": typeof agents_model;
