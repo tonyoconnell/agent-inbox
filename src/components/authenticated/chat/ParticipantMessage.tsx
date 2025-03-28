@@ -32,7 +32,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
   const participants = useQuery(
-    api.conversationParticipants.public.listDetailsForMe,
+    api.conversationParticipants.queries.listDetailsForMe,
     {
       conversationId: message.conversationId,
     },
@@ -43,7 +43,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   );
 
   // Get all agents to find the matching one for this participant
-  const agents = useQuery(api.agents.public.listMine);
+  const agents = useQuery(api.agents.queries.listMine);
   const matchingAgent =
     participant?.kind === "agent" &&
     agents?.find((agent) => agent.name === participant.name);

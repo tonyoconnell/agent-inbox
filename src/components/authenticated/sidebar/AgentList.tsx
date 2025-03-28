@@ -18,8 +18,8 @@ type Agent = {
 };
 
 export const AgentList = () => {
-  const agents = useQuery(api.agents.public.listMine);
-  const createAgent = useMutation(api.agents.public.create);
+  const agents = useQuery(api.agents.queries.listMine);
+  const createAgent = useMutation(api.agents.mutations.create);
   const onApiError = useApiErrorHandler();
   const currentAgentId = useCurrentAgentId();
 

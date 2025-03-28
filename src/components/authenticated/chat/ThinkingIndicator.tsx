@@ -13,7 +13,7 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
   conversationId,
 }) => {
   const thinkingParticipants = useQuery(
-    api.conversationParticipants.public.listThinkingParticipants,
+    api.conversationParticipants.queries.listThinkingParticipants,
     {
       conversationId,
     },

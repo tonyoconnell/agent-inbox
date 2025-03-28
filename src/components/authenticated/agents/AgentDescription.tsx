@@ -25,7 +25,7 @@ export const AgentDescription: React.FC<AgentDescriptionProps> = ({
   personality,
   tools,
 }) => {
-  const updateAgent = useMutation(api.agents.public.updateMine);
+  const updateAgent = useMutation(api.agents.mutations.updateMine);
   const descriptionEditRef = React.useRef<EditableTextHandle>(null);
 
   return (

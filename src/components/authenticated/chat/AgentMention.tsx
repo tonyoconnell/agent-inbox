@@ -19,7 +19,7 @@ export const AgentMention: React.FC<AgentMentionProps> = ({
   agentId,
   isInUserMessage,
 }) => {
-  const agent = useQuery(api.agents.public.findMention, { agentId });
+  const agent = useQuery(api.agents.queries.findMention, { agentId });
   if (!agent) return null;
 
   const handleClick = () => {

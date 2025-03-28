@@ -7,7 +7,6 @@ import { Skeleton } from "../../ui/skeleton";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { listDetailsForMe } from "../../../../convex/conversationParticipants/public";
 import { ChatProvider } from "./ChatContext";
 
 interface ChatAreaProps {
@@ -16,10 +15,10 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  const conversation = useQuery(api.conversations.public.findMine, {
+  const conversation = useQuery(api.conversations.queries.findMine, {
     conversationId,
   });
-  const messages = useQuery(api.conversationMessages.public.listForMe, {
+  const messages = useQuery(api.conversationMessages.queries.listForMe, {
     conversationId,
   });
 

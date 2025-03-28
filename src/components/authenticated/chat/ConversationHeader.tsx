@@ -25,8 +25,12 @@ interface ConversationHeaderProps {
 export const ConversationHeader: React.FC<ConversationHeaderProps> = ({
   conversation,
 }) => {
-  const updateConversation = useMutation(api.conversations.public.updateMine);
-  const deleteConversation = useMutation(api.conversations.public.removeMine);
+  const updateConversation = useMutation(
+    api.conversations.mutations.updateMine,
+  );
+  const deleteConversation = useMutation(
+    api.conversations.mutations.removeMine,
+  );
   const [isOpen, setIsOpen] = React.useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = React.useState(false);
   const [newTitle, setNewTitle] = React.useState(conversation?.title ?? "");

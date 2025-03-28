@@ -30,14 +30,14 @@ export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
   trigger,
 }) => {
   const participants = useQuery(
-    api.conversationParticipants.public.listDetailsForMe,
+    api.conversationParticipants.queries.listDetailsForMe,
     {
       conversationId: conversation._id,
     },
   );
 
   const removeParticipant = useMutation(
-    api.conversationParticipants.public.removeParticipant,
+    api.conversationParticipants.mutations.removeParticipant,
   );
 
   const handleRemove = async (

@@ -16,10 +16,10 @@ import { Input } from "@/components/ui/input";
 import { AgentToolName } from "../../../../shared/tools";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
-  const agent = useQuery(api.agents.public.findMine, { agentId });
-  const deleteAgent = useMutation(api.agents.public.removeMine);
-  const shuffleAvatar = useMutation(api.agents.public.shuffleAvatar);
-  const updateAgent = useMutation(api.agents.public.updateMine);
+  const agent = useQuery(api.agents.queries.findMine, { agentId });
+  const deleteAgent = useMutation(api.agents.mutations.removeMine);
+  const shuffleAvatar = useMutation(api.agents.mutations.shuffleAvatar);
+  const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
   const [isEditingName, setIsEditingName] = React.useState(false);
   const [editedName, setEditedName] = React.useState("");

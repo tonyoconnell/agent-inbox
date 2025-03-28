@@ -22,8 +22,10 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   const [message, setMessage] = React.useState("");
-  const agents = useQuery(api.agents.public.listMine) ?? [];
-  const sendMessage = useMutation(api.conversationMessages.public.sendFromMe);
+  const agents = useQuery(api.agents.queries.listMine) ?? [];
+  const sendMessage = useMutation(
+    api.conversationMessages.mutations.sendFromMe,
+  );
   const apiError = useApiErrorHandler();
   const {
     replyToMention,

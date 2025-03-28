@@ -17,7 +17,7 @@ export const UserMention: React.FC<UserMentionProps> = ({
   userId,
   isInUserMessage,
 }) => {
-  const user = useQuery(api.users.public.findMention, { userId });
+  const user = useQuery(api.users.queries.findMention, { userId });
 
 
 

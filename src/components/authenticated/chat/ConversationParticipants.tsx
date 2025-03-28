@@ -13,7 +13,7 @@ export const ConversationParticipants: React.FC<
   ConversationParticipantsProps
 > = ({ conversation }) => {
   const avatars = useQuery(
-    api.conversationParticipants.public.listAvatars,
+    api.conversationParticipants.queries.listAvatars,
     conversation
       ? {
           conversationId: conversation._id,

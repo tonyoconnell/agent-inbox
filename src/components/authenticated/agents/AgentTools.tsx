@@ -12,7 +12,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserChoosableToolName, userChoosableToolDefinitions, toolDefinitions, AgentToolName } from "../../../../shared/tools";
+import {
+  UserChoosableToolName,
+  userChoosableToolDefinitions,
+  toolDefinitions,
+  AgentToolName,
+} from "../../../../shared/tools";
 
 interface AgentToolsProps {
   agentId: Id<"agents">;
@@ -29,7 +34,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
   personality,
   tools,
 }) => {
-  const updateAgent = useMutation(api.agents.public.updateMine);
+  const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [isEditing, setIsEditing] = React.useState(false);
 
   const handleRemoveTool = async (toolToRemove: AgentToolName) => {
@@ -54,8 +59,10 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
   };
 
   // Get available tools that aren't already added
-  const availableTools: Array<[UserChoosableToolName, typeof toolDefinitions[UserChoosableToolName]]> = [];
-  
+  const availableTools: Array<
+    [UserChoosableToolName, (typeof toolDefinitions)[UserChoosableToolName]]
+  > = [];
+
   // Only include tools from userChoosableToolDefinitions
   Object.keys(userChoosableToolDefinitions).forEach((key) => {
     const toolKey = key as UserChoosableToolName;
