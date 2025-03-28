@@ -61,20 +61,6 @@ export const findParticipantByConversationIdAndIdentifier = internalQuery({
   },
 });
 
-export const addAgent = internalMutation({
-  args: {
-    conversationId: v.id("conversations"),
-    agentId: v.id("agents"),
-  },
-  returns: v.id("conversationParticipants"),
-  handler: async (ctx, args) => {
-    return ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
-      conversationId: args.conversationId,
-      agentId: args.agentId,
-    });
-  },
-});
-
 export const addAgentIfNotAlreadyJoined = internalMutation({
   args: {
     conversationId: v.id("conversations"),

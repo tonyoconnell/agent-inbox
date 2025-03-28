@@ -47,7 +47,7 @@ export const triageMessage = async (
           agentParticipant: participant,
           conversation: args.conversation,
         }),
-        maxSteps: 5,
+        maxSteps: 20,
         messages: await gatherMessages(ctx, {
           systemMessage: constructTriageInstructions({
             conversation: args.conversation,

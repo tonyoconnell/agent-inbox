@@ -14,6 +14,7 @@ import {
   AgentToolName,
   alwaysIncludedTools,
 } from "../../shared/tools";
+import { addAgentIfNotAlreadyJoined } from "../conversationParticipants/private";
 
 const exa = new Exa(process.env.EXA_API_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -245,7 +246,7 @@ export const createTools = ({
         });
 
         const participant = await ctx.runMutation(
-          internal.conversationParticipants.private.addAgent,
+          internal.conversationParticipants.private.addAgentIfNotAlreadyJoined,
           {
             conversationId: conversation._id,
             agentId: agentId as Id<"agents">,
