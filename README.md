@@ -1,5 +1,23 @@
 # Agent Inbox
 
+A playground to experimenting with agentic behaviours on Convex.
+
+## Setup
+
+1. Install dependencies: `bun install`
+
+2. Start the dev server: `bun dev` this will step you though getting up a new convex project
+
+3. Provide the API tokens needed: 
++ OPENAI_API_KEY - for AI models - `bun convex env set EXA_API_KEY {YOUR_KEY}`
++ EXA_API_KEY - for web search tooling - `bun convex env set EXA_API_KEY {YOUR_KEY}`
++ RESEND_API_KEY - for emailing tooling - `bun convex env set RESEND_API_KEY {YOUR_KEY}`
+
+4. Setup convex auth tokens: `bunx @convex-dev/auth`
+
+5. Setup GithubOauth: https://labs.convex.dev/auth/config/oauth/github
+
+
 ## Initial Idea
 
 The idea is that we are building an agentic inbox application that uses Convex and Mastra.AI
@@ -17,13 +35,3 @@ When an agent is "atted" (@) it can go off on a "Task" this "Task" might involve
 The user can create new agents at any time. Each agent can be given different personality prompts and tools they have access to so that they behave differntly. 
 
 All agents can be viewed from an agent gallery modal.
-
-## How the Bots Work
-
-Whenever a user posts a message to a conversation I want the function to also schedule a convex action to run that will invoke the "triage bot". 
-
-This triage bot will eventually run an LLM that will look at the message and work out what to do. 
-
-For now its important that you dont attempt to use an LLM and instead you should just fake calling one and instead do a time delay or something. 
-
-What the triage bot will do will look at the message and decide a plan on action. It will look at what agents are conversation participants and what tools and personality and description they have then it it will then reply by creating a message into the conversation and will reference one of those bots. 
