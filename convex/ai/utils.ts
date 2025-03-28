@@ -1,7 +1,9 @@
 import { internal } from "../_generated/api";
-import { Id } from "../_generated/dataModel";
+import { Doc, Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
+import { generateText } from "ai";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 
 export const sendSystemMessageToConversation = async (
   ctx: ActionCtx,
@@ -80,4 +82,95 @@ export const getTriageAgentAndEnsureItIsJoinedToConversation = async (
     );
 
   return { agent, participant };
+};
+
+/**
+ * Generic function to handle AI generation with consistent status management
+ */
+export const runAgentAIGeneration = async <T>(
+  ctx: ActionCtx,
+  args: {
+    agent: Doc<"agents">;
+    participant: Doc<"conversationParticipants"> & { kind: "agent" };
+    conversation: Doc<"conversations">;
+    generateAIResponse: () => Promise<T>;
+  },
+) => {
+  // Set the agent's status to thinking
+  await ctx.runMutation(
+    internal.conversationParticipants.private.updateParticipantStatus,
+    {
+      participantId: args.participant._id,
+      status: "thinking",
+    },
+  );
+
+  try {
+    return await args.generateAIResponse();
+  } catch (error: unknown) {
+    await handleAgentError(ctx, {
+      error,
+      conversationId: args.conversation._id,
+      errorContext: "responding to message",
+    });
+    return null;
+  } finally {
+    // No longer thinking
+    await ctx.runMutation(
+      internal.conversationParticipants.private.updateParticipantStatus,
+      {
+        participantId: args.participant._id,
+        status: "inactive",
+      },
+    );
+  }
+};
+
+/**
+ * Handles agent errors with a consistent approach
+ */
+export const handleAgentError = async (
+  ctx: ActionCtx,
+  args: {
+    error: unknown;
+    conversationId: Id<"conversations">;
+    errorContext: string;
+  },
+) => {
+  console.error(`Error while ${args.errorContext}:`, args.error);
+
+  // Send error message to conversation
+  await sendSystemMessageToConversation(ctx, {
+    conversationId: args.conversationId,
+    content: `Error while ${args.errorContext}: ${args.error instanceof Error ? args.error.message : "Unknown error"}`,
+  });
+};
+
+/**
+ * Process AI result and handle noOp cases
+ */
+export const processAgentAIResult = async (
+  ctx: ActionCtx,
+  args: {
+    result: { text: string; toolCalls: Array<{ toolName: string; args: any }> };
+    agent: Doc<"agents">;
+    conversation: Doc<"conversations">;
+    participant: Doc<"conversationParticipants"> & { kind: "agent" };
+    sendMessage: (text: string) => Promise<void>;
+  },
+) => {
+  console.log(`Agent result:`, args.result);
+  console.log(`Tool Calls:`, args.result.toolCalls);
+
+  if (args.result.text !== "") {
+    await args.sendMessage(args.result.text);
+  } else {
+    const noOp = args.result.toolCalls.find((t) => t.toolName === "noOutput");
+    if (noOp) {
+      await sendSystemMessageToConversation(ctx, {
+        conversationId: args.conversation._id,
+        content: `Agent ${args.agent.name} decided not to respond to the message because: "${noOp.args.reasoning}"`,
+      });
+    }
+  }
 };

@@ -4,10 +4,14 @@ import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { openai } from "@ai-sdk/openai";
 import { createToolsForAgent } from "./tools";
-import { CoreMessage, generateText } from "ai";
+import { generateText } from "ai";
 import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 import { constructTriageInstructions } from "./instructions";
-import { getTriageAgentAndEnsureItIsJoinedToConversation } from "./utils";
+import {
+  getTriageAgentAndEnsureItIsJoinedToConversation,
+  runAgentAIGeneration,
+  processAgentAIResult,
+} from "./utils";
 import { gatherMessages } from "./messages";
 import { omit } from "convex-helpers";
 
@@ -25,69 +29,60 @@ export const triageMessage = async (
       args.conversation._id,
     );
 
-  // Set the triage agent's status to thinking
-  await ctx.runMutation(
-    internal.conversationParticipants.private.updateParticipantStatus,
-    {
-      participantId: participant._id,
-      status: "thinking",
-    },
-  );
+  if (participant.kind !== "agent") {
+    throw new Error(
+      `Participant of id '${participant._id}' is not an agent, but is of kind '${participant.kind}'`,
+    );
+  }
 
-  try {
-    const result = await generateText({
-      model: openai("gpt-4o-mini"),
-      tools: omit(
-        createToolsForAgent({
-          ctx,
-          agent,
-          agentParticipant: participant,
-          conversation: args.conversation,
-        }),
-        ["messageAnotherAgent"], // I want the triage agent to reply to the text rather than use the tool
-      ),
-      maxSteps: 5,
-      messages: await gatherMessages(ctx, {
-        systemMessage: constructTriageInstructions({
+  await runAgentAIGeneration(ctx, {
+    agent,
+    participant,
+    conversation: args.conversation,
+    generateAIResponse: async () => {
+      const result = await generateText({
+        model: openai("gpt-4o-mini"),
+        tools: omit(
+          createToolsForAgent({
+            ctx,
+            agent,
+            agentParticipant: participant,
+            conversation: args.conversation,
+          }),
+          ["messageAnotherAgent"], // I want the triage agent to reply to the text rather than use the tool
+        ),
+        maxSteps: 5,
+        messages: await gatherMessages(ctx, {
+          systemMessage: constructTriageInstructions({
+            conversation: args.conversation,
+            message: args.message,
+            messageAuthor: args.messageAuthor,
+            agent,
+            participant,
+          }),
           conversation: args.conversation,
           message: args.message,
           messageAuthor: args.messageAuthor,
-          agent,
-          participant,
         }),
+      });
+
+      await processAgentAIResult(ctx, {
+        result,
+        agent,
         conversation: args.conversation,
-        message: args.message,
-        messageAuthor: args.messageAuthor,
-      }),
-    });
+        participant,
+        sendMessage: async (text) => {
+          await ctx.runMutation(
+            internal.conversationMessages.private.sendFromTriageAgent,
+            {
+              conversationId: args.conversation._id,
+              content: text,
+            },
+          );
+        },
+      });
 
-    console.log(`Triage agent result:`, result);
-
-    await ctx.runMutation(
-      internal.conversationMessages.private.sendFromTriageAgent,
-      {
-        conversationId: args.conversation._id,
-        content: result.text,
-      },
-    );
-  } catch (error) {
-    console.error("When triaging message:", error);
-    // Send error message to conversation
-    await ctx.runMutation(
-      internal.conversationMessages.private.sendSystemMessage,
-      {
-        conversationId: args.conversation._id,
-        content: `Error occured while triaging message: ${error instanceof Error ? error.message : "Unknown error"}`,
-      },
-    );
-  } finally {
-    // No longer thinking
-    await ctx.runMutation(
-      internal.conversationParticipants.private.updateParticipantStatus,
-      {
-        participantId: participant._id,
-        status: "inactive",
-      },
-    );
-  }
+      return result;
+    },
+  });
 };

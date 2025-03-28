@@ -144,7 +144,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <div className="relative flex-1 max-w-[70%]">
+      <div className="relative max-w-[70%]">
         <div
           className={`rounded-lg p-3 ${
             participant?.kind === "user"
