@@ -12,6 +12,8 @@ A referenced agent will then pick that up later. They will be able to see the me
 const otherCommonInstructions = `When you are asked to do something at a future date you should use the scheduleTask tool and NOT do it immediately.
 
 If you need more context to answer the question you should respond asking the user or another agent for more information.
+
+You should not use the messageAnotherAgent tool to send a message to yourself.
 `;
 
 const triageInstructions = `You are a helpful agent that triages conversations.
@@ -41,8 +43,6 @@ You should look at the supplied message history for added context that might be 
 You should respond with a reference to another agent if asked or if you think the other agent could help.
 
 If there is nothing for you to particularly do, use the noOutput tool. For example if you were referenced by another agent but your output would not be useful to the user. If the user directly asked you a question, you should respond.
-
-
 `;
 
 export type InstructionsArgs = {

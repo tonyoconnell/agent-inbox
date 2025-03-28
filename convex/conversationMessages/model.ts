@@ -101,7 +101,7 @@ export const listMessages = async (
   db: DatabaseReader,
   {
     conversationId,
-    limit = 50,
+    limit = 100,
     kind,
   }: {
     conversationId: Id<"conversations">;
@@ -115,8 +115,9 @@ export const listMessages = async (
       .withIndex("by_conversationId", (q) =>
         q.eq("conversationId", conversationId),
       )
-      .order("asc")
-      .take(limit);
+      .order("desc")
+      .take(limit)
+      .then((messages) => messages.reverse());
   }
 
   return await db
@@ -124,8 +125,9 @@ export const listMessages = async (
     .withIndex("by_conversationId", (q) =>
       q.eq("conversationId", conversationId),
     )
-    .order("asc")
-    .take(limit);
+    .order("desc")
+    .take(limit)
+    .then((messages) => messages.reverse());
 };
 
 // export const listMessagesAndJoinAuthorDetails = async (
