@@ -53,10 +53,8 @@ export const agentReplyToMessage = async (
         messages: await gatherMessages(ctx, {
           systemMessage: constructAgentReplyInstructions({
             conversation: args.conversation,
-            message: args.message,
             messageAuthor: args.messageAuthor,
             agent,
-            participant,
           }),
           conversation: args.conversation,
           message: args.message,

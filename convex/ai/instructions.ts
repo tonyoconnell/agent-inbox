@@ -51,19 +51,15 @@ When responding:
 `;
 
 export type InstructionsArgs = {
-  message: Doc<"conversationMessages">;
   messageAuthor: ParticipantUserOrAgent;
   conversation: Doc<"conversations">;
   agent: Doc<"agents">;
-  participant: Doc<"conversationParticipants">;
 };
 
 export const constructAdditionalInstructionContext = ({
   conversation,
-  message,
   messageAuthor,
   agent,
-  participant,
 }: InstructionsArgs) => `Here is some extra info about you the agent:
 ${JSON.stringify(agent, null, 2)}
 

@@ -51,10 +51,8 @@ export const triageMessage = async (
         messages: await gatherMessages(ctx, {
           systemMessage: constructTriageInstructions({
             conversation: args.conversation,
-            message: args.message,
             messageAuthor: args.messageAuthor,
             agent,
-            participant,
           }),
           conversation: args.conversation,
           message: args.message,
