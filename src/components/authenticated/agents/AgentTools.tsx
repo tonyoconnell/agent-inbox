@@ -12,7 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AVAILABLE_TOOLS, AvailableToolName } from "../../../../shared/misc";
+import { AvailableToolName } from "shared/tools";
+import { toolDefinitions } from "../../../../shared/tools";
 
 interface AgentToolsProps {
   agentId: Id<"agents">;
@@ -54,7 +55,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
   };
 
   // Get available tools that aren't already added
-  const availableTools = Object.entries(AVAILABLE_TOOLS).filter(
+  const availableTools = Object.entries(toolDefinitions).filter(
     ([key]) => !tools.includes(key as AvailableToolName),
   );
 

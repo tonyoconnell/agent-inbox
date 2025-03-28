@@ -3,7 +3,7 @@ import { v } from "convex/values";
 import * as Agents from "./model";
 import { pick } from "convex-helpers";
 import { Id } from "../_generated/dataModel";
-import { AvailableToolName, AVAILABLE_TOOLS } from "../../shared/misc";
+import { toolDefinitions } from "../../shared/tools";
 
 export const create = mutation({
   args: {},
@@ -36,7 +36,7 @@ export const updateMine = mutation({
     description: v.string(),
     personality: v.string(),
     tools: v.array(
-      v.union(...Object.keys(AVAILABLE_TOOLS).map((key) => v.literal(key))),
+      v.union(...Object.keys(toolDefinitions).map((key) => v.literal(key))),
     ),
   },
   handler: async (ctx, args) => {

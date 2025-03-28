@@ -8,7 +8,7 @@ import { sendSystemMessageToConversation } from "./utils";
 import { openai } from "@ai-sdk/openai";
 import Exa from "exa-js";
 import { pick } from "convex-helpers";
-import { AVAILABLE_TOOLS } from "../../shared/misc";
+import { toolDefinitions } from "../../shared/tools";
 
 const exa = new Exa(process.env.EXA_API_KEY);
 
@@ -23,8 +23,8 @@ export const createTools = ({
   agentParticipant: Doc<"conversationParticipants">;
   conversation: Doc<"conversations">;
 }) => ({
-  [AVAILABLE_TOOLS.listConversationParticipants.name]: tool({
-    description: AVAILABLE_TOOLS.listConversationParticipants.description,
+  [toolDefinitions.listConversationParticipants.name]: tool({
+    description: toolDefinitions.listConversationParticipants.description,
     parameters: z.object({
       conversationId: z.string(),
     }),
@@ -62,8 +62,8 @@ export const createTools = ({
     },
   }),
 
-  [AVAILABLE_TOOLS.listAgents.name]: tool({
-    description: AVAILABLE_TOOLS.listAgents.description,
+  [toolDefinitions.listAgents.name]: tool({
+    description: toolDefinitions.listAgents.description,
     parameters: z.object({
       userId: z.string(),
     }),
@@ -81,8 +81,8 @@ export const createTools = ({
     },
   }),
 
-  [AVAILABLE_TOOLS.messageAnotherAgent.name]: tool({
-    description: AVAILABLE_TOOLS.messageAnotherAgent.description,
+  [toolDefinitions.messageAnotherAgent.name]: tool({
+    description: toolDefinitions.messageAnotherAgent.description,
     parameters: z.object({
       target: z.object({
         agentId: z.string(),
@@ -103,15 +103,15 @@ export const createTools = ({
     },
   }),
 
-  [AVAILABLE_TOOLS.noOutput.name]: tool({
-    description: AVAILABLE_TOOLS.noOutput.description,
+  [toolDefinitions.noOutput.name]: tool({
+    description: toolDefinitions.noOutput.description,
     parameters: z.object({
       reasoning: z.string(),
     }),
   }),
 
-  [AVAILABLE_TOOLS.webSearch.name]: tool({
-    description: AVAILABLE_TOOLS.webSearch.description,
+  [toolDefinitions.webSearch.name]: tool({
+    description: toolDefinitions.webSearch.description,
     parameters: z.object({
       query: z.string(),
     }),
@@ -126,8 +126,8 @@ export const createTools = ({
     },
   }),
 
-  [AVAILABLE_TOOLS.scheduleTask.name]: tool({
-    description: AVAILABLE_TOOLS.scheduleTask.description,
+  [toolDefinitions.scheduleTask.name]: tool({
+    description: toolDefinitions.scheduleTask.description,
     parameters: z.object({
       target: z.object({
         agentId: z.string(),

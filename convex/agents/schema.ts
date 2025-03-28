@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { AvailableToolName, AVAILABLE_TOOLS } from "../../shared/misc";
+import { toolDefinitions } from "../../shared/tools";
 
 const common = {
   name: v.string(),
@@ -7,7 +7,7 @@ const common = {
   personality: v.string(),
   avatarUrl: v.string(),
   tools: v.array(
-    v.union(...Object.keys(AVAILABLE_TOOLS).map((key) => v.literal(key))),
+    v.union(...Object.keys(toolDefinitions).map((key) => v.literal(key))),
   ),
   lastActiveTime: v.number(),
 };

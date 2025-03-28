@@ -1,4 +1,4 @@
-import { AvailableToolName } from "../../shared/misc";
+import { AvailableToolName } from "../../shared/tools";
 
 export type PredefinedAgent = {
   name: string;
