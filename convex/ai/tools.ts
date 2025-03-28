@@ -25,9 +25,7 @@ export const createTools = ({
 }) => ({
   [toolDefinitions.listConversationParticipants.name]: tool({
     description: toolDefinitions.listConversationParticipants.description,
-    parameters: z.object({
-      conversationId: z.string(),
-    }),
+    parameters: toolDefinitions.listConversationParticipants.parameters,
     execute: async ({ conversationId }) => {
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
@@ -64,9 +62,7 @@ export const createTools = ({
 
   [toolDefinitions.listAgents.name]: tool({
     description: toolDefinitions.listAgents.description,
-    parameters: z.object({
-      userId: z.string(),
-    }),
+    parameters: toolDefinitions.listAgents.parameters,
     execute: async ({ userId }) => {
       console.log(`using tool: listAgents`, { userId });
 
@@ -83,13 +79,7 @@ export const createTools = ({
 
   [toolDefinitions.messageAnotherAgent.name]: tool({
     description: toolDefinitions.messageAnotherAgent.description,
-    parameters: z.object({
-      target: z.object({
-        agentId: z.string(),
-        agentName: z.string(),
-      }),
-      content: z.string(),
-    }),
+    parameters: toolDefinitions.messageAnotherAgent.parameters,
     execute: async ({ target, content }) => {
       return await ctx.runMutation(
         internal.conversationMessages.private.sendFromAgent,
@@ -105,16 +95,12 @@ export const createTools = ({
 
   [toolDefinitions.noOutput.name]: tool({
     description: toolDefinitions.noOutput.description,
-    parameters: z.object({
-      reasoning: z.string(),
-    }),
+    parameters: toolDefinitions.noOutput.parameters,
   }),
 
   [toolDefinitions.webSearch.name]: tool({
     description: toolDefinitions.webSearch.description,
-    parameters: z.object({
-      query: z.string(),
-    }),
+    parameters: toolDefinitions.webSearch.parameters,
     execute: async ({ query }) => {
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is searching the web for "${query}"`,
@@ -128,15 +114,7 @@ export const createTools = ({
 
   [toolDefinitions.scheduleTask.name]: tool({
     description: toolDefinitions.scheduleTask.description,
-    parameters: z.object({
-      target: z.object({
-        agentId: z.string(),
-        agentName: z.string(),
-      }),
-      title: z.string(),
-      content: z.string(),
-      secondsFromNow: z.number(),
-    }),
+    parameters: toolDefinitions.scheduleTask.parameters,
     execute: async ({ content, secondsFromNow, target, title }) => {
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} scheduled a task "${title}" to be sent in ${secondsFromNow} seconds`,
