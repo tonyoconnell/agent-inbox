@@ -13,7 +13,6 @@ import {
   processAgentAIResult,
 } from "./utils";
 import { gatherMessages } from "./messages";
-import { omit } from "convex-helpers";
 
 export const triageMessage = async (
   ctx: ActionCtx,
@@ -41,16 +40,13 @@ export const triageMessage = async (
     conversation: args.conversation,
     generateAIResponse: async () => {
       const result = await generateText({
-        model: openai("gpt-4o-mini"),
-        tools: omit(
-          createToolsForAgent({
-            ctx,
-            agent,
-            agentParticipant: participant,
-            conversation: args.conversation,
-          }),
-          ["messageAnotherAgent"], // I want the triage agent to reply to the text rather than use the tool
-        ),
+        model: openai("gpt-4o"),
+        tools: createToolsForAgent({
+          ctx,
+          agent,
+          agentParticipant: participant,
+          conversation: args.conversation,
+        }),
         maxSteps: 5,
         messages: await gatherMessages(ctx, {
           systemMessage: constructTriageInstructions({

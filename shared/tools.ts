@@ -78,6 +78,7 @@ export type AgentToolName = keyof typeof toolDefinitions;
 // Define the subset of tools that users can choose from
 export const userChoosableToolDefinitions = pick(toolDefinitions, [
   "webSearch",
+  "scheduleTask",
 ]);
 
 export type UserChoosableToolName = keyof typeof userChoosableToolDefinitions;

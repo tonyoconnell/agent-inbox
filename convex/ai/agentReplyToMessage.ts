@@ -42,7 +42,7 @@ export const agentReplyToMessage = async (
     conversation: args.conversation,
     generateAIResponse: async () => {
       const result = await generateText({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         tools: createToolsForAgent({
           ctx,
           agent,
