@@ -61,6 +61,7 @@ export const sendSystemMessage = internalMutation({
   args: {
     conversationId: v.id("conversations"),
     content: v.string(),
+    meta: v.optional(v.any()),
   },
   returns: v.id("conversationMessages"),
   handler: async (ctx, args) => {

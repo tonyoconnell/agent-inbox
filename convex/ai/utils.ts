@@ -10,11 +10,13 @@ export const sendSystemMessageToConversation = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
+    meta?: any;
   },
 ) =>
   ctx.runMutation(internal.conversationMessages.private.sendSystemMessage, {
     conversationId: args.conversationId as Id<"conversations">,
     content: args.content,
+    meta: args.meta,
   });
 
 export const getAgentAndEnsureItIsJoinedToConversation = async (
@@ -139,10 +141,25 @@ export const handleAgentError = async (
 ) => {
   console.error(`Error while ${args.errorContext}:`, args.error);
 
+  const errorMessage =
+    args.error instanceof Error ? args.error.message : "Unknown error";
+
   // Send error message to conversation
   await sendSystemMessageToConversation(ctx, {
     conversationId: args.conversationId,
-    content: `Error while ${args.errorContext}: ${args.error instanceof Error ? args.error.message : "Unknown error"}`,
+    content: `Error while ${args.errorContext}: ${errorMessage}`,
+    meta: {
+      error: errorMessage,
+      errorContext: args.errorContext,
+      fullError:
+        args.error instanceof Error
+          ? {
+              message: args.error.message,
+              stack: args.error.stack,
+              name: args.error.name,
+            }
+          : String(args.error),
+    },
   });
 };
 
@@ -170,6 +187,12 @@ export const processAgentAIResult = async (
       await sendSystemMessageToConversation(ctx, {
         conversationId: args.conversation._id,
         content: `Agent ${args.agent.name} decided not to respond to the message because: "${noOp.args.reasoning}"`,
+        meta: {
+          toolName: "noOutput",
+          reasoning: noOp.args.reasoning,
+          agentName: args.agent.name,
+          agentId: args.agent._id,
+        },
       });
     }
   }

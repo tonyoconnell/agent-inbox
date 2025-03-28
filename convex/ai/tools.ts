@@ -36,6 +36,10 @@ export const createTools = ({
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
         conversationId: conversation._id,
+        meta: {
+          toolName: "listConversationParticipants",
+          agentName: agent.name,
+        },
       });
       const participants = await ctx.runQuery(
         internal.conversationParticipants.private
@@ -79,6 +83,7 @@ export const createTools = ({
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is listing the users agents ${conversation._id}`,
         conversationId: conversation._id,
+        meta: { toolName: "listAgents", userId, agentName: agent.name },
       });
 
       return await ctx.runQuery(internal.agents.private.listAgentsForUser, {
@@ -115,6 +120,7 @@ export const createTools = ({
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is searching the web for "${query}"`,
         conversationId: conversation._id,
+        meta: { toolName: "webSearch", query, agentName: agent.name },
       });
       const result = await exa.answer(query, { text: true });
       console.log(`webSearch result:`, result);
@@ -134,6 +140,11 @@ export const createTools = ({
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} updated the conversation title to "${title}"`,
         conversationId: conversation._id,
+        meta: {
+          toolName: "updateConversationTitle",
+          newTitle: title,
+          agentName: agent.name,
+        },
       });
 
       return {
@@ -150,6 +161,14 @@ export const createTools = ({
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} scheduled a task "${title}" to be sent in ${secondsFromNow} seconds`,
         conversationId: conversation._id,
+        meta: {
+          toolName: "scheduleTask",
+          title,
+          secondsFromNow,
+          target,
+          content,
+          agentName: agent.name,
+        },
       });
 
       const scheduledMessageId = await ctx.scheduler.runAfter(
@@ -177,6 +196,14 @@ export const createTools = ({
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is sending an email to "${to}" with the subject "${subject}"`,
         conversationId: conversation._id,
+        meta: {
+          toolName: "sendEmail",
+          to,
+          subject,
+          content,
+          from,
+          agentName: agent.name,
+        },
       });
 
       try {

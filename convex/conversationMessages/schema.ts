@@ -32,6 +32,7 @@ export const conversationAgentMessageSchemaValidator = v.union(
   v.object({
     ...common,
     kind: v.literal("system"),
+    meta: v.optional(v.any()),
   }),
 );
 

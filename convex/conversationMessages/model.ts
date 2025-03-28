@@ -48,6 +48,7 @@ export const addMessageToConversationFromSystem = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
+    meta?: any;
   },
 ) => {
   // Create the message
@@ -55,6 +56,7 @@ export const addMessageToConversationFromSystem = async (
     kind: "system",
     conversationId: args.conversationId,
     content: args.content,
+    ...(args.meta !== undefined && { meta: args.meta }),
   });
 };
 
