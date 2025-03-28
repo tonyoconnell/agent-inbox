@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import * as Agents from "./model";
 import { pick } from "convex-helpers";
 import { Id } from "../_generated/dataModel";
+import { AvailableToolName, AVAILABLE_TOOLS } from "../../shared/misc";
 
 export const create = mutation({
   args: {},
@@ -34,7 +35,9 @@ export const updateMine = mutation({
     name: v.string(),
     description: v.string(),
     personality: v.string(),
-    tools: v.array(v.string()),
+    tools: v.array(
+      v.union(...Object.keys(AVAILABLE_TOOLS).map((key) => v.literal(key))),
+    ),
   },
   handler: async (ctx, args) => {
     const agent = await Agents.getMine(ctx, { agentId: args.agentId });
