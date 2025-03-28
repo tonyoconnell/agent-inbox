@@ -7,6 +7,7 @@ import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useApiErrorHandler } from "@/components/misc/errors";
 import { ReactNode } from "react";
+import { useChatContext } from "./ChatContext";
 
 // Define our custom suggestion data type
 interface CustomSuggestionData extends SuggestionDataItem {
@@ -24,6 +25,15 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   const agents = useQuery(api.agents.public.listMine) ?? [];
   const sendMessage = useMutation(api.conversationMessages.public.sendFromMe);
   const apiError = useApiErrorHandler();
+  const { replyToMention, setReplyToMention } = useChatContext();
+
+  // Apply the reply mention when it changes
+  React.useEffect(() => {
+    if (replyToMention) {
+      setMessage(replyToMention);
+      setReplyToMention(null); // Clear after applying
+    }
+  }, [replyToMention, setReplyToMention]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

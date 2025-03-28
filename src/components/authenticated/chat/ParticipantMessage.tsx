@@ -15,6 +15,9 @@ import { UserMention } from "./UserMention";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { splitMessageContent } from "../../../../shared/mentions";
+import { ReplyIcon } from "lucide-react";
+import { createMentionString } from "../../../../shared/mentions";
+import { useChatContext } from "./ChatContext";
 
 interface Props {
   message: Doc<"conversationMessages">;
@@ -23,6 +26,9 @@ interface Props {
 export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   if (message.kind != "participant")
     throw new Error("Message is not a participant message");
+
+  const { setReplyToMention } = useChatContext();
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const participants = useQuery(
     api.conversationParticipants.public.listDetailsForMe,
@@ -35,7 +41,24 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
     (p) => p.id === message.authorParticipantId,
   );
 
+  // Get all agents to find the matching one for this participant
+  const agents = useQuery(api.agents.public.listMine);
+  const matchingAgent =
+    participant?.kind === "agent" &&
+    agents?.find((agent) => agent.name === participant.name);
+
   const timeAgo = useTimeAgo(message._creationTime);
+
+  const handleReply = () => {
+    if (participant?.kind === "agent" && matchingAgent) {
+      const mentionText = createMentionString({
+        kind: "agent",
+        agentId: matchingAgent._id,
+        name: participant.name ?? "Agent",
+      });
+      setReplyToMention(mentionText + " ");
+    }
+  };
 
   const renderMessageContent = (content: string) => {
     const parts = splitMessageContent(content);
@@ -97,6 +120,8 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
       className={`flex items-start gap-3 ${
         participant?.kind === "user" ? "flex-row-reverse" : "flex-row"
       }`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <TooltipProvider>
         <Tooltip>
@@ -117,28 +142,42 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <div
-        className={`max-w-[70%] rounded-lg p-3 ${
-          participant?.kind === "user"
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted"
-        }`}
-      >
-        {participant?.kind === "agent" && (
-          <div className="text-sm font-medium text-foreground mb-1">
-            {participant.name}
-          </div>
-        )}
-        <div className="space-x-1">{renderMessageContent(message.content)}</div>
+      <div className="relative flex-1 max-w-[70%]">
         <div
-          className={`text-xs mt-1 ${
+          className={`rounded-lg p-3 ${
             participant?.kind === "user"
-              ? "text-primary-foreground/80"
-              : "text-muted-foreground"
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted"
           }`}
         >
-          {timeAgo}
+          {participant?.kind === "agent" && (
+            <div className="text-sm font-medium text-foreground mb-1">
+              {participant.name}
+            </div>
+          )}
+          <div className="space-x-1">
+            {renderMessageContent(message.content)}
+          </div>
+          <div
+            className={`text-xs mt-1 ${
+              participant?.kind === "user"
+                ? "text-primary-foreground/80"
+                : "text-muted-foreground"
+            }`}
+          >
+            {timeAgo}
+          </div>
         </div>
+
+        {participant?.kind === "agent" && matchingAgent && isHovered && (
+          <button
+            onClick={handleReply}
+            className="absolute -right-10 top-2 p-1.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Reply"
+          >
+            <ReplyIcon size={16} />
+          </button>
+        )}
       </div>
     </div>
   );
