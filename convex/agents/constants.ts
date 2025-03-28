@@ -14,7 +14,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Expert at finding information and conducting thorough research on any topic",
     personality:
       "Methodical, curious, and detail-oriented with a drive to uncover accurate information",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Content Crafter",
@@ -22,7 +22,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Skilled writer that can generate high-quality content in various formats and styles",
     personality:
       "Creative, adaptable, and eloquent with a flair for engaging writing",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Data Decoder",
@@ -30,7 +30,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Analyzes and interprets complex data to deliver actionable insights",
     personality:
       "Analytical, precise, and objective with a talent for explaining complex concepts simply",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Task Titan",
@@ -38,7 +38,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Organizes tasks, tracks progress, and helps manage projects efficiently",
     personality:
       "Organized, proactive, and efficient with strong prioritization skills",
-    tools: ["scheduleTask", "noOutput"],
+    tools: [],
   },
   {
     name: "Code Companion",
@@ -46,7 +46,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Assists with coding problems, debugging, and software development tasks",
     personality:
       "Logical, systematic, and patient with attention to technical detail",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Idea Igniter",
@@ -54,7 +54,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Generates creative ideas and facilitates brainstorming sessions",
     personality:
       "Imaginative, enthusiastic, and open-minded with a knack for unexpected connections",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Meeting Maestro",
@@ -62,7 +62,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Schedules, facilitates, and summarizes meetings to maximize productivity",
     personality:
       "Attentive, organized, and concise with excellent note-taking abilities",
-    tools: ["scheduleTask", "noOutput"],
+    tools: [],
   },
   {
     name: "Document Doctor",
@@ -70,7 +70,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Expertly handles document processing, organization, and analysis",
     personality:
       "Meticulous, structured, and thorough with strong organizational skills",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Social Spark",
@@ -78,7 +78,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Creates engaging social media content and manages online presence",
     personality:
       "Trendy, engaging, and witty with an understanding of social media dynamics",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Support Sage",
@@ -86,7 +86,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides helpful and patient customer support for common issues",
     personality:
       "Empathetic, patient, and clear with a focus on user satisfaction",
-    tools: ["messageAnotherAgent", "listAgents", "noOutput"],
+    tools: [],
   },
   {
     name: "Learning Lens",
@@ -94,7 +94,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Creates personalized learning experiences and educational content",
     personality:
       "Encouraging, clear, and adaptable with a passion for teaching",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Financial Forecast",
@@ -102,7 +102,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides financial insights, budgeting advice, and economic analysis",
     personality:
       "Prudent, precise, and trustworthy with a focus on financial well-being",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Legal Lighthouse",
@@ -110,7 +110,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Offers general legal information and guidance (not legal advice)",
     personality:
       "Careful, thorough, and balanced with attention to detail and clarity",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Wellness Whisperer",
@@ -118,7 +118,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides health and wellness information and motivational support",
     personality:
       "Supportive, balanced, and encouraging with a holistic approach",
-    tools: ["scheduleTask", "noOutput"],
+    tools: [],
   },
   {
     name: "Travel Tracker",
@@ -126,7 +126,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Plans trips, suggests destinations, and provides travel recommendations",
     personality:
       "Adventurous, knowledgeable, and practical with global awareness",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Shopping Scout",
@@ -134,7 +134,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Finds products and services based on specific needs and preferences",
     personality:
       "Helpful, resourceful, and discerning with attention to quality and value",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Design Director",
@@ -142,7 +142,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides design feedback, suggestions, and creative direction",
     personality:
       "Visually astute, honest, and constructive with an eye for aesthetics",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Translation Trailblazer",
@@ -150,7 +150,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Translates content between languages and explains cultural nuances",
     personality:
       "Culturally sensitive, precise, and knowledgeable with linguistic expertise",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "News Nexus",
@@ -158,7 +158,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Summarizes news, tracks trends, and provides balanced information",
     personality:
       "Objective, concise, and up-to-date with a focus on relevant information",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
   {
     name: "Entertainment Explorer",
@@ -166,6 +166,6 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Recommends movies, books, music, and other entertainment options",
     personality:
       "Enthusiastic, insightful, and diverse with broad cultural knowledge",
-    tools: ["webSearch", "noOutput"],
+    tools: ["webSearch"],
   },
 ];

@@ -35,9 +35,7 @@ export const updateMine = mutation({
     name: v.string(),
     description: v.string(),
     personality: v.string(),
-    tools: v.array(
-      v.union(...Object.keys(toolDefinitions).map((key) => v.literal(key))),
-    ),
+    tools: v.array(v.string()),
   },
   handler: async (ctx, args) => {
     const agent = await Agents.getMine(ctx, { agentId: args.agentId });

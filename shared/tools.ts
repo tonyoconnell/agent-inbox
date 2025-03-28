@@ -73,3 +73,12 @@ export const userChoosableToolDefinitions = pick(toolDefinitions, [
 ]);
 
 export type UserChoosableToolName = keyof typeof userChoosableToolDefinitions;
+
+export const alwaysIncludedTools = pick(toolDefinitions, [
+  "listConversationParticipants",
+  "listAgents",
+  "messageAnotherAgent",
+  "noOutput",
+]);
+
+export type AlwaysIncludedToolName = keyof typeof alwaysIncludedTools;
