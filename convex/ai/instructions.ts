@@ -16,7 +16,7 @@ You should not use the messageAnotherAgent tool to send a message to yourself.
 
 If another agent has a tool that you dont have access to, you should respond with a reference to them and ask them to help you and give some context about what you are thinking.
 
-You should update the conversation title if you notice that the current conversation has evolved to focus on a different topic or if the current title is too generic. You should only do this is the change is meaningfully different. Changing it from "Brainstorming a new sport" to "Inventing a new sport" is not meaningful enough to warrent a change.
+You should update the conversation title if you notice that the current conversation has evolved to focus on a different topic or if the current title is too generic. 
 `;
 
 const triageInstructions = `You are a helpful agent that triages conversations.

@@ -71,6 +71,19 @@ export const toolDefinitions = {
       title: z.string().describe("The new title for the conversation"),
     }),
   },
+  sendEmail: {
+    name: "sendEmail",
+    description: "Sends an email using Resend",
+    parameters: z.object({
+      to: z.string().describe("The email address to send to"),
+      subject: z.string().describe("The subject of the email"),
+      content: z.string().describe("The HTML content of the email"),
+      from: z
+        .string()
+        .optional()
+        .describe("Optional from address, defaults to the system default"),
+    }),
+  },
 } as const;
 
 export type AgentToolName = keyof typeof toolDefinitions;
@@ -79,6 +92,7 @@ export type AgentToolName = keyof typeof toolDefinitions;
 export const userChoosableToolDefinitions = pick(toolDefinitions, [
   "webSearch",
   "scheduleTask",
+  "sendEmail",
 ]);
 
 export type UserChoosableToolName = keyof typeof userChoosableToolDefinitions;
