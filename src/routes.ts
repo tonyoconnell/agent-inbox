@@ -8,13 +8,6 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     },
     (p) => `/conversation/${p.conversationId}`,
   ),
-  conversationWithTask: defineRoute(
-    {
-      conversationId: param.path.string,
-      taskId: param.path.string,
-    },
-    (p) => `/conversation/${p.conversationId}/task/${p.taskId}`,
-  ),
   agent: defineRoute(
     {
       agentId: param.path.string,
@@ -31,15 +24,7 @@ export type ConversationParams = {
 // Helper to get current conversation ID if we're on a conversation route
 export function useCurrentConversationId(): string | undefined {
   const route = useRoute();
-  if (route.name === "conversation" || route.name === "conversationWithTask")
-    return route.params.conversationId;
-  return undefined;
-}
-
-// Helper to get current task ID if we're on a task route
-export function useCurrentTaskId(): string | undefined {
-  const route = useRoute();
-  if (route.name === "conversationWithTask") return route.params.taskId;
+  if (route.name === "conversation") return route.params.conversationId;
   return undefined;
 }
 

@@ -1,12 +1,7 @@
 import * as React from "react";
 import { ChatArea } from "./chat/ChatArea";
 import { Sidebar } from "./sidebar/Sidebar";
-import {
-  useRoute,
-  routes,
-  useCurrentConversationId,
-  useCurrentTaskId,
-} from "../../routes";
+import { useRoute, routes, useCurrentConversationId } from "../../routes";
 import { Id } from "convex/_generated/dataModel";
 import { AgentProfile } from "./agents/AgentProfile";
 
@@ -21,7 +16,6 @@ interface Message {
 export const AuthenticatedContent: React.FC = () => {
   const route = useRoute();
   const currentConversationId = useCurrentConversationId();
-  const currentTaskId = useCurrentTaskId();
 
   // If we're not in a conversation or agent view, show a welcome message
   if (!currentConversationId && route.name !== "agent")
@@ -58,39 +52,6 @@ export const AuthenticatedContent: React.FC = () => {
           <AgentProfile agentId={route.params.agentId as Id<"agents">} />
         ) : null}
       </div>
-
-      {/* Right Sidebar - Task Details */}
-      {currentTaskId && (
-        <div className="w-80 bg-background border-l border-border overflow-y-auto flex-shrink-0">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-medium">Task Details</h3>
-            <button
-              onClick={() =>
-                routes
-                  .conversation({ conversationId: currentConversationId! })
-                  .push()
-              }
-              className="text-muted-foreground hover:text-foreground"
-            >
-              ×
-            </button>
-          </div>
-          <div className="space-y-4">
-            <div className="p-3 bg-muted rounded-lg">
-              <div className="text-sm font-medium">Web Search</div>
-              <div className="text-sm text-muted-foreground">
-                Searched for "project planning methodologies"
-              </div>
-            </div>
-            <div className="p-3 bg-muted rounded-lg">
-              <div className="text-sm font-medium">Document Analysis</div>
-              <div className="text-sm text-muted-foreground">
-                Analyzed 3 case studies related to similar projects
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
