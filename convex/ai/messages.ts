@@ -25,8 +25,6 @@ export const gatherMessages = async (
     count: 30,
   });
 
-  console.log(`messageHistory:`, messageHistory);
-
   const messages: CoreMessage[] = [
     {
       role: "system",

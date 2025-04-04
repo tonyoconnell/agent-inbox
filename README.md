@@ -9,14 +9,13 @@ A playground to experimenting with agentic behaviours on Convex.
 2. Start the dev server: `bun dev` this will step you though getting up a new convex project
 
 3. Provide the API tokens needed: 
-+ OPENAI_API_KEY - for AI models - `bun convex env set EXA_API_KEY {YOUR_KEY}`
++ OPENAI_API_KEY - for AI models - `bun convex env set OPENAI_API_KEY {YOUR_KEY}`
 + EXA_API_KEY - for web search tooling - `bun convex env set EXA_API_KEY {YOUR_KEY}`
 + RESEND_API_KEY - for emailing tooling - `bun convex env set RESEND_API_KEY {YOUR_KEY}`
 
 4. Setup convex auth tokens: `bunx @convex-dev/auth`
 
-5. Setup GithubOauth: https://labs.convex.dev/auth/config/oauth/github
-
+5. Setup Github OAuth: https://labs.convex.dev/auth/config/oauth/github
 
 ## Initial Idea
 

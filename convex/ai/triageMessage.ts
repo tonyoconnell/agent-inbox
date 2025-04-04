@@ -1,7 +1,7 @@
 "use node";
 import { ActionCtx } from "../_generated/server";
 import { internal } from "../_generated/api";
-import { Doc, Id } from "../_generated/dataModel";
+import { Doc } from "../_generated/dataModel";
 import { openai } from "@ai-sdk/openai";
 import { createToolsForAgent } from "./tools";
 import { generateText } from "ai";
@@ -28,11 +28,10 @@ export const triageMessage = async (
       args.conversation._id,
     );
 
-  if (participant.kind !== "agent") {
+  if (participant.kind !== "agent")
     throw new Error(
       `Participant of id '${participant._id}' is not an agent, but is of kind '${participant.kind}'`,
     );
-  }
 
   await runAgentAIGeneration(ctx, {
     agent,

@@ -2,8 +2,6 @@ import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
-import { generateText } from "ai";
-import { ParticipantUserOrAgent } from "../conversationParticipants/model";
 
 export const sendSystemMessageToConversation = async (
   ctx: ActionCtx,
@@ -126,7 +124,8 @@ export const runAgentAIGeneration = async <T>(
   } finally {
     // No longer thinking
     await ctx.runMutation(
-      internal.conversationParticipants.internalMutations.updateParticipantStatus,
+      internal.conversationParticipants.internalMutations
+        .updateParticipantStatus,
       {
         participantId: args.participant._id,
         status: "inactive",

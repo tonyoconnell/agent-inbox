@@ -23,7 +23,3 @@ export const getMessageHistory = async (
         .filter(isNotNullOrUndefined),
     );
 };
-
-export type MessageHistory = Awaited<
-  ReturnType<typeof getMessageHistory>
->[number];

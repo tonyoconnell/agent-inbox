@@ -30,11 +30,10 @@ export const agentReplyToMessage = async (
       conversationId: args.message.conversationId,
     });
 
-  if (participant.kind !== "agent") {
+  if (participant.kind !== "agent")
     throw new Error(
       `Participant of id '${participant._id}' is not an agent, but is of kind '${participant.kind}'`,
     );
-  }
 
   await runAgentAIGeneration(ctx, {
     agent,
