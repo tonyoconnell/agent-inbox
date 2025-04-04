@@ -2,7 +2,7 @@
 
 # Agent Inbox
 
-A multi-agent AI chat running on convex
+A multi-agent AI chat running on Convex
 
 ## Setup
 
