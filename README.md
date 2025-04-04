@@ -1,6 +1,8 @@
+![agent inbox screenshot](./media/screenshot.png)
+
 # Agent Inbox
 
-A playground to experimenting with agentic behaviours on Convex.
+A multi-agent AI chat running on convex
 
 ## Setup
 
