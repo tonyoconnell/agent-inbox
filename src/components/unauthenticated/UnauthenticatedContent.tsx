@@ -13,8 +13,8 @@ export function UnauthenticatedContent() {
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="mb-8 flex flex-col items-center">
         <img
-          src="/logo.png"
-          alt="Agent Inbox Logo"
+          src="/logo.svg"
+          alt="ONE logo"
           className="w-72 h-auto mb-2"
         />
       </div>
