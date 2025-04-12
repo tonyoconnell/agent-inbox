@@ -13,9 +13,9 @@ export const Sidebar = () => {
     <div className="flex flex-col h-full border-r">
       <div className="h-24 border-b border-border relative overflow-hidden">
         <img
-          src="/logo-white.png"
-          alt="Agent Inbox"
-          className="absolute -right-0 -top-2 h-32 object-cover"
+          src="/logo.svg"
+          alt="ONE"
+          className="absolute -right-0 -top-2 h-32 object-cover p-5"
         />
         <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
       </div>

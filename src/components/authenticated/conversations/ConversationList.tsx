@@ -31,7 +31,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({}) => {
     <>
       <div className="h-24 border-b border-border relative overflow-hidden">
         <img
-          src="/logo-white.png"
+          src="/logo.svg"
           alt="Agent Inbox"
           className="absolute -right-0 -top-2 h-32 object-cover"
         />
