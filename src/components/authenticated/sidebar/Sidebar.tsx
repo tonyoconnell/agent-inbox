@@ -11,13 +11,12 @@ export const Sidebar = () => {
 
   return (
     <div className="flex flex-col h-full border-r">
-      <div className="h-24 border-b border-border relative overflow-hidden">
+      <div className="h-16 border-b border-border flex items-center px-4">
         <img
           src="/logo.svg"
           alt="ONE"
-          className="absolute -right-0 -top-2 h-32 object-cover p-5"
+          className="h-[40px] w-auto object-contain"
         />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
       </div>
       <div className="flex border-b">
         <Button
