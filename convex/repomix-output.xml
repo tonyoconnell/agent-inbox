@@ -1,0 +1,3557 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+<additional_info>
+
+</additional_info>
+
+</file_summary>
+
+<directory_structure>
+_generated/
+  api.d.ts
+  api.js
+  dataModel.d.ts
+  server.d.ts
+  server.js
+agents/
+  internalMutations.ts
+  internalQueries.ts
+  model.ts
+  mutations.ts
+  queries.ts
+  schema.ts
+ai/
+  agentReplyToMessage.ts
+  history.ts
+  instructions.ts
+  messages.ts
+  tools.ts
+  triageMessage.ts
+  utils.ts
+conversationMessages/
+  internalActions.ts
+  internalMutations.ts
+  internalQueries.ts
+  model.ts
+  mutations.ts
+  queries.ts
+  schema.ts
+conversationParticipants/
+  internalMutations.ts
+  internalQueries.ts
+  model.ts
+  mutations.ts
+  queries.ts
+  schema.ts
+conversations/
+  internalMutations.ts
+  internalQueries.ts
+  model.ts
+  mutations.ts
+  queries.ts
+users/
+  model.ts
+  queries.ts
+auth.config.ts
+auth.ts
+http.ts
+README.md
+schema.ts
+tsconfig.json
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="_generated/api.d.ts">
+/* eslint-disable */
+/**
+ * Generated `api` utility.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
+import type * as agents_internalMutations from "../agents/internalMutations.js";
+import type * as agents_internalQueries from "../agents/internalQueries.js";
+import type * as agents_model from "../agents/model.js";
+import type * as agents_mutations from "../agents/mutations.js";
+import type * as agents_queries from "../agents/queries.js";
+import type * as ai_agentReplyToMessage from "../ai/agentReplyToMessage.js";
+import type * as ai_history from "../ai/history.js";
+import type * as ai_instructions from "../ai/instructions.js";
+import type * as ai_messages from "../ai/messages.js";
+import type * as ai_tools from "../ai/tools.js";
+import type * as ai_triageMessage from "../ai/triageMessage.js";
+import type * as ai_utils from "../ai/utils.js";
+import type * as auth from "../auth.js";
+import type * as conversationMessages_internalActions from "../conversationMessages/internalActions.js";
+import type * as conversationMessages_internalMutations from "../conversationMessages/internalMutations.js";
+import type * as conversationMessages_internalQueries from "../conversationMessages/internalQueries.js";
+import type * as conversationMessages_model from "../conversationMessages/model.js";
+import type * as conversationMessages_mutations from "../conversationMessages/mutations.js";
+import type * as conversationMessages_queries from "../conversationMessages/queries.js";
+import type * as conversationParticipants_internalMutations from "../conversationParticipants/internalMutations.js";
+import type * as conversationParticipants_internalQueries from "../conversationParticipants/internalQueries.js";
+import type * as conversationParticipants_model from "../conversationParticipants/model.js";
+import type * as conversationParticipants_mutations from "../conversationParticipants/mutations.js";
+import type * as conversationParticipants_queries from "../conversationParticipants/queries.js";
+import type * as conversations_internalMutations from "../conversations/internalMutations.js";
+import type * as conversations_internalQueries from "../conversations/internalQueries.js";
+import type * as conversations_model from "../conversations/model.js";
+import type * as conversations_mutations from "../conversations/mutations.js";
+import type * as conversations_queries from "../conversations/queries.js";
+import type * as http from "../http.js";
+import type * as users_model from "../users/model.js";
+import type * as users_queries from "../users/queries.js";
+
+/**
+ * A utility for referencing Convex functions in your app's API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
+declare const fullApi: ApiFromModules<{
+  "agents/internalMutations": typeof agents_internalMutations;
+  "agents/internalQueries": typeof agents_internalQueries;
+  "agents/model": typeof agents_model;
+  "agents/mutations": typeof agents_mutations;
+  "agents/queries": typeof agents_queries;
+  "ai/agentReplyToMessage": typeof ai_agentReplyToMessage;
+  "ai/history": typeof ai_history;
+  "ai/instructions": typeof ai_instructions;
+  "ai/messages": typeof ai_messages;
+  "ai/tools": typeof ai_tools;
+  "ai/triageMessage": typeof ai_triageMessage;
+  "ai/utils": typeof ai_utils;
+  auth: typeof auth;
+  "conversationMessages/internalActions": typeof conversationMessages_internalActions;
+  "conversationMessages/internalMutations": typeof conversationMessages_internalMutations;
+  "conversationMessages/internalQueries": typeof conversationMessages_internalQueries;
+  "conversationMessages/model": typeof conversationMessages_model;
+  "conversationMessages/mutations": typeof conversationMessages_mutations;
+  "conversationMessages/queries": typeof conversationMessages_queries;
+  "conversationParticipants/internalMutations": typeof conversationParticipants_internalMutations;
+  "conversationParticipants/internalQueries": typeof conversationParticipants_internalQueries;
+  "conversationParticipants/model": typeof conversationParticipants_model;
+  "conversationParticipants/mutations": typeof conversationParticipants_mutations;
+  "conversationParticipants/queries": typeof conversationParticipants_queries;
+  "conversations/internalMutations": typeof conversations_internalMutations;
+  "conversations/internalQueries": typeof conversations_internalQueries;
+  "conversations/model": typeof conversations_model;
+  "conversations/mutations": typeof conversations_mutations;
+  "conversations/queries": typeof conversations_queries;
+  http: typeof http;
+  "users/model": typeof users_model;
+  "users/queries": typeof users_queries;
+}>;
+export declare const api: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "public">
+>;
+export declare const internal: FilterApi<
+  typeof fullApi,
+  FunctionReference<any, "internal">
+>;
+</file>
+
+<file path="_generated/api.js">
+/* eslint-disable */
+/**
+ * Generated `api` utility.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import { anyApi } from "convex/server";
+
+/**
+ * A utility for referencing Convex functions in your app's API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
+export const api = anyApi;
+export const internal = anyApi;
+</file>
+
+<file path="_generated/dataModel.d.ts">
+/* eslint-disable */
+/**
+ * Generated data model types.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import type {
+  DataModelFromSchemaDefinition,
+  DocumentByName,
+  TableNamesInDataModel,
+  SystemTableNames,
+} from "convex/server";
+import type { GenericId } from "convex/values";
+import schema from "../schema.js";
+
+/**
+ * The names of all of your Convex tables.
+ */
+export type TableNames = TableNamesInDataModel<DataModel>;
+
+/**
+ * The type of a document stored in Convex.
+ *
+ * @typeParam TableName - A string literal type of the table name (like "users").
+ */
+export type Doc<TableName extends TableNames> = DocumentByName<
+  DataModel,
+  TableName
+>;
+
+/**
+ * An identifier for a document in Convex.
+ *
+ * Convex documents are uniquely identified by their `Id`, which is accessible
+ * on the `_id` field. To learn more, see [Document IDs](https://docs.convex.dev/using/document-ids).
+ *
+ * Documents can be loaded using `db.get(id)` in query and mutation functions.
+ *
+ * IDs are just strings at runtime, but this type can be used to distinguish them from other
+ * strings when type checking.
+ *
+ * @typeParam TableName - A string literal type of the table name (like "users").
+ */
+export type Id<TableName extends TableNames | SystemTableNames> =
+  GenericId<TableName>;
+
+/**
+ * A type describing your Convex data model.
+ *
+ * This type includes information about what tables you have, the type of
+ * documents stored in those tables, and the indexes defined on them.
+ *
+ * This type is used to parameterize methods like `queryGeneric` and
+ * `mutationGeneric` to make them type-safe.
+ */
+export type DataModel = DataModelFromSchemaDefinition<typeof schema>;
+</file>
+
+<file path="_generated/server.d.ts">
+/* eslint-disable */
+/**
+ * Generated utilities for implementing server-side Convex query and mutation functions.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import {
+  ActionBuilder,
+  HttpActionBuilder,
+  MutationBuilder,
+  QueryBuilder,
+  GenericActionCtx,
+  GenericMutationCtx,
+  GenericQueryCtx,
+  GenericDatabaseReader,
+  GenericDatabaseWriter,
+} from "convex/server";
+import type { DataModel } from "./dataModel.js";
+
+/**
+ * Define a query in this Convex app's public API.
+ *
+ * This function will be allowed to read your Convex database and will be accessible from the client.
+ *
+ * @param func - The query function. It receives a {@link QueryCtx} as its first argument.
+ * @returns The wrapped query. Include this as an `export` to name it and make it accessible.
+ */
+export declare const query: QueryBuilder<DataModel, "public">;
+
+/**
+ * Define a query that is only accessible from other Convex functions (but not from the client).
+ *
+ * This function will be allowed to read from your Convex database. It will not be accessible from the client.
+ *
+ * @param func - The query function. It receives a {@link QueryCtx} as its first argument.
+ * @returns The wrapped query. Include this as an `export` to name it and make it accessible.
+ */
+export declare const internalQuery: QueryBuilder<DataModel, "internal">;
+
+/**
+ * Define a mutation in this Convex app's public API.
+ *
+ * This function will be allowed to modify your Convex database and will be accessible from the client.
+ *
+ * @param func - The mutation function. It receives a {@link MutationCtx} as its first argument.
+ * @returns The wrapped mutation. Include this as an `export` to name it and make it accessible.
+ */
+export declare const mutation: MutationBuilder<DataModel, "public">;
+
+/**
+ * Define a mutation that is only accessible from other Convex functions (but not from the client).
+ *
+ * This function will be allowed to modify your Convex database. It will not be accessible from the client.
+ *
+ * @param func - The mutation function. It receives a {@link MutationCtx} as its first argument.
+ * @returns The wrapped mutation. Include this as an `export` to name it and make it accessible.
+ */
+export declare const internalMutation: MutationBuilder<DataModel, "internal">;
+
+/**
+ * Define an action in this Convex app's public API.
+ *
+ * An action is a function which can execute any JavaScript code, including non-deterministic
+ * code and code with side-effects, like calling third-party services.
+ * They can be run in Convex's JavaScript environment or in Node.js using the "use node" directive.
+ * They can interact with the database indirectly by calling queries and mutations using the {@link ActionCtx}.
+ *
+ * @param func - The action. It receives an {@link ActionCtx} as its first argument.
+ * @returns The wrapped action. Include this as an `export` to name it and make it accessible.
+ */
+export declare const action: ActionBuilder<DataModel, "public">;
+
+/**
+ * Define an action that is only accessible from other Convex functions (but not from the client).
+ *
+ * @param func - The function. It receives an {@link ActionCtx} as its first argument.
+ * @returns The wrapped function. Include this as an `export` to name it and make it accessible.
+ */
+export declare const internalAction: ActionBuilder<DataModel, "internal">;
+
+/**
+ * Define an HTTP action.
+ *
+ * This function will be used to respond to HTTP requests received by a Convex
+ * deployment if the requests matches the path and method where this action
+ * is routed. Be sure to route your action in `convex/http.js`.
+ *
+ * @param func - The function. It receives an {@link ActionCtx} as its first argument.
+ * @returns The wrapped function. Import this function from `convex/http.js` and route it to hook it up.
+ */
+export declare const httpAction: HttpActionBuilder;
+
+/**
+ * A set of services for use within Convex query functions.
+ *
+ * The query context is passed as the first argument to any Convex query
+ * function run on the server.
+ *
+ * This differs from the {@link MutationCtx} because all of the services are
+ * read-only.
+ */
+export type QueryCtx = GenericQueryCtx<DataModel>;
+
+/**
+ * A set of services for use within Convex mutation functions.
+ *
+ * The mutation context is passed as the first argument to any Convex mutation
+ * function run on the server.
+ */
+export type MutationCtx = GenericMutationCtx<DataModel>;
+
+/**
+ * A set of services for use within Convex action functions.
+ *
+ * The action context is passed as the first argument to any Convex action
+ * function run on the server.
+ */
+export type ActionCtx = GenericActionCtx<DataModel>;
+
+/**
+ * An interface to read from the database within Convex query functions.
+ *
+ * The two entry points are {@link DatabaseReader.get}, which fetches a single
+ * document by its {@link Id}, or {@link DatabaseReader.query}, which starts
+ * building a query.
+ */
+export type DatabaseReader = GenericDatabaseReader<DataModel>;
+
+/**
+ * An interface to read from and write to the database within Convex mutation
+ * functions.
+ *
+ * Convex guarantees that all writes within a single mutation are
+ * executed atomically, so you never have to worry about partial writes leaving
+ * your data in an inconsistent state. See [the Convex Guide](https://docs.convex.dev/understanding/convex-fundamentals/functions#atomicity-and-optimistic-concurrency-control)
+ * for the guarantees Convex provides your functions.
+ */
+export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
+</file>
+
+<file path="_generated/server.js">
+/* eslint-disable */
+/**
+ * Generated utilities for implementing server-side Convex query and mutation functions.
+ *
+ * THIS CODE IS AUTOMATICALLY GENERATED.
+ *
+ * To regenerate, run `npx convex dev`.
+ * @module
+ */
+
+import {
+  actionGeneric,
+  httpActionGeneric,
+  queryGeneric,
+  mutationGeneric,
+  internalActionGeneric,
+  internalMutationGeneric,
+  internalQueryGeneric,
+} from "convex/server";
+
+/**
+ * Define a query in this Convex app's public API.
+ *
+ * This function will be allowed to read your Convex database and will be accessible from the client.
+ *
+ * @param func - The query function. It receives a {@link QueryCtx} as its first argument.
+ * @returns The wrapped query. Include this as an `export` to name it and make it accessible.
+ */
+export const query = queryGeneric;
+
+/**
+ * Define a query that is only accessible from other Convex functions (but not from the client).
+ *
+ * This function will be allowed to read from your Convex database. It will not be accessible from the client.
+ *
+ * @param func - The query function. It receives a {@link QueryCtx} as its first argument.
+ * @returns The wrapped query. Include this as an `export` to name it and make it accessible.
+ */
+export const internalQuery = internalQueryGeneric;
+
+/**
+ * Define a mutation in this Convex app's public API.
+ *
+ * This function will be allowed to modify your Convex database and will be accessible from the client.
+ *
+ * @param func - The mutation function. It receives a {@link MutationCtx} as its first argument.
+ * @returns The wrapped mutation. Include this as an `export` to name it and make it accessible.
+ */
+export const mutation = mutationGeneric;
+
+/**
+ * Define a mutation that is only accessible from other Convex functions (but not from the client).
+ *
+ * This function will be allowed to modify your Convex database. It will not be accessible from the client.
+ *
+ * @param func - The mutation function. It receives a {@link MutationCtx} as its first argument.
+ * @returns The wrapped mutation. Include this as an `export` to name it and make it accessible.
+ */
+export const internalMutation = internalMutationGeneric;
+
+/**
+ * Define an action in this Convex app's public API.
+ *
+ * An action is a function which can execute any JavaScript code, including non-deterministic
+ * code and code with side-effects, like calling third-party services.
+ * They can be run in Convex's JavaScript environment or in Node.js using the "use node" directive.
+ * They can interact with the database indirectly by calling queries and mutations using the {@link ActionCtx}.
+ *
+ * @param func - The action. It receives an {@link ActionCtx} as its first argument.
+ * @returns The wrapped action. Include this as an `export` to name it and make it accessible.
+ */
+export const action = actionGeneric;
+
+/**
+ * Define an action that is only accessible from other Convex functions (but not from the client).
+ *
+ * @param func - The function. It receives an {@link ActionCtx} as its first argument.
+ * @returns The wrapped function. Include this as an `export` to name it and make it accessible.
+ */
+export const internalAction = internalActionGeneric;
+
+/**
+ * Define a Convex HTTP action.
+ *
+ * @param func - The function. It receives an {@link ActionCtx} as its first argument, and a `Request` object
+ * as its second.
+ * @returns The wrapped endpoint function. Route a URL path to this function in `convex/http.js`.
+ */
+export const httpAction = httpActionGeneric;
+</file>
+
+<file path="agents/internalMutations.ts">
+import { internalMutation } from "../_generated/server";
+import { systemAgentValidator } from "./schema";
+import * as Agents from "./model";
+
+export const createSystemAgent = internalMutation({
+  args: systemAgentValidator,
+  handler: async (ctx, args) => {
+    const existringAgent = await Agents.findSystemAgentByKind(ctx.db, {
+      systemAgentKind: args.systemAgentKind,
+    });
+    if (existringAgent) return existringAgent;
+    await Agents.createSystemAgent(ctx, args);
+    return Agents.getSystemAgentByKind(ctx.db, {
+      systemAgentKind: args.systemAgentKind,
+    });
+  },
+});
+</file>
+
+<file path="agents/internalQueries.ts">
+import {internalQuery} from '../_generated/server';
+import {systemAgentKindValidator} from './schema';
+import * as Agents from './model';
+import {v} from 'convex/values';
+import {listForUser} from './model';
+
+
+export const findSystemAgentByKind = internalQuery({
+  args: {
+    systemAgentKind: systemAgentKindValidator,
+  },
+  handler: async (ctx, args) => {
+    return await Agents.findSystemAgentByKind(ctx.db, args);
+  },
+});
+
+export const listAgentsForUser = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await Agents.listForUser(ctx.db, { userId: args.userId });
+  },
+});
+
+
+export const find = internalQuery({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    return await Agents.find(ctx.db, args);
+  },
+});
+</file>
+
+<file path="agents/model.ts">
+import { DatabaseReader, MutationCtx, QueryCtx } from "../_generated/server";
+import { Doc, Id } from "../_generated/dataModel";
+import * as Users from "../users/model";
+import { predefinedAgents } from "../../shared/predefinedAgents";
+import { systemAgentKindValidator, systemAgentValidator } from "./schema";
+
+export const find = async (
+  db: DatabaseReader,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  return await db.get(agentId);
+};
+
+export const get = async (
+  db: DatabaseReader,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  const agent = await find(db, { agentId });
+  if (!agent) throw new Error(`Agent not found ${agentId}`);
+  return agent;
+};
+
+export const createAgentAvatarUrl = (seed: string) => {
+  return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+};
+
+export const createAgent = async (ctx: MutationCtx) => {
+  const userId = await Users.getMyId(ctx);
+  const randomIndex = Math.floor(Math.random() * predefinedAgents.length);
+  const selectedAgent = predefinedAgents[randomIndex];
+
+  return await ctx.db.insert("agents", {
+    name: selectedAgent.name,
+    description: selectedAgent.description,
+    personality: selectedAgent.personality,
+    tools: selectedAgent.tools,
+    createdBy: userId,
+    lastActiveTime: Date.now(),
+    avatarUrl: createAgentAvatarUrl(selectedAgent.name),
+    kind: "user_agent",
+  });
+};
+
+export const createSystemAgent = async (
+  ctx: MutationCtx,
+  args: typeof systemAgentValidator.type,
+) => {
+  return await ctx.db.insert("agents", {
+    ...args,
+    kind: "system_agent",
+  });
+};
+
+export const listForUser = async (
+  db: DatabaseReader,
+  { userId }: { userId: Id<"users"> },
+) => {
+  return await db
+    .query("agents")
+    .withIndex("by_creator", (q) => q.eq("createdBy", userId))
+    .collect();
+};
+
+export const listMine = async (ctx: QueryCtx) => {
+  const userId = await Users.getMyId(ctx);
+  return listForUser(ctx.db, { userId });
+};
+
+export const findMine = async (
+  ctx: QueryCtx,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const agent = await ctx.db.get(agentId);
+  if (!agent) throw new Error("Access denied");
+  if (agent.kind != "user_agent") throw new Error("Access denied");
+  if (agent.createdBy != userId) throw new Error("Access denied");
+  return agent;
+};
+
+export const getMine = async (
+  ctx: QueryCtx,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  const agent = await findMine(ctx, { agentId });
+  if (!agent) throw new Error("Agent not found");
+  return agent;
+};
+
+export const ensureICanAccessAgent = async (
+  ctx: QueryCtx,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  const agent = await getMine(ctx, { agentId });
+  if (!agent) throw new Error("Access denied");
+};
+
+export const updateMine = async (
+  ctx: MutationCtx,
+  {
+    agentId,
+    name,
+    description,
+    personality,
+    tools,
+  }: {
+    agentId: Id<"agents">;
+    name: string;
+    description: string;
+    personality: string;
+    tools: string[];
+  },
+) => {
+  return await ctx.db.patch(agentId, {
+    name,
+    description,
+    personality,
+    tools,
+  });
+};
+
+export const remove = async (
+  ctx: MutationCtx,
+  { agentId }: { agentId: Id<"agents"> },
+) => {
+  await ctx.db.delete(agentId);
+};
+
+export const findSystemAgentByKind = async (
+  db: DatabaseReader,
+  {
+    systemAgentKind,
+  }: { systemAgentKind: typeof systemAgentKindValidator.type },
+) => {
+  const agent = await db
+    .query("agents")
+    .withIndex("by_system_agent_kind", (q) =>
+      q.eq("systemAgentKind", systemAgentKind),
+    )
+    .first();
+  return agent;
+};
+
+export const getSystemAgentByKind = async (
+  db: DatabaseReader,
+  {
+    systemAgentKind,
+  }: { systemAgentKind: typeof systemAgentKindValidator.type },
+) => {
+  const agent = await findSystemAgentByKind(db, { systemAgentKind });
+  if (!agent) throw new Error(`System agent '${systemAgentKind}' not found`);
+  return agent;
+};
+
+export const getTriageAgent = async (db: DatabaseReader) => {
+  return await getSystemAgentByKind(db, { systemAgentKind: "triage" });
+};
+</file>
+
+<file path="agents/mutations.ts">
+import { mutation, query } from "../_generated/server";
+import * as Agents from "./model";
+import { v } from "convex/values";
+
+export const create = mutation({
+  args: {},
+  handler: async (ctx) => Agents.createAgent(ctx),
+});
+
+
+
+export const updateMine = mutation({
+  args: {
+    agentId: v.id("agents"),
+    name: v.string(),
+    description: v.string(),
+    personality: v.string(),
+    tools: v.array(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const agent = await Agents.getMine(ctx, { agentId: args.agentId });
+    if (agent.kind != "user_agent")
+      throw new Error("Cannot update non user_agent");
+    return Agents.updateMine(ctx, args);
+  },
+});
+
+export const removeMine = mutation({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    const agent = await Agents.getMine(ctx, { agentId: args.agentId });
+    if (agent.kind != "user_agent")
+      throw new Error("Cannot delete non user_agent");
+    return Agents.remove(ctx, args);
+  },
+});
+
+export const shuffleAvatar = mutation({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    const agent = await Agents.getMine(ctx, args);
+    return await ctx.db.patch(args.agentId, {
+      avatarUrl: Agents.createAgentAvatarUrl(`${agent.name}-${Date.now()}`),
+    });
+  },
+});
+</file>
+
+<file path="agents/queries.ts">
+import { query } from "../_generated/server";
+import { v } from "convex/values";
+import { pick } from "convex-helpers";
+import { Id } from "../_generated/dataModel";
+import * as Agents from "./model";
+
+export const listMine = query({
+  args: {},
+  handler: async (ctx) => Agents.listMine(ctx),
+});
+
+export const getMine = query({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => Agents.getMine(ctx, args),
+});
+
+export const findMine = query({
+  args: {
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => Agents.findMine(ctx, args),
+});
+
+export const findMention = query({
+  args: {
+    agentId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const agent = await ctx.db.get(args.agentId as Id<"agents">);
+      if (!agent) return null;
+      return pick(agent, ["name", "_id", "avatarUrl"]);
+    } catch (error) {
+      // Return null if ID is invalid or any other error occurs
+      return null;
+    }
+  },
+});
+</file>
+
+<file path="agents/schema.ts">
+import { v } from "convex/values";
+import { toolDefinitions } from "../../shared/tools";
+
+const common = {
+  name: v.string(),
+  description: v.string(),
+  personality: v.string(),
+  avatarUrl: v.string(),
+  tools: v.array(v.string()),
+  lastActiveTime: v.number(),
+};
+
+export const systemAgentKindValidator = v.union(v.literal("triage"));
+
+export const systemAgentValidator = v.object({
+  ...common,
+  kind: v.literal("system_agent"),
+  systemAgentKind: systemAgentKindValidator,
+});
+
+export const agentsSchemaValidator = v.union(
+  v.object({
+    ...common,
+    kind: v.literal("user_agent"),
+    createdBy: v.id("users"),
+  }),
+  systemAgentValidator,
+);
+</file>
+
+<file path="ai/agentReplyToMessage.ts">
+"use node";
+import { Doc } from "../_generated/dataModel";
+import { openai } from "@ai-sdk/openai";
+import { Id } from "../_generated/dataModel";
+import { ActionCtx } from "../_generated/server";
+import { internal } from "../_generated/api";
+import { createToolsForAgent } from "./tools";
+import { generateText } from "ai";
+import { constructAgentReplyInstructions } from "./instructions";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+import { gatherMessages } from "./messages";
+import {
+  getAgentAndEnsureItIsJoinedToConversation,
+  runAgentAIGeneration,
+  processAgentAIResult,
+} from "./utils";
+
+export const agentReplyToMessage = async (
+  ctx: ActionCtx,
+  args: {
+    message: Doc<"conversationMessages">;
+    agentId: Id<"agents">;
+    conversation: Doc<"conversations">;
+    messageAuthor: ParticipantUserOrAgent;
+  },
+) => {
+  const { agent, participant } =
+    await getAgentAndEnsureItIsJoinedToConversation(ctx, {
+      agentId: args.agentId,
+      conversationId: args.message.conversationId,
+    });
+
+  if (participant.kind !== "agent")
+    throw new Error(
+      `Participant of id '${participant._id}' is not an agent, but is of kind '${participant.kind}'`,
+    );
+
+  await runAgentAIGeneration(ctx, {
+    agent,
+    participant,
+    conversation: args.conversation,
+    generateAIResponse: async () => {
+      const result = await generateText({
+        model: openai("gpt-4o"),
+        tools: createToolsForAgent({
+          ctx,
+          agent,
+          agentParticipant: participant,
+          conversation: args.conversation,
+        }),
+        maxSteps: 10,
+        messages: await gatherMessages(ctx, {
+          systemMessage: constructAgentReplyInstructions({
+            conversation: args.conversation,
+            messageAuthor: args.messageAuthor,
+            agent,
+          }),
+          conversation: args.conversation,
+          message: args.message,
+          messageAuthor: args.messageAuthor,
+        }),
+      });
+
+      await processAgentAIResult(ctx, {
+        result,
+        agent,
+        conversation: args.conversation,
+        participant,
+        sendMessage: async (text) => {
+          await ctx.runMutation(
+            internal.conversationMessages.internalMutations.sendFromAgent,
+            {
+              conversationId: args.message.conversationId,
+              agentId: agent._id,
+              content: text,
+              authorParticipantId: participant._id,
+            },
+          );
+        },
+      });
+
+      return result;
+    },
+  });
+};
+</file>
+
+<file path="ai/history.ts">
+import { internal } from "../_generated/api";
+import { isNotNullOrUndefined } from "../../shared/filter";
+import { Id } from "../_generated/dataModel";
+import { ActionCtx, QueryCtx } from "../_generated/server";
+
+export const getMessageHistory = async (
+  ctx: ActionCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    messageId: Id<"conversationMessages">;
+    count: number;
+  },
+) => {
+  return await ctx
+    .runQuery(
+      internal.conversationMessages.internalQueries
+        .listMessagesHistoryForAgentGeneration,
+      { conversationId: args.conversationId, count: args.count },
+    )
+    .then((messages) =>
+      messages
+        .filter((m) => (m.message._id == args.messageId ? null : m)) // exclude the message we are looking at
+        .filter(isNotNullOrUndefined),
+    );
+};
+</file>
+
+<file path="ai/instructions.ts">
+import { Doc } from "../_generated/dataModel";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+
+const referenceAgentInstructions = `You can reference an agent using the following special syntax: 
+@[AGENT_NAME](agent:AGENT_ID) 
+so for example:
+"Hey @[John](agent:abc123) can you take a look at this?"
+
+A referenced agent will then pick that up later. They will be able to see the message history and the message that referenced them.`;
+
+const otherCommonInstructions = `When you are asked to do something at a future date you should use the scheduleTask tool and NOT do it immediately.
+
+If you need more context to answer the question you should respond asking the user or another agent for more information.
+
+You should not use the messageAnotherAgent tool to send a message to yourself.
+
+If another agent has a tool that you dont have access to, you should respond with a reference to them and ask them to help you and give some context about what you are thinking.
+
+You should update the conversation title if you notice that the current conversation has evolved to focus on a different topic or if the current title is too generic such as "New Conversation". 
+`;
+
+const triageInstructions = `You are a helpful agent that triages conversations.
+
+You will be given a conversation message and it's up to you to determine what agent or agents you should route the message to.
+
+YOU SHOULD NOT RESPOND TO THE QUERY DIRECTLY, ONLY TRIAGE THE MESSAGE.
+
+You should respond with a reference to the agent you think should handle the message and they will see it and reply.
+
+You should add participants to the conversation if you think they would be needed later on.
+
+${otherCommonInstructions}
+
+${referenceAgentInstructions}`;
+
+const agentReplyInstructions = `You are an agent that is part of a conversation with yourself, other agents and other users. 
+
+You will be given the history of the conversation where each message is prefixed with the participant who sent it. You should look at the history to see if you can find any information that might be relevant to the message you are responding to.
+
+You can use the tools provided to you to help you respond to the message.
+
+${referenceAgentInstructions}
+
+${otherCommonInstructions}
+
+When responding:
+1. Look at the supplied message history for added context that might be important
+2. If the user directly asked you a question, respond helpfully and directly
+3. If you think another agent could help, use the reference syntax to mention them
+4. If you were referenced by the Triage Agent you should always respond.
+5. If you want to search the web for information, use the webSearch tool
+6. You are encouraged to reference another agent or human if you think they can contribute to the conversation, use the listConversationParticipants tool to see who is in the conversation
+`;
+
+export type InstructionsArgs = {
+  messageAuthor: ParticipantUserOrAgent;
+  conversation: Doc<"conversations">;
+  agent: Doc<"agents">;
+};
+
+export const constructAdditionalInstructionContext = ({
+  conversation,
+  messageAuthor,
+  agent,
+}: InstructionsArgs) => `Here is some extra info about you the agent:
+${JSON.stringify(agent, null, 2)}
+
+Here is some information about the message author:
+${JSON.stringify(messageAuthor, null, 2)}
+
+Here is some information about the conversation:
+${JSON.stringify(conversation, null, 2)}
+`;
+
+export const constructTriageInstructions = (args: InstructionsArgs) =>
+  `${triageInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
+
+export const constructAgentReplyInstructions = (args: InstructionsArgs) =>
+  `${agentReplyInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
+</file>
+
+<file path="ai/messages.ts">
+import { CoreMessage } from "ai";
+import { ActionCtx } from "../_generated/server";
+import { getMessageHistory } from "./history";
+import { Doc } from "../_generated/dataModel";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+import { createMentionString } from "../../shared/mentions";
+
+export const gatherMessages = async (
+  ctx: ActionCtx,
+  {
+    systemMessage,
+    conversation,
+    message,
+    messageAuthor,
+  }: {
+    systemMessage: string;
+    conversation: Doc<"conversations">;
+    message: Doc<"conversationMessages">;
+    messageAuthor: ParticipantUserOrAgent;
+  },
+): Promise<CoreMessage[]> => {
+  const messageHistory = await getMessageHistory(ctx, {
+    conversationId: conversation._id,
+    messageId: message._id,
+    count: 30,
+  });
+
+  const messages: CoreMessage[] = [
+    {
+      role: "system",
+      content: systemMessage,
+    },
+    ...messageHistory.map((m) => ({
+      role: "user" as const,
+      content: `${createMentionString(
+        m.author.kind === "user"
+          ? {
+              kind: "user" as const,
+              userId: m.author._id,
+              name: m.author.name ?? "Unknown User",
+            }
+          : {
+              kind: "agent" as const,
+              agentId: m.author._id,
+              name: m.author.name,
+            },
+      )} said: ${m.message.content}`,
+    })),
+    {
+      role: "user" as const,
+      content: `${createMentionString(
+        messageAuthor.kind === "user"
+          ? {
+              kind: "user" as const,
+              userId: messageAuthor.user._id,
+              name: messageAuthor.user.name ?? "Unknown User",
+            }
+          : {
+              kind: "agent" as const,
+              agentId: messageAuthor.agent._id,
+              name: messageAuthor.agent.name,
+            },
+      )} said: ${message.content}`,
+    },
+  ];
+
+  console.log(`agent messages:`, messages);
+
+  return messages;
+};
+</file>
+
+<file path="ai/tools.ts">
+"use node";
+import { ActionCtx } from "../_generated/server";
+import { internal, api } from "../_generated/api";
+import { Doc, Id } from "../_generated/dataModel";
+import { tool } from "ai";
+import { sendSystemMessageToConversation } from "./utils";
+import Exa from "exa-js";
+import { pick } from "convex-helpers";
+import { Resend } from "resend";
+import {
+  toolDefinitions,
+  AgentToolName,
+  alwaysIncludedTools,
+} from "../../shared/tools";
+
+const exa = new Exa(process.env.EXA_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export const createTools = ({
+  ctx,
+  agent,
+  conversation,
+  agentParticipant,
+}: {
+  ctx: ActionCtx;
+  agent: Doc<"agents">;
+  agentParticipant: Doc<"conversationParticipants">;
+  conversation: Doc<"conversations">;
+}) => ({
+  [toolDefinitions.listConversationParticipants.name]: tool({
+    description: toolDefinitions.listConversationParticipants.description,
+    parameters: toolDefinitions.listConversationParticipants.parameters,
+    execute: async ({ conversationId }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "listConversationParticipants",
+          agentName: agent.name,
+        },
+      });
+      const participants = await ctx.runQuery(
+        internal.conversationParticipants.internalQueries
+          .listNonSystemAgentParticipantsWithJoinedDetails,
+        {
+          conversationId: conversationId as Id<"conversations">,
+        },
+      );
+
+      // Lets turn them into the mention format which I hope is more AI compatible
+      return participants.map((p) => {
+        if (p.agent)
+          return {
+            kind: "agent",
+            ...pick(p.agent, [
+              "_id",
+              "name",
+              "description",
+              "personality",
+              "tools",
+            ]),
+          };
+
+        if (p.user)
+          return {
+            kind: "user",
+            ...pick(p.user, ["_id", "name", "email"]),
+          };
+
+        return null;
+      });
+    },
+  }),
+
+  [toolDefinitions.listAgents.name]: tool({
+    description: toolDefinitions.listAgents.description,
+    parameters: toolDefinitions.listAgents.parameters,
+    execute: async ({ userId }) => {
+      console.log(`using tool: listAgents`, { userId });
+
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is listing the users agents ${conversation._id}`,
+        conversationId: conversation._id,
+        meta: { toolName: "listAgents", userId, agentName: agent.name },
+      });
+
+      return await ctx.runQuery(
+        internal.agents.internalQueries.listAgentsForUser,
+        {
+          userId: userId as Id<"users">,
+        },
+      );
+    },
+  }),
+
+  [toolDefinitions.messageAnotherAgent.name]: tool({
+    description: toolDefinitions.messageAnotherAgent.description,
+    parameters: toolDefinitions.messageAnotherAgent.parameters,
+    execute: async ({ target, content }) => {
+      return await ctx.runMutation(
+        internal.conversationMessages.internalMutations.sendFromAgent,
+        {
+          conversationId: conversation._id,
+          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
+          agentId: agent._id,
+          authorParticipantId: agentParticipant._id,
+        },
+      );
+    },
+  }),
+
+  [toolDefinitions.noOutput.name]: tool({
+    description: toolDefinitions.noOutput.description,
+    parameters: toolDefinitions.noOutput.parameters,
+  }),
+
+  [toolDefinitions.webSearch.name]: tool({
+    description: toolDefinitions.webSearch.description,
+    parameters: toolDefinitions.webSearch.parameters,
+    execute: async ({ query }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is searching the web for "${query}"`,
+        conversationId: conversation._id,
+        meta: { toolName: "webSearch", query, agentName: agent.name },
+      });
+      const result = await exa.answer(query, { text: true });
+      console.log(`webSearch result:`, result);
+      return pick(result, ["answer", "citations"]);
+    },
+  }),
+
+  [toolDefinitions.updateConversationTitle.name]: tool({
+    description: toolDefinitions.updateConversationTitle.description,
+    parameters: toolDefinitions.updateConversationTitle.parameters,
+    execute: async ({ title }) => {
+      await ctx.runMutation(internal.conversations.internalMutations.update, {
+        conversationId: conversation._id,
+        title,
+      });
+
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} updated the conversation title to "${title}"`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "updateConversationTitle",
+          newTitle: title,
+          agentName: agent.name,
+        },
+      });
+
+      return {
+        result: "title_updated",
+        newTitle: title,
+      };
+    },
+  }),
+
+  [toolDefinitions.scheduleTask.name]: tool({
+    description: toolDefinitions.scheduleTask.description,
+    parameters: toolDefinitions.scheduleTask.parameters,
+    execute: async ({ content, secondsFromNow, target, title }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} scheduled a task "${title}" to be sent in ${secondsFromNow} seconds`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "scheduleTask",
+          title,
+          secondsFromNow,
+          target,
+          content,
+          agentName: agent.name,
+        },
+      });
+
+      const scheduledMessageId = await ctx.scheduler.runAfter(
+        secondsFromNow * 1000,
+        internal.conversationMessages.internalMutations.sendFromAgent,
+        {
+          conversationId: conversation._id,
+          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
+          agentId: agent._id,
+          authorParticipantId: agentParticipant._id,
+        },
+      );
+
+      return {
+        result: "message_sent",
+        scheduledMessageId,
+      };
+    },
+  }),
+
+  [toolDefinitions.sendEmail.name]: tool({
+    description: toolDefinitions.sendEmail.description,
+    parameters: toolDefinitions.sendEmail.parameters,
+    execute: async ({ to, subject, content, from }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is sending an email to "${to}" with the subject "${subject}"`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "sendEmail",
+          to,
+          subject,
+          content,
+          from,
+          agentName: agent.name,
+        },
+      });
+
+      try {
+        const response = await resend.emails.send({
+          to,
+          subject,
+          html: content,
+          from: "mike.cann@convex.dev",
+        });
+
+        if (response.error)
+          throw new Error(`Failed to send email: ${response.error.message}`);
+
+        return {
+          result: "email_sent",
+        };
+      } catch (error: any) {
+        console.error("Failed to send email:", error);
+        throw new Error(
+          `Failed to send email: ${error?.message ?? "Unknown error"}`,
+        );
+      }
+    },
+  }),
+
+  [toolDefinitions.addParticipantToConversation.name]: tool({
+    description: toolDefinitions.addParticipantToConversation.description,
+    parameters: toolDefinitions.addParticipantToConversation.parameters,
+    execute: async ({ agentId }) => {
+      try {
+        await sendSystemMessageToConversation(ctx, {
+          content: `${agent.name} is adding an agent with ID ${agentId} to the conversation`,
+          conversationId: conversation._id,
+          meta: {
+            toolName: "addParticipantToConversation",
+            agentId,
+            agentName: agent.name,
+          },
+        });
+
+        const participant = await ctx.runMutation(
+          internal.conversationParticipants.internalMutations
+            .addAgentIfNotAlreadyJoined,
+          {
+            conversationId: conversation._id,
+            agentId: agentId as Id<"agents">,
+          },
+        );
+
+        return {
+          result: "participant_added",
+          participantId: participant,
+          type: "agent",
+        };
+      } catch (error: any) {
+        console.error("Failed to add agent:", error);
+        throw new Error(
+          `Failed to add agent: ${error?.message ?? "Unknown error"}`,
+        );
+      }
+    },
+  }),
+});
+
+export const createToolsForAgent = ({
+  ctx,
+  agent,
+  conversation,
+  agentParticipant,
+}: {
+  ctx: ActionCtx;
+  agent: Doc<"agents">;
+  agentParticipant: Doc<"conversationParticipants">;
+  conversation: Doc<"conversations">;
+}) => {
+  const allTools = createTools({ ctx, agent, conversation, agentParticipant });
+  return pick(allTools, [
+    ...(Object.keys(alwaysIncludedTools) as AgentToolName[]),
+    ...(agent.tools as AgentToolName[]),
+  ]);
+};
+</file>
+
+<file path="ai/triageMessage.ts">
+"use node";
+import { ActionCtx } from "../_generated/server";
+import { internal } from "../_generated/api";
+import { Doc } from "../_generated/dataModel";
+import { openai } from "@ai-sdk/openai";
+import { createToolsForAgent } from "./tools";
+import { generateText } from "ai";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+import { constructTriageInstructions } from "./instructions";
+import {
+  getTriageAgentAndEnsureItIsJoinedToConversation,
+  runAgentAIGeneration,
+  processAgentAIResult,
+} from "./utils";
+import { gatherMessages } from "./messages";
+
+export const triageMessage = async (
+  ctx: ActionCtx,
+  args: {
+    message: Doc<"conversationMessages">;
+    messageAuthor: ParticipantUserOrAgent;
+    conversation: Doc<"conversations">;
+  },
+) => {
+  const { agent, participant } =
+    await getTriageAgentAndEnsureItIsJoinedToConversation(
+      ctx,
+      args.conversation._id,
+    );
+
+  if (participant.kind !== "agent")
+    throw new Error(
+      `Participant of id '${participant._id}' is not an agent, but is of kind '${participant.kind}'`,
+    );
+
+  await runAgentAIGeneration(ctx, {
+    agent,
+    participant,
+    conversation: args.conversation,
+    generateAIResponse: async () => {
+      const result = await generateText({
+        model: openai("gpt-4o"),
+        tools: createToolsForAgent({
+          ctx,
+          agent,
+          agentParticipant: participant,
+          conversation: args.conversation,
+        }),
+        maxSteps: 20,
+        messages: await gatherMessages(ctx, {
+          systemMessage: constructTriageInstructions({
+            conversation: args.conversation,
+            messageAuthor: args.messageAuthor,
+            agent,
+          }),
+          conversation: args.conversation,
+          message: args.message,
+          messageAuthor: args.messageAuthor,
+        }),
+      });
+
+      await processAgentAIResult(ctx, {
+        result,
+        agent,
+        conversation: args.conversation,
+        participant,
+        sendMessage: async (text) => {
+          await ctx.runMutation(
+            internal.conversationMessages.internalMutations.sendFromTriageAgent,
+            {
+              conversationId: args.conversation._id,
+              content: text,
+            },
+          );
+        },
+      });
+
+      return result;
+    },
+  });
+};
+</file>
+
+<file path="ai/utils.ts">
+import { internal } from "../_generated/api";
+import { Doc, Id } from "../_generated/dataModel";
+import { ActionCtx } from "../_generated/server";
+import * as Agents from "../agents/model";
+
+export const sendSystemMessageToConversation = async (
+  ctx: ActionCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+    meta?: any;
+  },
+) =>
+  ctx.runMutation(
+    internal.conversationMessages.internalMutations.sendSystemMessage,
+    {
+      conversationId: args.conversationId as Id<"conversations">,
+      content: args.content,
+      meta: args.meta,
+    },
+  );
+
+export const getAgentAndEnsureItIsJoinedToConversation = async (
+  ctx: ActionCtx,
+  args: {
+    agentId: Id<"agents">;
+    conversationId: Id<"conversations">;
+  },
+) => {
+  // Get the referenced agent
+  const agent = await ctx.runQuery(internal.agents.internalQueries.find, {
+    agentId: args.agentId,
+  });
+
+  if (!agent)
+    throw new Error(`Agent of id '${args.agentId}' could not be found`);
+
+  // Get or create the participant for this agent in the conversation
+  const participant = await ctx.runMutation(
+    internal.conversationParticipants.internalMutations
+      .addAgentIfNotAlreadyJoined,
+    {
+      conversationId: args.conversationId,
+      agentId: agent._id,
+    },
+  );
+
+  return { agent, participant };
+};
+
+export const getTriageAgent = async (ctx: ActionCtx) => {
+  const agent = await ctx.runQuery(
+    internal.agents.internalQueries.findSystemAgentByKind,
+    { systemAgentKind: "triage" },
+  );
+  if (agent) return agent;
+  return await ctx.runMutation(
+    internal.agents.internalMutations.createSystemAgent,
+    {
+      systemAgentKind: "triage",
+      name: "System Triage Agent",
+      description: `Triage messages to the correct agent`,
+      personality: `Helpful, concise`,
+      avatarUrl: Agents.createAgentAvatarUrl(`system-triage`),
+      tools: [],
+      lastActiveTime: Date.now(),
+      kind: "system_agent",
+    },
+  );
+};
+
+export const getTriageAgentAndEnsureItIsJoinedToConversation = async (
+  ctx: ActionCtx,
+  conversationId: Id<"conversations">,
+) => {
+  const agent = await getTriageAgent(ctx);
+
+  const participant = await ctx.runMutation(
+    internal.conversations.internalMutations
+      .joinTriageAgentToConversationIfNotAlreadyJoined,
+    {
+      conversationId,
+    },
+  );
+
+  if (participant.kind != "agent")
+    throw new Error(
+      `Participant is not an agent, it should be as it is the triage agent`,
+    );
+
+  return { agent, participant };
+};
+
+/**
+ * Generic function to handle AI generation with consistent status management
+ */
+export const runAgentAIGeneration = async <T>(
+  ctx: ActionCtx,
+  args: {
+    agent: Doc<"agents">;
+    participant: Doc<"conversationParticipants"> & { kind: "agent" };
+    conversation: Doc<"conversations">;
+    generateAIResponse: () => Promise<T>;
+  },
+) => {
+  // Set the agent's status to thinking
+  await ctx.runMutation(
+    internal.conversationParticipants.internalMutations.updateParticipantStatus,
+    {
+      participantId: args.participant._id,
+      status: "thinking",
+    },
+  );
+
+  try {
+    return await args.generateAIResponse();
+  } catch (error: unknown) {
+    await handleAgentError(ctx, {
+      error,
+      conversationId: args.conversation._id,
+      errorContext: "responding to message",
+    });
+    return null;
+  } finally {
+    // No longer thinking
+    await ctx.runMutation(
+      internal.conversationParticipants.internalMutations
+        .updateParticipantStatus,
+      {
+        participantId: args.participant._id,
+        status: "inactive",
+      },
+    );
+  }
+};
+
+/**
+ * Handles agent errors with a consistent approach
+ */
+export const handleAgentError = async (
+  ctx: ActionCtx,
+  args: {
+    error: unknown;
+    conversationId: Id<"conversations">;
+    errorContext: string;
+  },
+) => {
+  console.error(`Error while ${args.errorContext}:`, args.error);
+
+  const errorMessage =
+    args.error instanceof Error ? args.error.message : "Unknown error";
+
+  // Send error message to conversation
+  await sendSystemMessageToConversation(ctx, {
+    conversationId: args.conversationId,
+    content: `Error while ${args.errorContext}: ${errorMessage}`,
+    meta: {
+      error: errorMessage,
+      errorContext: args.errorContext,
+      fullError:
+        args.error instanceof Error
+          ? {
+              message: args.error.message,
+              stack: args.error.stack,
+              name: args.error.name,
+            }
+          : String(args.error),
+    },
+  });
+};
+
+/**
+ * Process AI result and handle noOp cases
+ */
+export const processAgentAIResult = async (
+  ctx: ActionCtx,
+  args: {
+    result: { text: string; toolCalls: Array<{ toolName: string; args: any }> };
+    agent: Doc<"agents">;
+    conversation: Doc<"conversations">;
+    participant: Doc<"conversationParticipants"> & { kind: "agent" };
+    sendMessage: (text: string) => Promise<void>;
+  },
+) => {
+  console.log(`Agent result:`, args.result);
+  console.log(`Tool Calls:`, args.result.toolCalls);
+
+  if (args.result.text !== "") {
+    await args.sendMessage(args.result.text);
+  } else {
+    const noOp = args.result.toolCalls.find((t) => t.toolName === "noOutput");
+    if (noOp) {
+      await sendSystemMessageToConversation(ctx, {
+        conversationId: args.conversation._id,
+        content: `Agent ${args.agent.name} decided not to respond to the message because: "${noOp.args.reasoning}"`,
+        meta: {
+          toolName: "noOutput",
+          reasoning: noOp.args.reasoning,
+          agentName: args.agent.name,
+          agentId: args.agent._id,
+        },
+      });
+    }
+  }
+};
+</file>
+
+<file path="conversationMessages/internalActions.ts">
+"use node";
+import { internalAction } from "../_generated/server";
+import schema from "../schema";
+import { triageMessage } from "../ai/triageMessage";
+import { doc } from "convex-helpers/validators";
+import { agentReplyToMessage } from "../ai/agentReplyToMessage";
+import { internal } from "../_generated/api";
+import { parseMentionsFromMessageContent } from "../../shared/mentions";
+
+export const processMessage = internalAction({
+  args: {
+    message: doc(schema, "conversationMessages"),
+    conversation: doc(schema, "conversations"),
+  },
+  handler: async (ctx, args) => {
+    // Dont handle system
+    if (args.message.kind == "system") return;
+
+    // If there are no references then we should invoke the "triage agent" which will    decide what to do with the message
+
+    console.log(`Processing Message..`, args.message);
+
+    const references = parseMentionsFromMessageContent(args.message.content);
+
+    console.log(`Detected references`, references);
+
+    if (references.length == 0) {
+      const author = await ctx.runQuery(
+        internal.conversationParticipants.internalQueries
+          .getParticipantUserOrAgent,
+        { participantId: args.message.authorParticipantId },
+      );
+
+      if (author.kind != "user") {
+        console.log(`Not triaging agent messages`);
+        return;
+      }
+
+      await triageMessage(ctx, {
+        message: args.message,
+        conversation: args.conversation,
+        messageAuthor: author,
+      });
+    }
+
+    // Otherwise we should invoke each agent with the message
+    for (const reference of references) {
+      if (reference.kind == "agent") {
+        const author = await ctx.runQuery(
+          internal.conversationParticipants.internalQueries
+            .getParticipantUserOrAgent,
+          { participantId: args.message.authorParticipantId },
+        );
+        await agentReplyToMessage(ctx, {
+          message: args.message,
+          agentId: reference.agentId,
+          conversation: args.conversation,
+          messageAuthor: author,
+        });
+      }
+    }
+  },
+});
+</file>
+
+<file path="conversationMessages/internalMutations.ts">
+import { internalMutation } from "../_generated/server";
+import { v } from "convex/values";
+import * as Messages from "./model";
+import * as Agents from "../agents/model";
+import * as ConversationParticipants from "../conversationParticipants/model";
+
+export const sendFromTriageAgent = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    content: v.string(),
+  },
+  returns: v.id("conversationMessages"),
+  handler: async (ctx, args) => {
+    const triageAgent = await Agents.getTriageAgent(ctx.db);
+
+    const triageAgentParticipant =
+      await ConversationParticipants.getParticipantByConversationIdAndIdentifier(
+        ctx.db,
+        {
+          conversationId: args.conversationId,
+          identifier: {
+            kind: "agent",
+            agentId: triageAgent._id,
+          },
+        },
+      );
+
+    const messageId = await Messages.addMessageToConversationFromAgent(ctx, {
+      conversationId: args.conversationId,
+      content: args.content,
+      agentId: triageAgent._id,
+      authorParticipantId: triageAgentParticipant._id,
+    });
+
+    return messageId;
+  },
+});
+
+export const sendFromAgent = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    agentId: v.id("agents"),
+    content: v.string(),
+    authorParticipantId: v.id("conversationParticipants"),
+  },
+  returns: v.id("conversationMessages"),
+  handler: async (ctx, args) => {
+    return await Messages.addMessageToConversationFromAgent(ctx, args);
+  },
+});
+
+export const sendSystemMessage = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    content: v.string(),
+    meta: v.optional(v.any()),
+  },
+  returns: v.id("conversationMessages"),
+  handler: async (ctx, args) => {
+    return await Messages.addMessageToConversationFromSystem(ctx.db, args);
+  },
+});
+</file>
+
+<file path="conversationMessages/internalQueries.ts">
+import { internalQuery } from "../_generated/server";
+import { v } from "convex/values";
+import * as Messages from "./model";
+import * as ConversationParticipants from "../conversationParticipants/model";
+import { ensureFP } from "../../shared/ensure";
+import { pick } from "convex-helpers";
+import { exhaustiveCheck } from "../../shared/misc";
+
+export const listMessages = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+    count: v.number(),
+  },
+  handler: async (ctx, args) => {
+    return await Messages.listMessages(ctx.db, {
+      conversationId: args.conversationId,
+      limit: args.count,
+    });
+  },
+});
+
+export const listMessagesHistoryForAgentGeneration = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+    count: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const messages = await Messages.listMessages(ctx.db, {
+      conversationId: args.conversationId,
+      limit: args.count,
+      kind: "participant",
+    });
+
+    const messagesWithAuthorDetails = await Promise.all(
+      messages
+        .filter((m) => m.kind == "participant")
+        .map(async (message) => {
+          const userOrAgent =
+            await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+              participantId: message.authorParticipantId,
+            });
+
+          if (userOrAgent.kind == "agent")
+            return {
+              message,
+              author: {
+                ...pick(userOrAgent.agent, ["name", "_id"]),
+                kind: "agent",
+              } as const,
+            };
+
+          if (userOrAgent.kind == "user")
+            return {
+              message,
+              author: {
+                ...pick(userOrAgent.user, ["name", "_id"]),
+                kind: "user",
+              } as const,
+            };
+
+          exhaustiveCheck(userOrAgent);
+        }),
+    );
+
+    return messagesWithAuthorDetails;
+  },
+});
+
+export const getMessageAuthor = internalQuery({
+  args: {
+    messageId: v.id("conversationMessages"),
+  },
+  handler: async (ctx, args) => {
+    const message = await ctx.db.get(args.messageId).then(ensureFP());
+    if (message.kind == "system")
+      throw new Error("Message is a system message");
+    return await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+      participantId: message.authorParticipantId,
+    });
+  },
+});
+</file>
+
+<file path="conversationMessages/model.ts">
+import {
+  DatabaseReader,
+  DatabaseWriter,
+  MutationCtx,
+  QueryCtx,
+} from "../_generated/server";
+import { Doc, Id } from "../_generated/dataModel";
+import { internal } from "../_generated/api";
+import { ensureFP } from "../../shared/ensure";
+import * as ConversationParticipants from "../conversationParticipants/model";
+import { conversationAgentMessageSchemaValidator } from "./schema";
+import { ParticipantUserOrAgent } from "../conversationParticipants/model";
+
+export const addMessageToConversationFromUserOrAgent = async (
+  ctx: MutationCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+    authorParticipantId: Id<"conversationParticipants">;
+  },
+) => {
+  // Create the message
+  const messageId = await ctx.db.insert("conversationMessages", {
+    ...args,
+    kind: "participant",
+  });
+
+  // Update conversation's last message time
+  await ctx.db.patch(args.conversationId, {
+    lastMessageTime: Date.now(),
+  });
+
+  // Schedule a task to process the message
+  await ctx.scheduler.runAfter(
+    0,
+    internal.conversationMessages.internalActions.processMessage,
+    {
+      message: await ctx.db.get(messageId).then(ensureFP()),
+      conversation: await ctx.db.get(args.conversationId).then(ensureFP()),
+    },
+  );
+
+  return messageId;
+};
+
+export const addMessageToConversationFromSystem = async (
+  db: DatabaseWriter,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+    meta?: any;
+  },
+) => {
+  // Create the message
+  return await db.insert("conversationMessages", {
+    kind: "system",
+    conversationId: args.conversationId,
+    content: args.content,
+    ...(args.meta !== undefined && { meta: args.meta }),
+  });
+};
+
+export const addMessageToConversationFromMe = async (
+  ctx: MutationCtx,
+  args: {
+    conversationId: Id<"conversations">;
+    content: string;
+  },
+) => {
+  const participant = await ConversationParticipants.getMyParticipant(ctx, {
+    conversationId: args.conversationId,
+  });
+
+  const messageId = await addMessageToConversationFromUserOrAgent(ctx, {
+    ...args,
+    authorParticipantId: participant._id,
+  });
+
+  return messageId;
+};
+
+export const addMessageToConversationFromAgent = async (
+  ctx: MutationCtx,
+  {
+    authorParticipantId,
+    content,
+    conversationId,
+  }: {
+    conversationId: Id<"conversations">;
+    agentId: Id<"agents">;
+    content: string;
+    authorParticipantId: Id<"conversationParticipants">;
+  },
+) => {
+  return await addMessageToConversationFromUserOrAgent(ctx, {
+    conversationId,
+    content,
+    authorParticipantId,
+  });
+};
+
+export const listMessages = async (
+  db: DatabaseReader,
+  {
+    conversationId,
+    limit = 100,
+    kind,
+  }: {
+    conversationId: Id<"conversations">;
+    kind?: typeof conversationAgentMessageSchemaValidator.type.kind;
+    limit?: number;
+  },
+) => {
+  if (kind) {
+    return await db
+      .query("conversationMessages")
+      .withIndex("by_conversationId", (q) =>
+        q.eq("conversationId", conversationId),
+      )
+      .order("desc")
+      .take(limit)
+      .then((messages) => messages.reverse());
+  }
+
+  return await db
+    .query("conversationMessages")
+    .withIndex("by_conversationId", (q) =>
+      q.eq("conversationId", conversationId),
+    )
+    .order("desc")
+    .take(limit)
+    .then((messages) => messages.reverse());
+};
+
+// export const listMessagesAndJoinAuthorDetails = async (
+//   ctx: QueryCtx,
+//   {
+//     conversationId,
+//     limit = 50,
+//   }: {
+//     conversationId: Id<"conversations">;
+//     limit?: number;
+//   },
+// ) => {
+//   const messages = await listMessages(ctx, {
+//     conversationId,
+//     limit,
+//   });
+
+//   const messagesWithAuthorDetails = await Promise.all(
+//     messages.map(async (message) => {
+//       const userOrAgent =
+//         await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+//           participantId: message.author,
+//         });
+//       return { message, author: userOrAgent };
+//     }),
+//   );
+
+//   // Fetch avatar URLs and names for each message
+//   // const messagesWithAvatars = await Promise.all(
+//   //   messages.map(async (message) => {
+//   //     if (message.author.kind === "user") {
+//   //       const user = await ctx.db.get(message.author.userId);
+//   //       if (!user) return { ...message, avatarUrl: null };
+//   //       return {
+//   //         ...message,
+//   //         avatarUrl:
+//   //           user.image ??
+//   //           `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
+//   //       };
+//   //     }
+
+//   //     if (message.author.kind === "agent") {
+//   //       const agent = await ctx.db.get(message.author.agentId);
+//   //       if (!agent) return { ...message, avatarUrl: null };
+//   //       return {
+//   //         ...message,
+//   //         avatarUrl: agent.avatarUrl,
+//   //       };
+//   //     }
+
+//   //     if (message.author.kind === "system") {
+//   //       return {
+//   //         ...message,
+//   //         avatarUrl: null,
+//   //       };
+//   //     }
+
+//   //     exhaustiveCheck(message.author);
+//   //   }),
+//   // );
+
+//   return messages;
+// };
+
+export const createParticipantJoinedConversationMessage = async (
+  db: DatabaseWriter,
+  args: {
+    conversationId: Id<"conversations">;
+    agentOrUser: Doc<"agents"> | Doc<"users">;
+  },
+) => {
+  const name = args.agentOrUser.name ?? "Unknown";
+
+  await addMessageToConversationFromSystem(db, {
+    conversationId: args.conversationId,
+    content: `👋 ${name} has joined the conversation.`,
+  });
+};
+
+export const createParticipantLeftConversationMessage = async (
+  db: DatabaseWriter,
+  args: {
+    conversationId: Id<"conversations">;
+    participant: ParticipantUserOrAgent;
+  },
+) => {
+  const name =
+    args.participant.kind === "user"
+      ? args.participant.user.name
+      : args.participant.agent.name;
+
+  await addMessageToConversationFromSystem(db, {
+    conversationId: args.conversationId,
+    content: `🚪 ${name} has left the conversation.`,
+  });
+};
+
+export const deleteAllMessagesForConversation = async (
+  db: DatabaseWriter,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const messages = await db
+    .query("conversationMessages")
+    .withIndex("by_conversationId", (q) =>
+      q.eq("conversationId", conversationId),
+    )
+    .collect();
+
+  await Promise.all(messages.map((message) => db.delete(message._id)));
+};
+</file>
+
+<file path="conversationMessages/mutations.ts">
+import { v } from "convex/values";
+import { mutation } from "../_generated/server";
+import * as Conversations from "../conversations/model";
+import * as Messages from "./model";
+
+export const sendFromMe = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await Conversations.ensureICanAccessConversation(ctx, {
+      conversationId: args.conversationId,
+    });
+    return Messages.addMessageToConversationFromMe(ctx, args);
+  },
+});
+</file>
+
+<file path="conversationMessages/queries.ts">
+import {query} from '../_generated/server';
+import {v} from 'convex/values';
+import * as Messages from './model';
+import * as Conversations from '../conversations/model';
+
+export const listForMe = query({
+  args: {
+    conversationId: v.id("conversations"),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    await Conversations.ensureICanAccessConversation(ctx, {
+      conversationId: args.conversationId,
+    });
+    return Messages.listMessages(ctx.db, args);
+  },
+});
+</file>
+
+<file path="conversationMessages/schema.ts">
+import { defineTable } from "convex/server";
+import { v } from "convex/values";
+
+export const conversationMessageReferenceSchemaValidator = v.union(
+  v.object({
+    kind: v.literal("agent"),
+    agentId: v.id("agents"),
+  }),
+  v.object({
+    kind: v.literal("user"),
+    userId: v.id("users"),
+  }),
+);
+
+export const conversationMessageReferencesSchemaValidator = v.array(
+  conversationMessageReferenceSchemaValidator,
+);
+
+const common = {
+  conversationId: v.id("conversations"),
+  content: v.string(),
+};
+
+export const conversationParticipantMessageSchemaValidator = v.object({
+  ...common,
+  kind: v.literal("participant"),
+  authorParticipantId: v.id("conversationParticipants"),
+});
+
+export const conversationAgentMessageSchemaValidator = v.union(
+  conversationParticipantMessageSchemaValidator,
+  v.object({
+    ...common,
+    kind: v.literal("system"),
+    meta: v.optional(v.any()),
+  }),
+);
+
+export const conversationMessagesTable = defineTable(
+  conversationAgentMessageSchemaValidator,
+)
+  .index("by_conversationId", ["conversationId"])
+  .index("by_conversationId_kind", ["conversationId", "kind"]);
+</file>
+
+<file path="conversationParticipants/internalMutations.ts">
+import {internalMutation} from '../_generated/server';
+import {v} from 'convex/values';
+import * as ConversationParticipants from './model';
+
+
+export const updateParticipantStatus = internalMutation({
+  args: {
+    participantId: v.id("conversationParticipants"),
+    status: v.union(v.literal("thinking"), v.literal("inactive")),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.participantId, {
+      status: args.status,
+    });
+    return null;
+  },
+});
+
+
+export const addAgentIfNotAlreadyJoined = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, args) => {
+    const participant =
+      await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
+        ctx.db,
+        {
+          conversationId: args.conversationId,
+          identifier: {
+            kind: "agent",
+            agentId: args.agentId,
+          },
+        },
+      );
+
+    if (participant && participant.isRemoved == false) return participant;
+
+    const participantId =
+      await ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
+        conversationId: args.conversationId,
+        agentId: args.agentId,
+      });
+
+    return ConversationParticipants.getParticipant(ctx.db, {
+      participantId: participantId,
+    });
+  },
+});
+</file>
+
+<file path="conversationParticipants/internalQueries.ts">
+import { internalQuery } from "../_generated/server";
+import { v } from "convex/values";
+import * as ConversationParticipants from "./model";
+import { conversationParticipantIdentifierSchemaValidator } from "./schema";
+
+export const listNonSystemAgentParticipants = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    return await ConversationParticipants.listNonSystemAgentParticipants(
+      ctx.db,
+      args,
+    );
+  },
+});
+
+export const listNonSystemAgentParticipantsWithJoinedDetails = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const participants =
+      await ConversationParticipants.listParticipantsWithJoinedDetails(
+        ctx.db,
+        args,
+      );
+
+    return participants
+      .filter((p) => {
+        if (p.agent && p.agent.kind == "system_agent") return null;
+        return p;
+      })
+      .filter((p) => p !== null);
+  },
+});
+
+export const findParticipantByConversationIdAndIdentifier = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+    identifier: conversationParticipantIdentifierSchemaValidator,
+  },
+  handler: async (ctx, args) => {
+    return await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
+      ctx.db,
+      args,
+    );
+  },
+});
+
+export const getParticipantUserOrAgent = internalQuery({
+  args: {
+    participantId: v.id("conversationParticipants"),
+  },
+  handler: async (ctx, args) => {
+    return await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+      participantId: args.participantId,
+    });
+  },
+});
+</file>
+
+<file path="conversationParticipants/model.ts">
+import { DatabaseReader, DatabaseWriter, QueryCtx } from "../_generated/server";
+import { Doc, Id } from "../_generated/dataModel";
+import * as Agents from "../agents/model";
+import * as Users from "../users/model";
+import { exhaustiveCheck } from "../../shared/misc";
+import { conversationParticipantIdentifierSchemaValidator } from "./schema";
+import * as ConversationMessages from "../conversationMessages/model";
+import { get } from "../agents/model";
+
+export const getNonRemovedParticipants = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await db
+    .query("conversationParticipants")
+    .withIndex("by_conversationId_isRemoved", (q) =>
+      q.eq("conversationId", conversationId).eq("isRemoved", false),
+    )
+    .collect();
+
+  return participants;
+};
+
+export const findParticipant = async (
+  db: DatabaseReader,
+  { participantId }: { participantId: Id<"conversationParticipants"> },
+) => {
+  return await db.get(participantId);
+};
+
+export const getParticipant = async (
+  db: DatabaseReader,
+  { participantId }: { participantId: Id<"conversationParticipants"> },
+) => {
+  const participant = await findParticipant(db, { participantId });
+  if (!participant) throw new Error(`Participant not found ${participantId}`);
+  return participant;
+};
+
+export const getParticipantUserOrAgent = async (
+  db: DatabaseReader,
+  { participantId }: { participantId: Id<"conversationParticipants"> },
+): Promise<
+  { kind: "agent"; agent: Doc<"agents"> } | { kind: "user"; user: Doc<"users"> }
+> => {
+  const participant = await getParticipant(db, { participantId });
+
+  if (participant.kind === "agent")
+    return {
+      kind: "agent" as const,
+      agent: await Agents.get(db, { agentId: participant.agentId }),
+    };
+
+  if (participant.kind === "user")
+    return {
+      kind: "user",
+      user: await Users.get(db, { userId: participant.userId }),
+    };
+
+  exhaustiveCheck(participant);
+};
+export type ParticipantUserOrAgent = Awaited<
+  ReturnType<typeof getParticipantUserOrAgent>
+>;
+
+export const addAgentOrReactivate = async (
+  db: DatabaseWriter,
+  {
+    conversationId,
+    agentId,
+  }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+) => {
+  const existing = await db
+    .query("conversationParticipants")
+    .withIndex("by_conversationId_kind_agentId", (q) =>
+      q
+        .eq("conversationId", conversationId)
+        .eq("kind", "agent")
+        .eq("agentId", agentId),
+    )
+    .first();
+
+  if (existing) {
+    if (existing.isRemoved)
+      await db.patch(existing._id, {
+        isRemoved: false,
+      });
+
+    return existing._id;
+  }
+
+  return db.insert("conversationParticipants", {
+    conversationId,
+    agentId,
+    kind: "agent",
+    addedAt: Date.now(),
+    status: "inactive",
+    isRemoved: false,
+  });
+};
+
+export const addAgentAndSendJoinMessage = async (
+  db: DatabaseWriter,
+  {
+    conversationId,
+    agentId,
+  }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+) => {
+  const participantId = await addAgentOrReactivate(db, {
+    conversationId,
+    agentId,
+  });
+  const agent = await Agents.get(db, { agentId });
+  await ConversationMessages.createParticipantJoinedConversationMessage(db, {
+    conversationId,
+    agentOrUser: agent,
+  });
+  return participantId;
+};
+
+export const addUser = async (
+  db: DatabaseWriter,
+  {
+    conversationId,
+    userId,
+  }: { conversationId: Id<"conversations">; userId: Id<"users"> },
+) => {
+  const existing = await db
+    .query("conversationParticipants")
+    .withIndex("by_conversationId_kind_userId", (q) =>
+      q
+        .eq("conversationId", conversationId)
+        .eq("kind", "user")
+        .eq("userId", userId),
+    )
+    .first();
+
+  if (existing) return existing._id;
+
+  return db.insert("conversationParticipants", {
+    conversationId,
+    userId,
+    kind: "user",
+    addedAt: Date.now(),
+    status: "inactive",
+    isRemoved: false,
+  });
+};
+
+export const removeParticipant = async (
+  db: DatabaseWriter,
+  { participantId }: { participantId: Id<"conversationParticipants"> },
+) => {
+  await db.patch(participantId, {
+    isRemoved: true,
+  });
+};
+
+export const findParticipantByConversationIdAndIdentifier = async (
+  db: DatabaseReader,
+  {
+    conversationId,
+    identifier,
+  }: {
+    conversationId: Id<"conversations">;
+    identifier: typeof conversationParticipantIdentifierSchemaValidator.type;
+  },
+) => {
+  if (identifier.kind === "agent") {
+    return await db
+      .query("conversationParticipants")
+      .withIndex("by_conversationId_kind_agentId", (q) =>
+        q
+          .eq("conversationId", conversationId)
+          .eq("kind", "agent")
+          .eq("agentId", identifier.agentId),
+      )
+      .first();
+  }
+
+  if (identifier.kind === "user") {
+    return await db
+      .query("conversationParticipants")
+      .withIndex("by_conversationId_kind_userId", (q) =>
+        q
+          .eq("conversationId", conversationId)
+          .eq("kind", "user")
+          .eq("userId", identifier.userId),
+      )
+      .first();
+  }
+
+  exhaustiveCheck(identifier);
+};
+
+export const getParticipantByConversationIdAndIdentifier = async (
+  db: DatabaseReader,
+  args: {
+    conversationId: Id<"conversations">;
+    identifier: typeof conversationParticipantIdentifierSchemaValidator.type;
+  },
+) => {
+  const participant = await findParticipantByConversationIdAndIdentifier(
+    db,
+    args,
+  );
+  if (!participant) throw new Error(`Participant not found ${args.identifier}`);
+  return participant;
+};
+
+export const findUserParticipantInConversation = async (
+  db: DatabaseReader,
+  {
+    conversationId,
+    userId,
+  }: { conversationId: Id<"conversations">; userId: Id<"users"> },
+) => {
+  return await findParticipantByConversationIdAndIdentifier(db, {
+    conversationId,
+    identifier: { kind: "user", userId },
+  });
+};
+
+export const getMyParticipant = async (
+  ctx: QueryCtx,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const participant = await findParticipantByConversationIdAndIdentifier(
+    ctx.db,
+    {
+      conversationId,
+      identifier: { kind: "user", userId },
+    },
+  );
+  if (!participant) throw new Error(`Participant not found ${userId}`);
+  return participant;
+};
+
+export const doesHaveAgent = async (
+  db: DatabaseReader,
+  {
+    conversationId,
+    agentId,
+  }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+) => {
+  const conversationParticipant =
+    await findParticipantByConversationIdAndIdentifier(db, {
+      conversationId,
+      identifier: { kind: "agent", agentId },
+    });
+  return !!conversationParticipant;
+};
+
+export const doesHaveTriageAgent = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const triageAgent = await Agents.getTriageAgent(db);
+  return doesHaveAgent(db, { conversationId, agentId: triageAgent._id });
+};
+
+export const getParticipantDetails = async (
+  db: DatabaseReader,
+  participant: Doc<"conversationParticipants">,
+  options?: {
+    includeDescription?: boolean;
+    isCreator?: (participant: Doc<"conversationParticipants">) => boolean;
+  },
+) => {
+  if (participant.kind === "agent") {
+    const agent = await db.get(participant.agentId);
+    if (!agent) return null;
+    return {
+      id: participant._id,
+      name: agent.name,
+      avatarUrl: agent.avatarUrl,
+      kind: "agent",
+      ...(options?.includeDescription && { description: agent.description }),
+      ...(options?.includeDescription && {
+        isSystem: agent.kind === "system_agent",
+      }),
+      isCreator: false,
+    };
+  } else {
+    const user = await db.get(participant.userId);
+    if (!user) return null;
+    return {
+      id: participant._id,
+      name: user.name ?? "Unknown User",
+      avatarUrl:
+        user.image ??
+        `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`,
+      kind: "user",
+      isCreator: options?.isCreator?.(participant) ?? false,
+    };
+  }
+};
+
+export const listNonSystemAgentParticipants = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await getNonRemovedParticipants(db, { conversationId });
+
+  // Filter to only agent participants and get their details
+  const agentParticipants = await Promise.all(
+    participants
+      .filter((p) => p.kind === "agent")
+      .map(async (p) => {
+        if (p.kind !== "agent") return null; // TypeScript narrowing
+        const agent = await Agents.find(db, { agentId: p.agentId });
+        if (!agent || agent.kind === "system_agent") return null;
+        return {
+          participant: p,
+          agent,
+        };
+      }),
+  );
+
+  return agentParticipants.filter(
+    (p): p is NonNullable<typeof p> => p !== null,
+  );
+};
+
+export const listParticipantsWithJoinedDetails = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await getNonRemovedParticipants(db, { conversationId });
+
+  const participantsWithDetails = await Promise.all(
+    participants.map(async (participant) => {
+      if (participant.kind === "agent")
+        return {
+          participant,
+          agent: await Agents.get(db, { agentId: participant.agentId }),
+        };
+
+      if (participant.kind === "user")
+        return {
+          participant,
+          user: await Users.get(db, { userId: participant.userId }),
+        };
+
+      exhaustiveCheck(participant);
+    }),
+  );
+
+  return participantsWithDetails;
+};
+
+export const getNonSystemAgentParticipants = async (
+  db: DatabaseReader,
+  args: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await listNonSystemAgentParticipants(db, args);
+  if (!participants)
+    throw new Error(
+      `No non-system agent participants found for conversation '${args.conversationId}'`,
+    );
+  return participants;
+};
+
+export const deleteAllParticipantsForConversation = async (
+  db: DatabaseWriter,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const participants = await db
+    .query("conversationParticipants")
+    .withIndex("by_conversationId", (q) =>
+      q.eq("conversationId", conversationId),
+    )
+    .collect();
+
+  await Promise.all(
+    participants.map((participant) => db.delete(participant._id)),
+  );
+};
+</file>
+
+<file path="conversationParticipants/mutations.ts">
+import { mutation } from "../_generated/server";
+import { v } from "convex/values";
+import * as ConversationParticipants from "./model";
+import { ensureICanAccessConversation } from "../conversations/model";
+import * as ConversationMessages from "../conversationMessages/model";
+import { ensureICanAccessAgent } from "../agents/model";
+import { addAgentAndSendJoinMessage } from "./model";
+
+export const addAgent = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    agentId: v.id("agents"),
+  },
+  handler: async (ctx, { conversationId, agentId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    await ensureICanAccessAgent(ctx, { agentId });
+    return ConversationParticipants.addAgentAndSendJoinMessage(ctx.db, {
+      conversationId,
+      agentId,
+    });
+  },
+});
+
+export const addUser = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, { conversationId, userId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    return ConversationParticipants.addUser(ctx.db, { conversationId, userId });
+  },
+});
+
+export const removeParticipant = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    participantId: v.id("conversationParticipants"),
+  },
+  handler: async (ctx, { conversationId, participantId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+
+    const participant =
+      await ConversationParticipants.getParticipantUserOrAgent(ctx.db, {
+        participantId,
+      });
+
+    if (participant.kind == "agent" && participant.agent.kind == "system_agent")
+      throw new Error("Cannot remove system agent from conversation");
+
+    await ConversationParticipants.removeParticipant(ctx.db, { participantId });
+
+    await ConversationMessages.createParticipantLeftConversationMessage(
+      ctx.db,
+      {
+        conversationId,
+        participant,
+      },
+    );
+
+    return null;
+  },
+});
+</file>
+
+<file path="conversationParticipants/queries.ts">
+import { query } from "../_generated/server";
+import { v } from "convex/values";
+import * as ConversationParticipants from "./model";
+import { ensureICanAccessConversation } from "../conversations/model";
+
+export const listForMe = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    return ConversationParticipants.getNonRemovedParticipants(ctx.db, {
+      conversationId,
+    });
+  },
+});
+
+export const listAvatars = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    const participants =
+      await ConversationParticipants.getNonRemovedParticipants(ctx.db, {
+        conversationId,
+      });
+
+    const participantPromises = participants.map(async (p) => {
+      if (p.kind === "agent") {
+        const agent = await ctx.db.get(p.agentId);
+        if (agent) return agent.avatarUrl;
+        return null;
+      } else {
+        const user = await ctx.db.get(p.userId);
+        if (!user) return null;
+        return (
+          user.image ??
+          `https://api.dicebear.com/7.x/avataaars/svg?seed=${user._id}`
+        );
+      }
+    });
+
+    const avatars = (await Promise.all(participantPromises)).filter(
+      (r) => r != null,
+    );
+    return avatars;
+  },
+});
+
+export const listDetailsForMe = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    const conversation = await ensureICanAccessConversation(ctx, {
+      conversationId,
+    });
+    const participants =
+      await ConversationParticipants.getNonRemovedParticipants(ctx.db, {
+        conversationId,
+      });
+
+    const details = await Promise.all(
+      participants.map((p) =>
+        ConversationParticipants.getParticipantDetails(ctx.db, p, {
+          includeDescription: true,
+          isCreator: (p) =>
+            p.kind === "user" && p.userId === conversation.createdBy,
+        }),
+      ),
+    );
+
+    return details.filter((d): d is NonNullable<typeof d> => d !== null);
+  },
+});
+
+export const listThinkingParticipants = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, { conversationId }) => {
+    await ensureICanAccessConversation(ctx, { conversationId });
+    const participants = await ctx.db
+      .query("conversationParticipants")
+      .withIndex("by_conversationId_status", (q) =>
+        q.eq("conversationId", conversationId).eq("status", "thinking"),
+      )
+      .collect();
+
+    const details = await Promise.all(
+      participants.map((p) =>
+        ConversationParticipants.getParticipantDetails(ctx.db, p),
+      ),
+    );
+
+    return details.filter((d): d is NonNullable<typeof d> => d !== null);
+  },
+});
+</file>
+
+<file path="conversationParticipants/schema.ts">
+import { v } from "convex/values";
+import { defineTable } from "convex/server";
+
+export const conversationParticipantStatusSchemaValidator = v.union(
+  v.literal("inactive"),
+  v.literal("thinking"),
+);
+
+const common = {
+  conversationId: v.id("conversations"),
+  addedAt: v.number(),
+  status: conversationParticipantStatusSchemaValidator,
+  isRemoved: v.boolean(),
+};
+
+export const conversationParticipantIdentifierSchemaValidator = v.union(
+  v.object({
+    kind: v.literal("agent"),
+    agentId: v.id("agents"),
+  }),
+  v.object({
+    kind: v.literal("user"),
+    userId: v.id("users"),
+  }),
+);
+
+export const conversationParticipantsSchemaValidator = v.union(
+  v.object({
+    kind: v.literal("agent"),
+    agentId: v.id("agents"),
+    ...common,
+  }),
+  v.object({
+    kind: v.literal("user"),
+    userId: v.id("users"),
+    ...common,
+  }),
+);
+
+export const conversationParticipantsTable = defineTable(
+  conversationParticipantsSchemaValidator,
+)
+  .index("by_conversationId", ["conversationId"])
+  .index("by_conversationId_isRemoved", ["conversationId", "isRemoved"])
+  .index("by_userId", ["userId"])
+  .index("by_conversationId_kind_agentId", [
+    "conversationId",
+    "kind",
+    "agentId",
+  ])
+  .index("by_conversationId_kind_userId", ["conversationId", "kind", "userId"])
+  .index("by_conversationId_status", ["conversationId", "status"]);
+</file>
+
+<file path="conversations/internalMutations.ts">
+import { internalMutation } from "../_generated/server";
+import { v } from "convex/values";
+import * as Conversations from "./model";
+
+export const joinTriageAgentToConversationIfNotAlreadyJoined = internalMutation(
+  {
+    args: {
+      conversationId: v.id("conversations"),
+    },
+    handler: async (ctx, args) => {
+      return await Conversations.joinTriageAgentToConversationIfNotAlreadyJoined(
+        ctx.db,
+        args,
+      );
+    },
+  },
+);
+
+export const update = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => Conversations.update(ctx, args),
+});
+</file>
+
+<file path="conversations/internalQueries.ts">
+import {internalQuery} from '../_generated/server';
+import {v} from 'convex/values';
+import * as Conversations from './model';
+
+export const isTriageAgentJoined = internalQuery({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    return await Conversations.isTriageAgentJoined(ctx.db, args);
+  },
+});
+</file>
+
+<file path="conversations/model.ts">
+import {
+  DatabaseReader,
+  DatabaseWriter,
+  MutationCtx,
+  QueryCtx,
+} from "../_generated/server";
+import { Id } from "../_generated/dataModel";
+import * as Users from "../users/model";
+import * as ConversationParticipants from "../conversationParticipants/model";
+import * as Agents from "../agents/model";
+import { doesHaveTriageAgent } from "../conversationParticipants/model";
+import * as ConversationMessages from "../conversationMessages/model";
+
+export const ensureICanAccessConversation = async (
+  ctx: QueryCtx | MutationCtx,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const conversation = await ctx.db.get(conversationId);
+
+  if (!conversation) throw new Error("Conversation not found");
+  if (conversation.createdBy !== userId) throw new Error("Access denied");
+
+  return conversation;
+};
+
+export const createConversation = async (
+  ctx: MutationCtx,
+  { title }: { title: string },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const conversationId = await ctx.db.insert("conversations", {
+    title,
+    createdBy: userId,
+    lastMessageTime: Date.now(),
+  });
+
+  // Add the creator as a participant
+  await ConversationParticipants.addUser(ctx.db, { conversationId, userId });
+
+  return conversationId;
+};
+
+export const listMine = async (ctx: QueryCtx) => {
+  const userId = await Users.getMyId(ctx);
+
+  return await ctx.db
+    .query("conversations")
+    .withIndex("by_user_and_time", (q) => q.eq("createdBy", userId))
+    .order("desc")
+    .collect();
+};
+
+export const findMine = async (
+  ctx: QueryCtx,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const userId = await Users.getMyId(ctx);
+  const conversation = await ctx.db.get(conversationId);
+  if (conversation && conversation.createdBy !== userId)
+    throw new Error("Access denied");
+  return conversation;
+};
+
+export const getMine = async (
+  ctx: QueryCtx,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const conversation = await findMine(ctx, { conversationId });
+  if (!conversation) throw new Error("Conversation not found");
+  return conversation;
+};
+
+export const update = async (
+  ctx: MutationCtx,
+  {
+    conversationId,
+    title,
+  }: { conversationId: Id<"conversations">; title: string },
+) => {
+  return await ctx.db.patch(conversationId, { title });
+};
+
+export const updateMine = async (
+  ctx: MutationCtx,
+  {
+    conversationId,
+    title,
+  }: { conversationId: Id<"conversations">; title: string },
+) => {
+  await ensureICanAccessConversation(ctx, { conversationId });
+  return update(ctx, { conversationId, title });
+};
+
+export const removeMine = async (
+  ctx: MutationCtx,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  await ensureICanAccessConversation(ctx, { conversationId });
+
+  // Delete all messages and participants first
+  await ConversationMessages.deleteAllMessagesForConversation(ctx.db, {
+    conversationId,
+  });
+
+  await ConversationParticipants.deleteAllParticipantsForConversation(ctx.db, {
+    conversationId,
+  });
+
+  // Finally delete the conversation itself
+  await ctx.db.delete(conversationId);
+};
+
+export const isTriageAgentJoined = async (
+  db: DatabaseReader,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  return await doesHaveTriageAgent(db, { conversationId });
+};
+
+export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
+  db: DatabaseWriter,
+  { conversationId }: { conversationId: Id<"conversations"> },
+) => {
+  const agent = await Agents.getSystemAgentByKind(db, {
+    systemAgentKind: "triage",
+  });
+  const conversation = await db.get(conversationId);
+  if (!conversation)
+    throw new Error(`Conversation not found ${conversationId}`);
+
+  // If we have the triage agent in the conversation then we can return that
+  const triageAgent = await Agents.getTriageAgent(db);
+  const triageAgentParticipant =
+    await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
+      db,
+      {
+        conversationId,
+        identifier: {
+          kind: "agent",
+          agentId: triageAgent._id,
+        },
+      },
+    );
+  if (triageAgentParticipant) return triageAgentParticipant;
+
+  // Otherwise we add the triage agent to the conversation
+  const participantId = await ConversationParticipants.addAgentOrReactivate(
+    db,
+    {
+      conversationId,
+      agentId: agent._id,
+    },
+  );
+
+  // We also create a message to notify the user that the triage agent has joined the conversation
+  await ConversationMessages.createParticipantJoinedConversationMessage(db, {
+    conversationId,
+    agentOrUser: triageAgent,
+  });
+
+  return ConversationParticipants.getParticipant(db, { participantId });
+};
+
+export const joinAgentToConversationIfNotAlreadyJoined = async (
+  db: DatabaseWriter,
+  {
+    conversationId,
+    agentId,
+  }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+) => {
+  const agent = await db.get(agentId);
+  if (!agent) throw new Error(`Agent of id '${agentId}' could not be found`);
+
+  const conversation = await db.get(conversationId);
+  if (!conversation)
+    throw new Error(
+      `Conversation of id '${conversationId}' could not be found`,
+    );
+
+  // Check if the agent is already a participant in the conversation
+  const existingParticipant =
+    await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
+      db,
+      {
+        conversationId,
+        identifier: {
+          kind: "agent",
+          agentId,
+        },
+      },
+    );
+
+  if (existingParticipant) return existingParticipant;
+
+  // Add the agent to the conversation
+  const participantId = await ConversationParticipants.addAgentOrReactivate(
+    db,
+    {
+      conversationId,
+      agentId,
+    },
+  );
+
+  // Create a message to notify that the agent has joined the conversation
+  await ConversationMessages.createParticipantJoinedConversationMessage(db, {
+    conversationId,
+    agentOrUser: agent,
+  });
+
+  return ConversationParticipants.getParticipant(db, { participantId });
+};
+</file>
+
+<file path="conversations/mutations.ts">
+import { mutation } from "../_generated/server";
+import { v } from "convex/values";
+import * as Conversations from "./model";
+
+export const create = mutation({
+  args: {
+    title: v.string(),
+  },
+  handler: async (ctx, args) => Conversations.createConversation(ctx, args),
+});
+
+export const updateMine = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    title: v.string(),
+  },
+  handler: async (ctx, args) => Conversations.updateMine(ctx, args),
+});
+
+export const removeMine = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => Conversations.removeMine(ctx, args),
+});
+</file>
+
+<file path="conversations/queries.ts">
+import {query} from '../_generated/server';
+import {v} from 'convex/values';
+import * as Conversations from './model';
+
+
+
+export const listMine = query({
+  args: {},
+  handler: async (ctx) => Conversations.listMine(ctx),
+});
+
+export const getMine = query({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => Conversations.getMine(ctx, args),
+});
+
+export const findMine = query({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => Conversations.findMine(ctx, args),
+});
+</file>
+
+<file path="users/model.ts">
+import { getAuthUserId } from "@convex-dev/auth/server";
+import { DatabaseReader, QueryCtx } from "../_generated/server";
+import { Id } from "../_generated/dataModel";
+
+export const find = async (
+  db: DatabaseReader,
+  { userId }: { userId: Id<"users"> },
+) => {
+  return await db.get(userId);
+};
+
+export const get = async (
+  db: DatabaseReader,
+  { userId }: { userId: Id<"users"> },
+) => {
+  const user = await find(db, { userId });
+  if (!user) throw new Error(`User not found ${userId}`);
+  return user;
+};
+
+export const getMyId = async (ctx: QueryCtx) => {
+  const userId = await getAuthUserId(ctx);
+  if (!userId) throw new Error("Not authenticated");
+  return userId;
+};
+
+export const getMe = async (ctx: QueryCtx) => {
+  const userId = await getMyId(ctx);
+  const user = await ctx.db.get(userId);
+  if (!user) throw new Error("User not found");
+  return user;
+};
+</file>
+
+<file path="users/queries.ts">
+import { v } from "convex/values";
+import { query } from "../_generated/server";
+import * as Users from "./model";
+import { pick } from "convex-helpers";
+import { Id } from "../_generated/dataModel";
+
+export const getMe = query({
+  args: {},
+  handler: async (ctx) => Users.getMe(ctx),
+});
+
+export const findMention = query({
+  args: {
+    userId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    try {
+      const user = await ctx.db.get(args.userId as Id<"users">);
+      if (!user) return null;
+      return pick(user, ["name", "_id", "image"]);
+    } catch (error) {
+      // Return null if ID is invalid or any other error occurs
+      return null;
+    }
+  },
+});
+</file>
+
+<file path="auth.config.ts">
+export default {
+  providers: [
+    {
+      domain: process.env.CONVEX_SITE_URL,
+      applicationID: "convex",
+    },
+    {
+      domain: process.env.CONVEX_SITE_URL,
+      applicationID: "password",
+      validatePassword: async (password: string) => {
+        // In a real app, you'd want to enforce password strength
+        return true;
+      },
+    },
+  ],
+};
+</file>
+
+<file path="auth.ts">
+import { convexAuth } from "@convex-dev/auth/server";
+import { Password } from "@convex-dev/auth/providers/Password";
+import GitHub from "@auth/core/providers/github";
+
+export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
+  providers: [GitHub, Password],
+});
+</file>
+
+<file path="http.ts">
+import { httpRouter } from "convex/server";
+import { auth } from "./auth";
+
+const http = httpRouter();
+
+auth.addHttpRoutes(http);
+
+export default http;
+</file>
+
+<file path="README.md">
+# Welcome to your Convex functions directory!
+
+Write your Convex functions here.
+See https://docs.convex.dev/functions for more.
+
+A query function that takes two arguments looks like:
+
+```ts
+// functions.js
+import { query } from "./_generated/server";
+import { v } from "convex/values";
+
+export const myQueryFunction = query({
+  // Validators for arguments.
+  args: {
+    first: v.number(),
+    second: v.string(),
+  },
+
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Read the database as many times as you need here.
+    // See https://docs.convex.dev/database/reading-data.
+    const documents = await ctx.db.query("tablename").collect();
+
+    // Arguments passed from the client are properties of the args object.
+    console.log(args.first, args.second);
+
+    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
+    // remove non-public properties, or create new objects.
+    return documents;
+  },
+});
+```
+
+Using this query function in a React component looks like:
+
+```ts
+const data = useQuery(api.functions.myQueryFunction, {
+  first: 10,
+  second: "hello",
+});
+```
+
+A mutation function looks like:
+
+```ts
+// functions.js
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const myMutationFunction = mutation({
+  // Validators for arguments.
+  args: {
+    first: v.string(),
+    second: v.string(),
+  },
+
+  // Function implementation.
+  handler: async (ctx, args) => {
+    // Insert or modify documents in the database here.
+    // Mutations can also read from the database like queries.
+    // See https://docs.convex.dev/database/writing-data.
+    const message = { body: args.first, author: args.second };
+    const id = await ctx.db.insert("messages", message);
+
+    // Optionally, return a value from your mutation.
+    return await ctx.db.get(id);
+  },
+});
+```
+
+Using this mutation function in a React component looks like:
+
+```ts
+const mutation = useMutation(api.functions.myMutationFunction);
+function handleButtonPress() {
+  // fire and forget, the most common way to use mutations
+  mutation({ first: "Hello!", second: "me" });
+  // OR
+  // use the result once the mutation has completed
+  mutation({ first: "Hello!", second: "me" }).then((result) =>
+    console.log(result),
+  );
+}
+```
+
+Use the Convex CLI to push your functions to a deployment. See everything
+the Convex CLI can do by running `npx convex -h` in your project root
+directory. To learn more, launch the docs with `npx convex docs`.
+</file>
+
+<file path="schema.ts">
+import { defineSchema, defineTable } from "convex/server";
+import { authTables } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { agentsSchemaValidator } from "./agents/schema";
+import { conversationParticipantsTable } from "./conversationParticipants/schema";
+import { conversationMessagesTable } from "./conversationMessages/schema";
+
+// The schema is normally optional, but Convex Auth
+// requires indexes defined on `authTables`.
+// The schema provides more precise TypeScript types.
+export default defineSchema({
+  ...authTables,
+
+  conversations: defineTable({
+    title: v.string(),
+    createdBy: v.id("users"),
+    lastMessageTime: v.number(),
+  }).index("by_user_and_time", ["createdBy", "lastMessageTime"]),
+
+  agents: defineTable(agentsSchemaValidator)
+    .index("by_creator", ["createdBy"])
+    .index("by_name", ["name"])
+    .index("by_system_agent_kind", ["systemAgentKind"]),
+
+  conversationParticipants: conversationParticipantsTable,
+  conversationMessages: conversationMessagesTable,
+});
+</file>
+
+<file path="tsconfig.json">
+{
+  /* This TypeScript project config describes the environment that
+   * Convex functions run in and is used to typecheck them.
+   * You can modify it, but some settings required to use Convex.
+   */
+  "compilerOptions": {
+    /* These settings are not required by Convex and can be modified. */
+    "allowJs": true,
+    "strict": true,
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* These compiler options are required by Convex */
+    "target": "ESNext",
+    "lib": ["ES2021", "dom"],
+    "forceConsistentCasingInFileNames": true,
+    "module": "ESNext",
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": [
+    "./**/*",
+    "../shared/mentions.test.ts",
+    "../shared/predefinedAgents.ts"
+  ],
+  "exclude": ["./_generated"]
+}
+</file>
+
+</files>

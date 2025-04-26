@@ -212,7 +212,7 @@ export const createTools = ({
           to,
           subject,
           html: content,
-          from: "mike.cann@convex.dev",
+          from: "tony@one.ie",
         });
 
         if (response.error)
