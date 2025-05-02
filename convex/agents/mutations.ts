@@ -7,8 +7,6 @@ export const create = mutation({
   handler: async (ctx) => Agents.createAgent(ctx),
 });
 
-
-
 export const updateMine = mutation({
   args: {
     agentId: v.id("agents"),

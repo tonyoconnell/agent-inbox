@@ -19,8 +19,6 @@ export const UserMention: React.FC<UserMentionProps> = ({
 }) => {
   const user = useQuery(api.users.queries.findMention, { userId });
 
-
-
   return (
     <BaseMention
       display={user?.name ?? display}

@@ -1400,6 +1400,115 @@ export default http;
 </svg>
 </file>
 
+<file path="shared/ensure.ts">
+import { isKinds } from "./filter";
+
+const getErrMsg = (err: string | (() => string)) => (typeof err === "string" ? err : err());
+
+export const ensureNotUndefined = <T>(
+  obj: T | undefined,
+  err: string | (() => string) = `variable was undefined when it shouldnt have been.`,
+): T => {
+  if (obj === undefined) throw new Error(getErrMsg(err));
+  return obj;
+};
+
+export const ensureNotNull = <T>(
+  obj: T | null,
+  err: string | (() => string) = `variable was null when it shouldnt have been.`,
+): T => {
+  if (obj === null) throw new Error(getErrMsg(err));
+  return obj;
+};
+
+export const ensure = <T>(
+  obj: Nullable<T>,
+  err: string | (() => string) = `variable was undefined or null when it shouldnt have been.`,
+): T => {
+  obj = ensureNotUndefined(obj, err);
+  obj = ensureNotNull(obj, err);
+  return obj;
+};
+
+export const createEnsurer =
+  <TVal, TArgs>(
+    fn: (...args: TArgs[]) => TVal | undefined | null,
+    err = `variable was undefined or null when it shouldnt have been.`,
+  ) =>
+  (...args: TArgs[]) =>
+    ensure(fn(...args), err);
+
+export const ensureFP =
+  (err = `variable was undefined or null when it shouldnt have been.`) =>
+  <T>(obj: Nullable<T>): T => {
+    obj = ensureNotUndefined(obj, err);
+    obj = ensureNotNull(obj, err);
+    return obj;
+  };
+
+export const ensureNotUndefinedFP =
+  (err = `variable was undefined when it shouldnt have been.`) =>
+  <T>(obj: T | undefined): T => {
+    if (obj === undefined) throw new Error(err);
+    return obj;
+  };
+
+export const ensureKind = <
+  TKindable extends {
+    kind: string;
+  },
+  TKind extends TKindable["kind"],
+>(
+  kind: TKind,
+  val: TKindable,
+): Extract<TKindable, { kind: TKind }> => {
+  if (!isKinds(kind)(val)) throw new Error(`Expected ${kind} but got ${val.kind}`);
+  return val as any;
+};
+
+export type Nullable<T> = T | undefined | null;
+</file>
+
+<file path="shared/filter.ts">
+export const isNotNullOrUndefined = <T>(item: T | null | undefined): item is T => {
+  if (item === null) return false;
+  if (item === undefined) return false;
+  return true;
+};
+
+export const isNotFalsey = <T>(item: T | null | undefined): item is T => {
+  return Boolean(item);
+};
+
+export const isFalse = (item: boolean): item is false => item == false;
+
+export const isTrue = (item: boolean): item is true => item == true;
+
+export const isKinds =
+  <
+    TKindable extends {
+      kind: string;
+    },
+    TKind extends TKindable["kind"],
+  >(
+    ...kinds: TKind[]
+  ) =>
+  (item: TKindable): item is Extract<TKindable, { kind: TKind }> =>
+    kinds.includes(item.kind as any);
+
+export const isKind =
+  <
+    TKindable extends {
+      kind: string;
+    },
+    TKind extends TKindable["kind"],
+  >(
+    kind: TKind,
+  ) =>
+  (item: TKindable): item is Extract<TKindable, { kind: TKind }> =>
+    kind == item.kind;
+</file>
+
 <file path="src/components/authenticated/SignOutButton.tsx">
 import * as React from "react";
 import { useConvexAuth } from "convex/react";
@@ -3103,115 +3212,6 @@ export const findMention = query({
 </svg>
 </file>
 
-<file path="shared/ensure.ts">
-import { isKinds } from "./filter";
-
-const getErrMsg = (err: string | (() => string)) => (typeof err === "string" ? err : err());
-
-export const ensureNotUndefined = <T>(
-  obj: T | undefined,
-  err: string | (() => string) = `variable was undefined when it shouldnt have been.`,
-): T => {
-  if (obj === undefined) throw new Error(getErrMsg(err));
-  return obj;
-};
-
-export const ensureNotNull = <T>(
-  obj: T | null,
-  err: string | (() => string) = `variable was null when it shouldnt have been.`,
-): T => {
-  if (obj === null) throw new Error(getErrMsg(err));
-  return obj;
-};
-
-export const ensure = <T>(
-  obj: Nullable<T>,
-  err: string | (() => string) = `variable was undefined or null when it shouldnt have been.`,
-): T => {
-  obj = ensureNotUndefined(obj, err);
-  obj = ensureNotNull(obj, err);
-  return obj;
-};
-
-export const createEnsurer =
-  <TVal, TArgs>(
-    fn: (...args: TArgs[]) => TVal | undefined | null,
-    err = `variable was undefined or null when it shouldnt have been.`,
-  ) =>
-  (...args: TArgs[]) =>
-    ensure(fn(...args), err);
-
-export const ensureFP =
-  (err = `variable was undefined or null when it shouldnt have been.`) =>
-  <T>(obj: Nullable<T>): T => {
-    obj = ensureNotUndefined(obj, err);
-    obj = ensureNotNull(obj, err);
-    return obj;
-  };
-
-export const ensureNotUndefinedFP =
-  (err = `variable was undefined when it shouldnt have been.`) =>
-  <T>(obj: T | undefined): T => {
-    if (obj === undefined) throw new Error(err);
-    return obj;
-  };
-
-export const ensureKind = <
-  TKindable extends {
-    kind: string;
-  },
-  TKind extends TKindable["kind"],
->(
-  kind: TKind,
-  val: TKindable,
-): Extract<TKindable, { kind: TKind }> => {
-  if (!isKinds(kind)(val)) throw new Error(`Expected ${kind} but got ${val.kind}`);
-  return val as any;
-};
-
-export type Nullable<T> = T | undefined | null;
-</file>
-
-<file path="shared/filter.ts">
-export const isNotNullOrUndefined = <T>(item: T | null | undefined): item is T => {
-  if (item === null) return false;
-  if (item === undefined) return false;
-  return true;
-};
-
-export const isNotFalsey = <T>(item: T | null | undefined): item is T => {
-  return Boolean(item);
-};
-
-export const isFalse = (item: boolean): item is false => item == false;
-
-export const isTrue = (item: boolean): item is true => item == true;
-
-export const isKinds =
-  <
-    TKindable extends {
-      kind: string;
-    },
-    TKind extends TKindable["kind"],
-  >(
-    ...kinds: TKind[]
-  ) =>
-  (item: TKindable): item is Extract<TKindable, { kind: TKind }> =>
-    kinds.includes(item.kind as any);
-
-export const isKind =
-  <
-    TKindable extends {
-      kind: string;
-    },
-    TKind extends TKindable["kind"],
-  >(
-    kind: TKind,
-  ) =>
-  (item: TKindable): item is Extract<TKindable, { kind: TKind }> =>
-    kind == item.kind;
-</file>
-
 <file path="shared/predefinedAgents.ts">
 import { AgentToolName } from "./tools";
 
@@ -4002,6 +4002,40 @@ export default function App() {
 }
 </file>
 
+<file path="tsconfig.app.json">
+{
+  "compilerOptions": {
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "ES2021",
+    "useDefineForClassFields": true,
+    "lib": ["ES2021", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+
+    /* Import paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "convex", "shared"]
+}
+</file>
+
 <file path=".cursor/rules/project.mdc">
 ---
 description: 
@@ -4768,55 +4802,6 @@ export const ThinkingIndicator: React.FC<ThinkingIndicatorProps> = ({
 };
 </file>
 
-<file path="src/components/authenticated/sidebar/Sidebar.tsx">
-import * as React from "react";
-import { ConversationList } from "./ConversationList";
-import { AgentList } from "./AgentList";
-import { Button } from "../../ui/button";
-import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
-
-type Tab = "conversations" | "agents";
-
-export const Sidebar = () => {
-  const [activeTab, setActiveTab] = React.useState<Tab>("conversations");
-
-  return (
-    <div className="flex flex-col h-full border-r">
-      <div className="h-24 border-b border-border relative overflow-hidden">
-        <img
-          src="/logo.svg"
-          alt="ONE"
-          className="absolute -right-0 -top-2 h-32 object-cover p-5"
-        />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
-      </div>
-      <div className="flex border-b">
-        <Button
-          variant={activeTab === "conversations" ? "default" : "ghost"}
-          className="flex-1 rounded-none text-primary-foreground"
-          onClick={() => setActiveTab("conversations")}
-        >
-          Conversations
-        </Button>
-        <Button
-          variant={activeTab === "agents" ? "default" : "ghost"}
-          className="flex-1 rounded-none text-primary-foreground"
-          onClick={() => setActiveTab("agents")}
-        >
-          Agents
-        </Button>
-      </div>
-      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-        <div className="flex-1 overflow-y-auto">
-          {activeTab === "conversations" ? <ConversationList /> : <AgentList />}
-        </div>
-      </div>
-      <UserProfile />
-    </div>
-  );
-};
-</file>
-
 <file path="src/components/misc/hooks.ts">
 import * as React from "react";
 import {
@@ -4971,40 +4956,6 @@ export const EditableText: React.FC<EditableTextProps> = ({
     </div>
   );
 };
-</file>
-
-<file path="tsconfig.app.json">
-{
-  "compilerOptions": {
-    "composite": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "target": "ES2021",
-    "useDefineForClassFields": true,
-    "lib": ["ES2021", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "strict": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* Import paths */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src", "convex", "shared"]
-}
 </file>
 
 <file path="src/components/authenticated/agents/AgentDescription.tsx">
@@ -5373,74 +5324,6 @@ export const SystemMessage: React.FC<Props> = ({ message }) => {
 };
 </file>
 
-<file path="src/components/authenticated/conversations/ConversationList.tsx">
-import * as React from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { Plus } from "lucide-react";
-import { useApiErrorHandler } from "../../misc/errors";
-import { ConversationItem } from "./ConversationItem";
-import { useCurrentConversationId, routes } from "../../../routes";
-
-const DEFAULT_THREAD_TITLE = "New Conversation";
-
-interface ConversationListProps {}
-
-export const ConversationList: React.FC<ConversationListProps> = ({}) => {
-  const conversations = useQuery(api.conversations.queries.listMine);
-  const createConversation = useMutation(api.conversations.mutations.create);
-  const onApiError = useApiErrorHandler();
-  const currentConversationId = useCurrentConversationId();
-
-  const handleCreateConversation = async () => {
-    try {
-      const conversationId = await createConversation({
-        title: DEFAULT_THREAD_TITLE,
-      });
-      routes.conversation({ conversationId }).push();
-    } catch (error) {
-      onApiError(error);
-    }
-  };
-
-  return (
-    <>
-      <div className="h-24 border-b border-border relative overflow-hidden">
-        <img
-          src="/logo-white.png"
-          alt="Agent Inbox"
-          className="absolute -right-0 -top-2 h-32 object-cover"
-        />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
-      </div>
-      <div className="p-4">
-        <button
-          onClick={handleCreateConversation}
-          className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
-        >
-          <Plus className="h-5 w-5" />
-          New Conversation
-        </button>
-      </div>
-      <div className="flex-1 overflow-y-auto">
-        {conversations?.map((conversation) => (
-          <ConversationItem
-            key={conversation._id}
-            id={conversation._id}
-            title={conversation.title}
-            lastMessageTime={conversation._creationTime}
-            isSelected={conversation._id === currentConversationId}
-            onSelect={(id) =>
-              routes.conversation({ conversationId: id }).push()
-            }
-          />
-        ))}
-      </div>
-    </>
-  );
-};
-</file>
-
 <file path="src/components/authenticated/conversations/UserProfile.tsx">
 import * as React from "react";
 import { Card } from "../../ui/card";
@@ -5471,6 +5354,54 @@ export const UserProfile: React.FC<UserProfileProps> = ({}) => {
         <SignOutButton />
       </div>
     </Card>
+  );
+};
+</file>
+
+<file path="src/components/authenticated/sidebar/Sidebar.tsx">
+import * as React from "react";
+import { ConversationList } from "./ConversationList";
+import { AgentList } from "./AgentList";
+import { Button } from "../../ui/button";
+import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
+
+type Tab = "conversations" | "agents";
+
+export const Sidebar = () => {
+  const [activeTab, setActiveTab] = React.useState<Tab>("conversations");
+
+  return (
+    <div className="flex flex-col h-full border-r">
+      <div className="h-16 border-b border-border flex items-center px-4">
+        <img
+          src="/logo.svg"
+          alt="ONE"
+          className="h-[40px] w-auto object-contain"
+        />
+      </div>
+      <div className="flex border-b">
+        <Button
+          variant={activeTab === "conversations" ? "default" : "ghost"}
+          className="flex-1 rounded-none text-primary-foreground"
+          onClick={() => setActiveTab("conversations")}
+        >
+          Conversations
+        </Button>
+        <Button
+          variant={activeTab === "agents" ? "default" : "ghost"}
+          className="flex-1 rounded-none text-primary-foreground"
+          onClick={() => setActiveTab("agents")}
+        >
+          Agents
+        </Button>
+      </div>
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === "conversations" ? <ConversationList /> : <AgentList />}
+        </div>
+      </div>
+      <UserProfile />
+    </div>
   );
 };
 </file>
@@ -5569,6 +5500,74 @@ export function useCurrentAgentId() {
   if (route.name === "agent") return route.params.agentId;
   return undefined;
 }
+</file>
+
+<file path="src/components/authenticated/conversations/ConversationList.tsx">
+import * as React from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Plus } from "lucide-react";
+import { useApiErrorHandler } from "../../misc/errors";
+import { ConversationItem } from "./ConversationItem";
+import { useCurrentConversationId, routes } from "../../../routes";
+
+const DEFAULT_THREAD_TITLE = "New Conversation";
+
+interface ConversationListProps {}
+
+export const ConversationList: React.FC<ConversationListProps> = ({}) => {
+  const conversations = useQuery(api.conversations.queries.listMine);
+  const createConversation = useMutation(api.conversations.mutations.create);
+  const onApiError = useApiErrorHandler();
+  const currentConversationId = useCurrentConversationId();
+
+  const handleCreateConversation = async () => {
+    try {
+      const conversationId = await createConversation({
+        title: DEFAULT_THREAD_TITLE,
+      });
+      routes.conversation({ conversationId }).push();
+    } catch (error) {
+      onApiError(error);
+    }
+  };
+
+  return (
+    <>
+      <div className="h-24 border-b border-border relative overflow-hidden">
+        <img
+          src="/logo.svg"
+          alt="Agent Inbox"
+          className="absolute -right-0 -top-2 h-32 object-cover"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
+      </div>
+      <div className="p-4">
+        <button
+          onClick={handleCreateConversation}
+          className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+        >
+          <Plus className="h-5 w-5" />
+          New Conversation
+        </button>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {conversations?.map((conversation) => (
+          <ConversationItem
+            key={conversation._id}
+            id={conversation._id}
+            title={conversation.title}
+            lastMessageTime={conversation._creationTime}
+            isSelected={conversation._id === currentConversationId}
+            onSelect={(id) =>
+              routes.conversation({ conversationId: id }).push()
+            }
+          />
+        ))}
+      </div>
+    </>
+  );
+};
 </file>
 
 <file path="src/components/authenticated/sidebar/ConversationList.tsx">
@@ -6417,6 +6416,229 @@ export type AgentTool = {
 };
 </file>
 
+<file path="src/components/authenticated/chat/ParticipantsDialog.tsx">
+import * as React from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Button } from "../../ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../ui/dialog";
+import { UserPlus, Trash2 } from "lucide-react";
+import { AgentSelector } from "./AgentSelector";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../../ui/tooltip";
+
+interface ParticipantsDialogProps {
+  conversation: Doc<"conversations">;
+  trigger: React.ReactNode;
+}
+
+export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
+  conversation,
+  trigger,
+}) => {
+  const participants = useQuery(
+    api.conversationParticipants.queries.listDetailsForMe,
+    {
+      conversationId: conversation._id,
+    },
+  );
+
+  const removeParticipant = useMutation(
+    api.conversationParticipants.mutations.removeParticipant,
+  );
+
+  const handleRemove = async (
+    participantId: Id<"conversationParticipants">,
+  ) => {
+    await removeParticipant({
+      conversationId: conversation._id,
+      participantId,
+    });
+  };
+
+  // Group participants by type
+  const users = participants?.filter((p) => p.kind === "user") ?? [];
+  const agents = participants?.filter((p) => p.kind === "agent") ?? [];
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Conversation Participants</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-6">
+          {/* Users section */}
+          <div className="space-y-2">
+            <div className="text-sm font-medium text-muted-foreground">
+              Users
+            </div>
+            {users.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-muted"
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={p.avatarUrl} />
+                    <AvatarFallback>{p.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium">{p.name}</div>
+                    {p.isCreator && (
+                      <div className="text-xs text-muted-foreground">
+                        Creator
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Agents section */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-medium text-muted-foreground">
+                Agents
+              </div>
+              <AgentSelector
+                conversation={conversation}
+                trigger={
+                  <Button variant="ghost" size="sm" className="h-7">
+                    <UserPlus className="h-4 w-4 mr-1.5" />
+                    Add
+                  </Button>
+                }
+              />
+            </div>
+            {agents.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center justify-between p-2 rounded-lg hover:bg-muted"
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar>
+                    <AvatarImage src={p.avatarUrl} />
+                    <AvatarFallback>{p.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="font-medium">{p.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {p.description}
+                    </div>
+                  </div>
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemove(p.id)}
+                          disabled={p.isSystem}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    {p.isSystem && (
+                      <TooltipContent>
+                        <p>
+                          System agents cannot be removed from a conversation
+                        </p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            ))}
+            {agents.length === 0 && (
+              <div className="text-sm text-muted-foreground text-center py-4 bg-muted/50 rounded-lg">
+                No agents added yet
+              </div>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+</file>
+
+<file path="src/components/authenticated/AuthenticatedContent.tsx">
+import * as React from "react";
+import { ChatArea } from "./chat/ChatArea";
+import { Sidebar } from "./sidebar/Sidebar";
+import { useRoute, routes, useCurrentConversationId } from "../../routes";
+import { Id } from "convex/_generated/dataModel";
+import { AgentProfile } from "./agents/AgentProfile";
+
+interface Message {
+  id: string;
+  content: string;
+  sender: "user" | "agent";
+  timestamp: string;
+  agentName?: string;
+}
+
+export const AuthenticatedContent: React.FC = () => {
+  const route = useRoute();
+  const currentConversationId = useCurrentConversationId();
+
+  // If we're not in a conversation or agent view, show a welcome message
+  if (!currentConversationId && route.name !== "agent")
+    return (
+      <div className="h-screen flex bg-background">
+        <div className="w-64 bg-card border-r border-border flex flex-col dark">
+          <Sidebar />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Welcome to Agent Inbox</h1>
+            <p className="text-muted-foreground">
+              Select a conversation or agent to get started
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+
+  return (
+    <div className="h-screen flex overflow-hidden bg-background">
+      <div className="w-64 bg-card border-r border-border flex-shrink-0 dark">
+        <Sidebar />
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        {route.name === "conversation" ? (
+          <ChatArea
+            conversationId={route.params.conversationId as Id<"conversations">}
+          />
+        ) : null}
+
+        {route.name === "agent" ? (
+          <AgentProfile agentId={route.params.agentId as Id<"agents">} />
+        ) : null}
+      </div>
+    </div>
+  );
+};
+</file>
+
 <file path="README.md">
 ![agent inbox screenshot](./media/screenshot.png)
 
@@ -6770,229 +6992,6 @@ export const alwaysIncludedTools = pick(toolDefinitions, [
 export type AlwaysIncludedToolName = keyof typeof alwaysIncludedTools;
 </file>
 
-<file path="src/components/authenticated/chat/ParticipantsDialog.tsx">
-import * as React from "react";
-import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../../convex/_generated/api";
-import { Doc, Id } from "../../../../convex/_generated/dataModel";
-import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
-import { Button } from "../../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../ui/dialog";
-import { UserPlus, Trash2 } from "lucide-react";
-import { AgentSelector } from "./AgentSelector";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../ui/tooltip";
-
-interface ParticipantsDialogProps {
-  conversation: Doc<"conversations">;
-  trigger: React.ReactNode;
-}
-
-export const ParticipantsDialog: React.FC<ParticipantsDialogProps> = ({
-  conversation,
-  trigger,
-}) => {
-  const participants = useQuery(
-    api.conversationParticipants.queries.listDetailsForMe,
-    {
-      conversationId: conversation._id,
-    },
-  );
-
-  const removeParticipant = useMutation(
-    api.conversationParticipants.mutations.removeParticipant,
-  );
-
-  const handleRemove = async (
-    participantId: Id<"conversationParticipants">,
-  ) => {
-    await removeParticipant({
-      conversationId: conversation._id,
-      participantId,
-    });
-  };
-
-  // Group participants by type
-  const users = participants?.filter((p) => p.kind === "user") ?? [];
-  const agents = participants?.filter((p) => p.kind === "agent") ?? [];
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Conversation Participants</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-6">
-          {/* Users section */}
-          <div className="space-y-2">
-            <div className="text-sm font-medium text-muted-foreground">
-              Users
-            </div>
-            {users.map((p) => (
-              <div
-                key={p.id}
-                className="flex items-center justify-between p-2 rounded-lg hover:bg-muted"
-              >
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={p.avatarUrl} />
-                    <AvatarFallback>{p.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">{p.name}</div>
-                    {p.isCreator && (
-                      <div className="text-xs text-muted-foreground">
-                        Creator
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Agents section */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-medium text-muted-foreground">
-                Agents
-              </div>
-              <AgentSelector
-                conversation={conversation}
-                trigger={
-                  <Button variant="ghost" size="sm" className="h-7">
-                    <UserPlus className="h-4 w-4 mr-1.5" />
-                    Add
-                  </Button>
-                }
-              />
-            </div>
-            {agents.map((p) => (
-              <div
-                key={p.id}
-                className="flex items-center justify-between p-2 rounded-lg hover:bg-muted"
-              >
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage src={p.avatarUrl} />
-                    <AvatarFallback>{p.name[0]}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium">{p.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {p.description}
-                    </div>
-                  </div>
-                </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemove(p.id)}
-                          disabled={p.isSystem}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TooltipTrigger>
-                    {p.isSystem && (
-                      <TooltipContent>
-                        <p>
-                          System agents cannot be removed from a conversation
-                        </p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            ))}
-            {agents.length === 0 && (
-              <div className="text-sm text-muted-foreground text-center py-4 bg-muted/50 rounded-lg">
-                No agents added yet
-              </div>
-            )}
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
-</file>
-
-<file path="src/components/authenticated/AuthenticatedContent.tsx">
-import * as React from "react";
-import { ChatArea } from "./chat/ChatArea";
-import { Sidebar } from "./sidebar/Sidebar";
-import { useRoute, routes, useCurrentConversationId } from "../../routes";
-import { Id } from "convex/_generated/dataModel";
-import { AgentProfile } from "./agents/AgentProfile";
-
-interface Message {
-  id: string;
-  content: string;
-  sender: "user" | "agent";
-  timestamp: string;
-  agentName?: string;
-}
-
-export const AuthenticatedContent: React.FC = () => {
-  const route = useRoute();
-  const currentConversationId = useCurrentConversationId();
-
-  // If we're not in a conversation or agent view, show a welcome message
-  if (!currentConversationId && route.name !== "agent")
-    return (
-      <div className="h-screen flex bg-background">
-        <div className="w-64 bg-card border-r border-border flex flex-col dark">
-          <Sidebar />
-        </div>
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold mb-4">Welcome to Agent Inbox</h1>
-            <p className="text-muted-foreground">
-              Select a conversation or agent to get started
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-
-  return (
-    <div className="h-screen flex overflow-hidden bg-background">
-      <div className="w-64 bg-card border-r border-border flex-shrink-0 dark">
-        <Sidebar />
-      </div>
-
-      <div className="flex-1 overflow-auto">
-        {route.name === "conversation" ? (
-          <ChatArea
-            conversationId={route.params.conversationId as Id<"conversations">}
-          />
-        ) : null}
-
-        {route.name === "agent" ? (
-          <AgentProfile agentId={route.params.agentId as Id<"agents">} />
-        ) : null}
-      </div>
-    </div>
-  );
-};
-</file>
-
 <file path="src/components/authenticated/sidebar/AgentList.tsx">
 import * as React from "react";
 import { Button } from "../../ui/button";
@@ -7280,6 +7279,36 @@ export const joinAgentToConversationIfNotAlreadyJoined = async (
 };
 </file>
 
+<file path="convex/schema.ts">
+import { defineSchema, defineTable } from "convex/server";
+import { authTables } from "@convex-dev/auth/server";
+import { v } from "convex/values";
+import { agentsSchemaValidator } from "./agents/schema";
+import { conversationParticipantsTable } from "./conversationParticipants/schema";
+import { conversationMessagesTable } from "./conversationMessages/schema";
+
+// The schema is normally optional, but Convex Auth
+// requires indexes defined on `authTables`.
+// The schema provides more precise TypeScript types.
+export default defineSchema({
+  ...authTables,
+
+  conversations: defineTable({
+    title: v.string(),
+    createdBy: v.id("users"),
+    lastMessageTime: v.number(),
+  }).index("by_user_and_time", ["createdBy", "lastMessageTime"]),
+
+  agents: defineTable(agentsSchemaValidator)
+    .index("by_creator", ["createdBy"])
+    .index("by_name", ["name"])
+    .index("by_system_agent_kind", ["systemAgentKind"]),
+
+  conversationParticipants: conversationParticipantsTable,
+  conversationMessages: conversationMessagesTable,
+});
+</file>
+
 <file path="convex/ai/agentReplyToMessage.ts">
 "use node";
 import { Doc } from "../_generated/dataModel";
@@ -7366,36 +7395,6 @@ export const agentReplyToMessage = async (
     },
   });
 };
-</file>
-
-<file path="convex/schema.ts">
-import { defineSchema, defineTable } from "convex/server";
-import { authTables } from "@convex-dev/auth/server";
-import { v } from "convex/values";
-import { agentsSchemaValidator } from "./agents/schema";
-import { conversationParticipantsTable } from "./conversationParticipants/schema";
-import { conversationMessagesTable } from "./conversationMessages/schema";
-
-// The schema is normally optional, but Convex Auth
-// requires indexes defined on `authTables`.
-// The schema provides more precise TypeScript types.
-export default defineSchema({
-  ...authTables,
-
-  conversations: defineTable({
-    title: v.string(),
-    createdBy: v.id("users"),
-    lastMessageTime: v.number(),
-  }).index("by_user_and_time", ["createdBy", "lastMessageTime"]),
-
-  agents: defineTable(agentsSchemaValidator)
-    .index("by_creator", ["createdBy"])
-    .index("by_name", ["name"])
-    .index("by_system_agent_kind", ["systemAgentKind"]),
-
-  conversationParticipants: conversationParticipantsTable,
-  conversationMessages: conversationMessagesTable,
-});
 </file>
 
 <file path="src/components/authenticated/chat/ParticipantMessage.tsx">
@@ -8780,297 +8779,6 @@ export const processMessage = internalAction({
 });
 </file>
 
-<file path="convex/ai/tools.ts">
-"use node";
-import { ActionCtx } from "../_generated/server";
-import { internal, api } from "../_generated/api";
-import { Doc, Id } from "../_generated/dataModel";
-import { tool } from "ai";
-import { sendSystemMessageToConversation } from "./utils";
-import Exa from "exa-js";
-import { pick } from "convex-helpers";
-import { Resend } from "resend";
-import {
-  toolDefinitions,
-  AgentToolName,
-  alwaysIncludedTools,
-} from "../../shared/tools";
-
-const exa = new Exa(process.env.EXA_API_KEY);
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-export const createTools = ({
-  ctx,
-  agent,
-  conversation,
-  agentParticipant,
-}: {
-  ctx: ActionCtx;
-  agent: Doc<"agents">;
-  agentParticipant: Doc<"conversationParticipants">;
-  conversation: Doc<"conversations">;
-}) => ({
-  [toolDefinitions.listConversationParticipants.name]: tool({
-    description: toolDefinitions.listConversationParticipants.description,
-    parameters: toolDefinitions.listConversationParticipants.parameters,
-    execute: async ({ conversationId }) => {
-      await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
-        conversationId: conversation._id,
-        meta: {
-          toolName: "listConversationParticipants",
-          agentName: agent.name,
-        },
-      });
-      const participants = await ctx.runQuery(
-        internal.conversationParticipants.internalQueries
-          .listNonSystemAgentParticipantsWithJoinedDetails,
-        {
-          conversationId: conversationId as Id<"conversations">,
-        },
-      );
-
-      // Lets turn them into the mention format which I hope is more AI compatible
-      return participants.map((p) => {
-        if (p.agent)
-          return {
-            kind: "agent",
-            ...pick(p.agent, [
-              "_id",
-              "name",
-              "description",
-              "personality",
-              "tools",
-            ]),
-          };
-
-        if (p.user)
-          return {
-            kind: "user",
-            ...pick(p.user, ["_id", "name", "email"]),
-          };
-
-        return null;
-      });
-    },
-  }),
-
-  [toolDefinitions.listAgents.name]: tool({
-    description: toolDefinitions.listAgents.description,
-    parameters: toolDefinitions.listAgents.parameters,
-    execute: async ({ userId }) => {
-      console.log(`using tool: listAgents`, { userId });
-
-      await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is listing the users agents ${conversation._id}`,
-        conversationId: conversation._id,
-        meta: { toolName: "listAgents", userId, agentName: agent.name },
-      });
-
-      return await ctx.runQuery(
-        internal.agents.internalQueries.listAgentsForUser,
-        {
-          userId: userId as Id<"users">,
-        },
-      );
-    },
-  }),
-
-  [toolDefinitions.messageAnotherAgent.name]: tool({
-    description: toolDefinitions.messageAnotherAgent.description,
-    parameters: toolDefinitions.messageAnotherAgent.parameters,
-    execute: async ({ target, content }) => {
-      return await ctx.runMutation(
-        internal.conversationMessages.internalMutations.sendFromAgent,
-        {
-          conversationId: conversation._id,
-          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
-          agentId: agent._id,
-          authorParticipantId: agentParticipant._id,
-        },
-      );
-    },
-  }),
-
-  [toolDefinitions.noOutput.name]: tool({
-    description: toolDefinitions.noOutput.description,
-    parameters: toolDefinitions.noOutput.parameters,
-  }),
-
-  [toolDefinitions.webSearch.name]: tool({
-    description: toolDefinitions.webSearch.description,
-    parameters: toolDefinitions.webSearch.parameters,
-    execute: async ({ query }) => {
-      await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is searching the web for "${query}"`,
-        conversationId: conversation._id,
-        meta: { toolName: "webSearch", query, agentName: agent.name },
-      });
-      const result = await exa.answer(query, { text: true });
-      console.log(`webSearch result:`, result);
-      return pick(result, ["answer", "citations"]);
-    },
-  }),
-
-  [toolDefinitions.updateConversationTitle.name]: tool({
-    description: toolDefinitions.updateConversationTitle.description,
-    parameters: toolDefinitions.updateConversationTitle.parameters,
-    execute: async ({ title }) => {
-      await ctx.runMutation(internal.conversations.internalMutations.update, {
-        conversationId: conversation._id,
-        title,
-      });
-
-      await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} updated the conversation title to "${title}"`,
-        conversationId: conversation._id,
-        meta: {
-          toolName: "updateConversationTitle",
-          newTitle: title,
-          agentName: agent.name,
-        },
-      });
-
-      return {
-        result: "title_updated",
-        newTitle: title,
-      };
-    },
-  }),
-
-  [toolDefinitions.scheduleTask.name]: tool({
-    description: toolDefinitions.scheduleTask.description,
-    parameters: toolDefinitions.scheduleTask.parameters,
-    execute: async ({ content, secondsFromNow, target, title }) => {
-      await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} scheduled a task "${title}" to be sent in ${secondsFromNow} seconds`,
-        conversationId: conversation._id,
-        meta: {
-          toolName: "scheduleTask",
-          title,
-          secondsFromNow,
-          target,
-          content,
-          agentName: agent.name,
-        },
-      });
-
-      const scheduledMessageId = await ctx.scheduler.runAfter(
-        secondsFromNow * 1000,
-        internal.conversationMessages.internalMutations.sendFromAgent,
-        {
-          conversationId: conversation._id,
-          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
-          agentId: agent._id,
-          authorParticipantId: agentParticipant._id,
-        },
-      );
-
-      return {
-        result: "message_sent",
-        scheduledMessageId,
-      };
-    },
-  }),
-
-  [toolDefinitions.sendEmail.name]: tool({
-    description: toolDefinitions.sendEmail.description,
-    parameters: toolDefinitions.sendEmail.parameters,
-    execute: async ({ to, subject, content, from }) => {
-      await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is sending an email to "${to}" with the subject "${subject}"`,
-        conversationId: conversation._id,
-        meta: {
-          toolName: "sendEmail",
-          to,
-          subject,
-          content,
-          from,
-          agentName: agent.name,
-        },
-      });
-
-      try {
-        const response = await resend.emails.send({
-          to,
-          subject,
-          html: content,
-          from: "mike.cann@convex.dev",
-        });
-
-        if (response.error)
-          throw new Error(`Failed to send email: ${response.error.message}`);
-
-        return {
-          result: "email_sent",
-        };
-      } catch (error: any) {
-        console.error("Failed to send email:", error);
-        throw new Error(
-          `Failed to send email: ${error?.message ?? "Unknown error"}`,
-        );
-      }
-    },
-  }),
-
-  [toolDefinitions.addParticipantToConversation.name]: tool({
-    description: toolDefinitions.addParticipantToConversation.description,
-    parameters: toolDefinitions.addParticipantToConversation.parameters,
-    execute: async ({ agentId }) => {
-      try {
-        await sendSystemMessageToConversation(ctx, {
-          content: `${agent.name} is adding an agent with ID ${agentId} to the conversation`,
-          conversationId: conversation._id,
-          meta: {
-            toolName: "addParticipantToConversation",
-            agentId,
-            agentName: agent.name,
-          },
-        });
-
-        const participant = await ctx.runMutation(
-          internal.conversationParticipants.internalMutations
-            .addAgentIfNotAlreadyJoined,
-          {
-            conversationId: conversation._id,
-            agentId: agentId as Id<"agents">,
-          },
-        );
-
-        return {
-          result: "participant_added",
-          participantId: participant,
-          type: "agent",
-        };
-      } catch (error: any) {
-        console.error("Failed to add agent:", error);
-        throw new Error(
-          `Failed to add agent: ${error?.message ?? "Unknown error"}`,
-        );
-      }
-    },
-  }),
-});
-
-export const createToolsForAgent = ({
-  ctx,
-  agent,
-  conversation,
-  agentParticipant,
-}: {
-  ctx: ActionCtx;
-  agent: Doc<"agents">;
-  agentParticipant: Doc<"conversationParticipants">;
-  conversation: Doc<"conversations">;
-}) => {
-  const allTools = createTools({ ctx, agent, conversation, agentParticipant });
-  return pick(allTools, [
-    ...(Object.keys(alwaysIncludedTools) as AgentToolName[]),
-    ...(agent.tools as AgentToolName[]),
-  ]);
-};
-</file>
-
 <file path="convex/conversationMessages/model.ts">
 import {
   DatabaseReader,
@@ -9313,6 +9021,297 @@ export const deleteAllMessagesForConversation = async (
     .collect();
 
   await Promise.all(messages.map((message) => db.delete(message._id)));
+};
+</file>
+
+<file path="convex/ai/tools.ts">
+"use node";
+import { ActionCtx } from "../_generated/server";
+import { internal, api } from "../_generated/api";
+import { Doc, Id } from "../_generated/dataModel";
+import { tool } from "ai";
+import { sendSystemMessageToConversation } from "./utils";
+import Exa from "exa-js";
+import { pick } from "convex-helpers";
+import { Resend } from "resend";
+import {
+  toolDefinitions,
+  AgentToolName,
+  alwaysIncludedTools,
+} from "../../shared/tools";
+
+const exa = new Exa(process.env.EXA_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export const createTools = ({
+  ctx,
+  agent,
+  conversation,
+  agentParticipant,
+}: {
+  ctx: ActionCtx;
+  agent: Doc<"agents">;
+  agentParticipant: Doc<"conversationParticipants">;
+  conversation: Doc<"conversations">;
+}) => ({
+  [toolDefinitions.listConversationParticipants.name]: tool({
+    description: toolDefinitions.listConversationParticipants.description,
+    parameters: toolDefinitions.listConversationParticipants.parameters,
+    execute: async ({ conversationId }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "listConversationParticipants",
+          agentName: agent.name,
+        },
+      });
+      const participants = await ctx.runQuery(
+        internal.conversationParticipants.internalQueries
+          .listNonSystemAgentParticipantsWithJoinedDetails,
+        {
+          conversationId: conversationId as Id<"conversations">,
+        },
+      );
+
+      // Lets turn them into the mention format which I hope is more AI compatible
+      return participants.map((p) => {
+        if (p.agent)
+          return {
+            kind: "agent",
+            ...pick(p.agent, [
+              "_id",
+              "name",
+              "description",
+              "personality",
+              "tools",
+            ]),
+          };
+
+        if (p.user)
+          return {
+            kind: "user",
+            ...pick(p.user, ["_id", "name", "email"]),
+          };
+
+        return null;
+      });
+    },
+  }),
+
+  [toolDefinitions.listAgents.name]: tool({
+    description: toolDefinitions.listAgents.description,
+    parameters: toolDefinitions.listAgents.parameters,
+    execute: async ({ userId }) => {
+      console.log(`using tool: listAgents`, { userId });
+
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is listing the users agents ${conversation._id}`,
+        conversationId: conversation._id,
+        meta: { toolName: "listAgents", userId, agentName: agent.name },
+      });
+
+      return await ctx.runQuery(
+        internal.agents.internalQueries.listAgentsForUser,
+        {
+          userId: userId as Id<"users">,
+        },
+      );
+    },
+  }),
+
+  [toolDefinitions.messageAnotherAgent.name]: tool({
+    description: toolDefinitions.messageAnotherAgent.description,
+    parameters: toolDefinitions.messageAnotherAgent.parameters,
+    execute: async ({ target, content }) => {
+      return await ctx.runMutation(
+        internal.conversationMessages.internalMutations.sendFromAgent,
+        {
+          conversationId: conversation._id,
+          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
+          agentId: agent._id,
+          authorParticipantId: agentParticipant._id,
+        },
+      );
+    },
+  }),
+
+  [toolDefinitions.noOutput.name]: tool({
+    description: toolDefinitions.noOutput.description,
+    parameters: toolDefinitions.noOutput.parameters,
+  }),
+
+  [toolDefinitions.webSearch.name]: tool({
+    description: toolDefinitions.webSearch.description,
+    parameters: toolDefinitions.webSearch.parameters,
+    execute: async ({ query }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is searching the web for "${query}"`,
+        conversationId: conversation._id,
+        meta: { toolName: "webSearch", query, agentName: agent.name },
+      });
+      const result = await exa.answer(query, { text: true });
+      console.log(`webSearch result:`, result);
+      return pick(result, ["answer", "citations"]);
+    },
+  }),
+
+  [toolDefinitions.updateConversationTitle.name]: tool({
+    description: toolDefinitions.updateConversationTitle.description,
+    parameters: toolDefinitions.updateConversationTitle.parameters,
+    execute: async ({ title }) => {
+      await ctx.runMutation(internal.conversations.internalMutations.update, {
+        conversationId: conversation._id,
+        title,
+      });
+
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} updated the conversation title to "${title}"`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "updateConversationTitle",
+          newTitle: title,
+          agentName: agent.name,
+        },
+      });
+
+      return {
+        result: "title_updated",
+        newTitle: title,
+      };
+    },
+  }),
+
+  [toolDefinitions.scheduleTask.name]: tool({
+    description: toolDefinitions.scheduleTask.description,
+    parameters: toolDefinitions.scheduleTask.parameters,
+    execute: async ({ content, secondsFromNow, target, title }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} scheduled a task "${title}" to be sent in ${secondsFromNow} seconds`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "scheduleTask",
+          title,
+          secondsFromNow,
+          target,
+          content,
+          agentName: agent.name,
+        },
+      });
+
+      const scheduledMessageId = await ctx.scheduler.runAfter(
+        secondsFromNow * 1000,
+        internal.conversationMessages.internalMutations.sendFromAgent,
+        {
+          conversationId: conversation._id,
+          content: `@[${target.agentName}](agent:${target.agentId}) ${content}`,
+          agentId: agent._id,
+          authorParticipantId: agentParticipant._id,
+        },
+      );
+
+      return {
+        result: "message_sent",
+        scheduledMessageId,
+      };
+    },
+  }),
+
+  [toolDefinitions.sendEmail.name]: tool({
+    description: toolDefinitions.sendEmail.description,
+    parameters: toolDefinitions.sendEmail.parameters,
+    execute: async ({ to, subject, content, from }) => {
+      await sendSystemMessageToConversation(ctx, {
+        content: `${agent.name} is sending an email to "${to}" with the subject "${subject}"`,
+        conversationId: conversation._id,
+        meta: {
+          toolName: "sendEmail",
+          to,
+          subject,
+          content,
+          from,
+          agentName: agent.name,
+        },
+      });
+
+      try {
+        const response = await resend.emails.send({
+          to,
+          subject,
+          html: content,
+          from: "tony@one.ie",
+        });
+
+        if (response.error)
+          throw new Error(`Failed to send email: ${response.error.message}`);
+
+        return {
+          result: "email_sent",
+        };
+      } catch (error: any) {
+        console.error("Failed to send email:", error);
+        throw new Error(
+          `Failed to send email: ${error?.message ?? "Unknown error"}`,
+        );
+      }
+    },
+  }),
+
+  [toolDefinitions.addParticipantToConversation.name]: tool({
+    description: toolDefinitions.addParticipantToConversation.description,
+    parameters: toolDefinitions.addParticipantToConversation.parameters,
+    execute: async ({ agentId }) => {
+      try {
+        await sendSystemMessageToConversation(ctx, {
+          content: `${agent.name} is adding an agent with ID ${agentId} to the conversation`,
+          conversationId: conversation._id,
+          meta: {
+            toolName: "addParticipantToConversation",
+            agentId,
+            agentName: agent.name,
+          },
+        });
+
+        const participant = await ctx.runMutation(
+          internal.conversationParticipants.internalMutations
+            .addAgentIfNotAlreadyJoined,
+          {
+            conversationId: conversation._id,
+            agentId: agentId as Id<"agents">,
+          },
+        );
+
+        return {
+          result: "participant_added",
+          participantId: participant,
+          type: "agent",
+        };
+      } catch (error: any) {
+        console.error("Failed to add agent:", error);
+        throw new Error(
+          `Failed to add agent: ${error?.message ?? "Unknown error"}`,
+        );
+      }
+    },
+  }),
+});
+
+export const createToolsForAgent = ({
+  ctx,
+  agent,
+  conversation,
+  agentParticipant,
+}: {
+  ctx: ActionCtx;
+  agent: Doc<"agents">;
+  agentParticipant: Doc<"conversationParticipants">;
+  conversation: Doc<"conversations">;
+}) => {
+  const allTools = createTools({ ctx, agent, conversation, agentParticipant });
+  return pick(allTools, [
+    ...(Object.keys(alwaysIncludedTools) as AgentToolName[]),
+    ...(agent.tools as AgentToolName[]),
+  ]);
 };
 </file>
 

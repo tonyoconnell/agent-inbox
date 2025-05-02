@@ -1,10 +1,13 @@
 import { isKinds } from "./filter";
 
-const getErrMsg = (err: string | (() => string)) => (typeof err === "string" ? err : err());
+const getErrMsg = (err: string | (() => string)) =>
+  typeof err === "string" ? err : err();
 
 export const ensureNotUndefined = <T>(
   obj: T | undefined,
-  err: string | (() => string) = `variable was undefined when it shouldnt have been.`,
+  err:
+    | string
+    | (() => string) = `variable was undefined when it shouldnt have been.`,
 ): T => {
   if (obj === undefined) throw new Error(getErrMsg(err));
   return obj;
@@ -12,7 +15,9 @@ export const ensureNotUndefined = <T>(
 
 export const ensureNotNull = <T>(
   obj: T | null,
-  err: string | (() => string) = `variable was null when it shouldnt have been.`,
+  err:
+    | string
+    | (() => string) = `variable was null when it shouldnt have been.`,
 ): T => {
   if (obj === null) throw new Error(getErrMsg(err));
   return obj;
@@ -20,7 +25,9 @@ export const ensureNotNull = <T>(
 
 export const ensure = <T>(
   obj: Nullable<T>,
-  err: string | (() => string) = `variable was undefined or null when it shouldnt have been.`,
+  err:
+    | string
+    | (() => string) = `variable was undefined or null when it shouldnt have been.`,
 ): T => {
   obj = ensureNotUndefined(obj, err);
   obj = ensureNotNull(obj, err);
@@ -59,7 +66,8 @@ export const ensureKind = <
   kind: TKind,
   val: TKindable,
 ): Extract<TKindable, { kind: TKind }> => {
-  if (!isKinds(kind)(val)) throw new Error(`Expected ${kind} but got ${val.kind}`);
+  if (!isKinds(kind)(val))
+    throw new Error(`Expected ${kind} but got ${val.kind}`);
   return val as any;
 };
 

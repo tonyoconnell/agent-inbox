@@ -7,52 +7,54 @@
 @layer base {
   :root {
     --radius: 0.5rem;
-    --background: #EAE9E9;
-    --foreground: #1A1A1A;
-    --card: #FFFFFF;
-    --card-foreground: #1A1A1A;
-    --popover: #FFFFFF;
-    --popover-foreground: #1A1A1A;
+    --background: #eae9e9;
+    --foreground: #1a1a1a;
+    --card: #ffffff;
+    --card-foreground: #1a1a1a;
+    --popover: #ffffff;
+    --popover-foreground: #1a1a1a;
     --primary: #669abd;
-    --primary-foreground: #FFFFFF;
-    --secondary: #F4F3F3;
-    --secondary-foreground: #1A1A1A;
-    --muted: #F4F3F3;
+    --primary-foreground: #ffffff;
+    --secondary: #f4f3f3;
+    --secondary-foreground: #1a1a1a;
+    --muted: #f4f3f3;
     --muted-foreground: #666666;
     --accent: #5b9eca;
-    --accent-foreground: #FFFFFF;
-    --destructive: #DC2626;
-    --destructive-foreground: #FFFFFF;
-    --border: #D1D0D0;
-    --input: #D1D0D0;
-    --ring: #2E90D0;
+    --accent-foreground: #ffffff;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --border: #d1d0d0;
+    --input: #d1d0d0;
+    --ring: #2e90d0;
   }
 
   .dark {
-    --background: #1A1A1A;
-    --foreground: #EAE9E9;
+    --background: #1a1a1a;
+    --foreground: #eae9e9;
     --card: #262626;
-    --card-foreground: #EAE9E9;
+    --card-foreground: #eae9e9;
     --popover: #262626;
-    --popover-foreground: #EAE9E9;
-    --primary: #2E90D0;
-    --primary-foreground: #FFFFFF;
+    --popover-foreground: #eae9e9;
+    --primary: #2e90d0;
+    --primary-foreground: #ffffff;
     --secondary: #333333;
-    --secondary-foreground: #EAE9E9;
+    --secondary-foreground: #eae9e9;
     --muted: #333333;
     --muted-foreground: #999999;
     --accent: #2e2e2e;
-    --accent-foreground: #FFFFFF;
-    --destructive: #DC2626;
-    --destructive-foreground: #FFFFFF;
+    --accent-foreground: #ffffff;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
     --border: #404040;
     --input: #333333;
-    --ring: #2E90D0;
+    --ring: #2e90d0;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }
 
@@ -88,6 +90,8 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
   }
 }

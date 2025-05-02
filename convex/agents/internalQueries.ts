@@ -1,9 +1,8 @@
-import {internalQuery} from '../_generated/server';
-import {systemAgentKindValidator} from './schema';
-import * as Agents from './model';
-import {v} from 'convex/values';
-import {listForUser} from './model';
-
+import { internalQuery } from "../_generated/server";
+import { systemAgentKindValidator } from "./schema";
+import * as Agents from "./model";
+import { v } from "convex/values";
+import { listForUser } from "./model";
 
 export const findSystemAgentByKind = internalQuery({
   args: {
@@ -23,7 +22,6 @@ export const listAgentsForUser = internalQuery({
   },
 });
 
-
 export const find = internalQuery({
   args: {
     agentId: v.id("agents"),
@@ -32,4 +30,3 @@ export const find = internalQuery({
     return await Agents.find(ctx.db, args);
   },
 });
-

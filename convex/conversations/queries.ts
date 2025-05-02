@@ -1,8 +1,6 @@
-import {query} from '../_generated/server';
-import {v} from 'convex/values';
-import * as Conversations from './model';
-
-
+import { query } from "../_generated/server";
+import { v } from "convex/values";
+import * as Conversations from "./model";
 
 export const listMine = query({
   args: {},

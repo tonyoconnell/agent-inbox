@@ -12,11 +12,7 @@ export function UnauthenticatedContent() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-8">
       <div className="mb-8 flex flex-col items-center">
-        <img
-          src="/logo.svg"
-          alt="ONE logo"
-          className="w-72 h-auto mb-2"
-        />
+        <img src="/logo.svg" alt="ONE logo" className="w-72 h-auto mb-2" />
       </div>
       <Card className="w-full max-w-xs relative overflow-hidden shadow-md border-neutral-200 p-0">
         <div

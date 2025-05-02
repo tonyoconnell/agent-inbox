@@ -1,4 +1,6 @@
-export const isNotNullOrUndefined = <T>(item: T | null | undefined): item is T => {
+export const isNotNullOrUndefined = <T>(
+  item: T | null | undefined,
+): item is T => {
   if (item === null) return false;
   if (item === undefined) return false;
   return true;

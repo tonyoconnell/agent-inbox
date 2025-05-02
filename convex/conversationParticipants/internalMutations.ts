@@ -1,7 +1,6 @@
-import {internalMutation} from '../_generated/server';
-import {v} from 'convex/values';
-import * as ConversationParticipants from './model';
-
+import { internalMutation } from "../_generated/server";
+import { v } from "convex/values";
+import * as ConversationParticipants from "./model";
 
 export const updateParticipantStatus = internalMutation({
   args: {
@@ -15,7 +14,6 @@ export const updateParticipantStatus = internalMutation({
     return null;
   },
 });
-
 
 export const addAgentIfNotAlreadyJoined = internalMutation({
   args: {
