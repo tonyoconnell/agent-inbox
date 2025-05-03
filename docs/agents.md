@@ -37,6 +37,56 @@ order: 1
     *   **HTTP Endpoints (`/convex/http.ts`):** Handles any necessary webhooks or external API integrations.
 *   **Shared Utilities (`/shared`):** Common functions and types (e.g., mentions parsing, tools definitions) used by both frontend and backend.
 
+**2.1. Agent Data Model & Schema Alignment (2024 Update)**
+
+The ONE Agent System is now fully powered by a robust, extensible schema that supports all the requirements for agent roles, configuration, orchestration, and future growth. The agent data model includes:
+
+- `name`, `description`, `goal`: Core identity and purpose
+- `systemPrompt`, `instructions`: Master prompt and operational instructions
+- `personality`: Explicitly models the agent's interaction style, separate from instructions
+- `delegatesTo`: Array of agent IDs this agent can delegate to (enables team structure and orchestration)
+- `tools`: Array of tool IDs the agent can use
+- `agentTools`: Join table for per-agent tool configuration and permissions
+- `knowledge`, `memories`: Structured data for context, history, and RAG
+- `attachedPrompts`: Array of prompt IDs for templates or reusable instructions
+- `model`: LLM model to use (e.g., "gpt-4")
+- `kind`: "system_agent" or "user_agent" (for user-customizable agents)
+- `createdBy`, `createdAt`, `updatedAt`, `updatedBy`: Audit fields for traceability
+
+**Prompt Attachments:** The `attachments` table allows prompts to be attached to agents (or groups) for flexible workflow design.
+
+**Extensibility:** The schema is designed to be future-proof, supporting new agent types, custom roles, richer team structures, and additional configuration fields as needed.
+
+**Example Agent Document:**
+```json
+{
+  "name": "Writer",
+  "description": "Generates marketing copy and creative assets.",
+  "goal": "Produce high-quality draft content for each Elevate step.",
+  "systemPrompt": "You are a creative marketing copywriter...",
+  "instructions": "Always use the brand voice provided in context.",
+  "personality": "Witty, concise, and persuasive.",
+  "delegatesTo": ["agentId_Sage", "agentId_Marketer"],
+  "tools": ["toolId_webSearch", "toolId_summarizer"],
+  "knowledge": { "foundationId": "..." },
+  "memories": [{ "summary": "User prefers short headlines." }],
+  "attachedPrompts": ["promptId_H1", "promptId_S2"],
+  "model": "gpt-4",
+  "kind": "system_agent",
+  "createdBy": "userId_admin",
+  "createdAt": 1710000000000,
+  "updatedAt": 1710000001000
+}
+```
+
+**Agent Configuration & Orchestration:**
+- Agents can be orchestrated by the Director or by user @mentions, with explicit delegation and team structure modeled in the schema.
+- Each agent's configuration, personality, and toolset are now first-class, queryable data.
+- The schema supports both system-defined and user-customizable agents.
+
+**Keep in Sync:**
+> As the agent system evolves, always update both the schema and this documentation to reflect new fields, agent types, and orchestration patterns.
+
 **3. The Agent Team Architecture**
 
 The core innovation is the replacement of a generic "triage" agent with a more sophisticated team structure, led by a **Director**.

@@ -66,6 +66,13 @@ export const courseModules = defineTable({
   exampleImageUrl: v.optional(v.string()),
   exampleText: v.optional(v.string()),
   implementationGuide: v.optional(v.string()),
+  status: v.optional(v.string()), // e.g., "now", "top", "todo", "done"
+  category: v.optional(v.string()),
+  tags: v.optional(v.array(v.string())),
+  createdAt: v.number(),
+  updatedAt: v.optional(v.number()),
+  createdBy: v.optional(v.id("users")),
+  updatedBy: v.optional(v.id("users")),
 }).index("by_moduleNumber", ["moduleNumber"]);
 
 // --- User Specific Data & Progress ---
@@ -75,6 +82,14 @@ export const users = defineTable({
   ...authTables.users.validator.fields,
   // Additional custom user fields if needed
   onboardingStatus: v.optional(v.string()), // e.g., 'Not Started', 'Foundation Complete', 'Course Complete'
+  phone: v.optional(v.string()),
+  address: v.optional(v.string()),
+  company: v.optional(v.string()),
+  marketingConsent: v.optional(v.boolean()),
+  preferredChannel: v.optional(v.string()),
+  communicationPreferences: v.optional(v.any()), // e.g., { email: true, sms: false }
+  currentFunnelStage: v.optional(v.string()), // e.g., "Nurture", "Sell"
+  lastActiveAt: v.optional(v.number()),
 });
 // Add Indexes from authTables if necessary for queries
 // .index("by_email", ["email"])
@@ -183,7 +198,9 @@ export const userFunnelSnapshots = defineTable({
   // Overall
   overallROI: v.optional(v.number()),
   notes: v.optional(v.string()), // User notes about this snapshot
-
+  channel: v.optional(v.string()), // e.g., "Facebook Ads", "Google Organic"
+  campaignId: v.optional(v.string()),
+  experimentId: v.optional(v.string()),
 }).index("by_user_date", ["userId", "snapshotDate"]);
 
 
@@ -210,200 +227,338 @@ export default defineSchema({
   // agents, conversations, conversationParticipants, conversationMessages, etc.
   // (Omitted here for focus, but would be needed for a full chat/agent system)
 
+  // --- New: userActivityLog table ---
+  userActivityLog: defineTable({
+    userId: v.id("users"),
+    actionType: v.string(), // e.g., "prompt_run", "module_complete", "asset_created"
+    actionRef: v.optional(v.string()), // e.g., ID of the related entity
+    details: v.optional(v.any()),
+    timestamp: v.number(),
+    createdBy: v.optional(v.id("users")),
+  })
+    .index("by_user", ["userId"]),
+
 });
-
-```
-
-**Explanation and Integration:**
-
-1.  **Playbook Structure (`playbookPrompts`, `courseModules`):** Defines the static content of the course and the prompt library itself. Links prompts to specific framework steps.
-2.  **User Data (`users`, `userFoundations`):** Stores core user info (via `authTables`) and, crucially, their specific, structured **Foundation Blueprint** data. This is the context source.
-3.  **User Activity (`userPromptExecutions`, `userGeneratedAssets`, `userModuleProgress`):** Tracks how users interact with the course and playbook.
-    *   `userPromptExecutions`: Logs *when* a user runs a specific prompt and *what Foundation context was used at that time* (snapshotting is important as Foundation might evolve). It also stores the raw AI response and links to the refined asset.
-    *   `userGeneratedAssets`: Stores the final, **user-refined** pieces of content (headlines, emails) generated for each step, linked back to the prompt execution that created the draft.
-    *   `userModuleProgress`: Tracks course completion.
-4.  **Ecom Funnel Data (`userFunnelSnapshots`):** This table is **conceptual** and likely requires the user to *manually input* summarized KPIs from their external analytics tools (GA4, Shopify Analytics, Ad Platforms) periodically, or requires complex API integrations (beyond the scope of a simple schema definition). It provides the data needed for the Student Analytics Dashboard. Linking specific `userGeneratedAssets` to performance changes in `userFunnelSnapshots` allows for assessing the impact of implementing the framework.
-
-**Seamless Integration:**
-
-*   The `userFoundations` table provides the **persistent context** required by prompts defined in `playbookPrompts`.
-*   When a user triggers a prompt via the UI (interacting with `courseModules` content), the system fetches their current `userFoundations` data, structures it according to the `playbookPrompts.requiredContext`, executes the prompt, and logs it in `userPromptExecutions`.
-*   The user refines the AI output and saves the final version in `userGeneratedAssets`, linking it back.
-*   The `userFunnelSnapshots` table (populated manually or via integration) provides the performance data against which the effectiveness of the implemented assets (`userGeneratedAssets`) and overall framework adoption (`userModuleProgress`) can be measured.
-
-This schema provides a robust structure for managing the course content, user-specific data, AI interactions, and performance metrics, enabling the integrated Elevate system experience.
-
-Okay, let's define schemas for a `persons` table (representing human individuals interacting with or relevant to the system) and refine the existing `agents` schema to clearly delineate the team members you described.
-
-This assumes the `users` table (from `authTables`) represents *authenticated login accounts*, while the `persons` table represents *actual human entities* who might *also* be authenticated users, or might be team members, contacts, or even stakeholder profiles defined within the Foundation.
-
-We will incorporate this into the main schema definition.
 
 ---
 
-**Refined Convex Schema with `persons` and Updated `agents` Table**
+# Unified Collaborative Schema for Agents, Users, Groups, Tools, and Conversations
+
+This section presents the latest, unified Convex schema for a collaborative, agent-augmented system. It supports users, richly-configurable agents, user/agent groups, tools, prompts, and group-based conversations. This schema is designed for extensibility, productivity, and seamless integration with advanced UI and analytics.
 
 ```typescript
 // convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server"; // Assuming you use convex/auth
+import { authTables } from "@convex-dev/auth/server";
 
-// --- Reusable Validators ---
-
-const elevateStepValidator = v.union(
-  v.literal("Foundation"), v.literal("Hook"), v.literal("Gift"),
-  v.literal("Identify"), v.literal("Engage"), v.literal("Sell"),
-  v.literal("Nurture"), v.literal("Upsell"), v.literal("Educate"),
-  v.literal("Share")
-);
-
-// --- NEW: Person Schema ---
-// Represents human individuals involved (Users, Team Members, Contacts)
-export const persons = defineTable({
-  userId: v.optional(v.id("users")), // Link to auth user record IF they log in
-  name: v.string(),                 // Full name
-  firstName: v.optional(v.string()),
-  lastName: v.optional(v.string()),
-  email: v.optional(v.string()),     // Primary email, might differ from login email
-  role: v.optional(v.string()),      // Role within ONE system context (e.g., "Student", "Admin", "Team Member")
-  organizationId: v.optional(v.id("organizations")), // Link if part of a team/company
-  avatarUrl: v.optional(v.string()), // Profile picture URL
-  metadata: v.optional(v.any()),     // For any other relevant person details
-}).index("by_userId", ["userId"])
-  .index("by_email", ["email"]) // Add index if searching by email is common
-  .index("by_organization", ["organizationId"]); // Add index if filtering by org
-
-// --- REFINED: Agent Schema ---
-// Defines both AI agents created by users and specialized system agents
-const commonAgentFields = {
-  name: v.string(),                     // Agent's display name
-  description: v.string(),              // What the agent does
-  personality: v.string(),              // Core persona description / guiding principles
-  avatarUrl: v.string(),                // URL for the agent's avatar
-  tools: v.optional(v.array(v.string())), // List of tool names agent can use (from shared/tools.ts)
-  lastActiveTime: v.optional(v.number()),// Timestamp of last known activity
-};
-
-// Define specialized System Agent roles (extensible)
-const systemAgentRoleValidator = v.union(
-  v.literal("Director"),    // Orchestrates the user's journey through Elevate
-  v.literal("Sage"),        // Foundation knowledge base expert
-  v.literal("Teacher"),     // Elevate framework & Playbook educator
-  v.literal("Writer"),      // Content generation specialist
-  v.literal("Marketer"),    // Campaign strategy & tactics advisor
-  v.literal("SEO"),         // Search Engine Optimiser (UK English focus)
-  v.literal("Researcher"),  // Directed information gathering (via tools)
-  v.literal("Connector"),   // API / Integration specialist
-  v.literal("Seller"),      // Conversion optimization / Closing expert
-  v.literal("MediaBuyer"),  // Paid traffic specialist
-  v.literal("Advocate"),    // SHARE step / Community specialist
-  v.literal("Guide")        // User journey / Customer state navigator
-  // Add other system roles as needed
-);
-
-export const agents = defineTable(
-  v.union(
-    // Agents created by users
-    v.object({
-      kind: v.literal("user_agent"),
-      createdBy: v.id("users"),        // Link to the user who created it
-      configuration: v.optional(v.any()), // Specific settings or loaded prompts
-      ...commonAgentFields
-    }),
-    // Pre-defined system agents with specific roles
-    v.object({
-      kind: v.literal("system_agent"),
-      systemRole: systemAgentRoleValidator, // Defines the agent's specific function
-      baseInstructions: v.optional(v.string()), // Core prompt instructions for this role
-      configuration: v.optional(v.any()), // Role-specific configuration
-      ...commonAgentFields
-    })
-  )
-).index("by_creator", ["createdBy", "kind"]) // Find agents created by a specific user
- .index("by_systemRole", ["systemRole", "kind"]); // Easily find specific system agents like the Director
-
-// --- Conceptual Organization Schema (Example) ---
-// Optional, only if you need multi-user/team structures
-export const organizations = defineTable({
-  name: v.string(),
-  ownerId: v.id("users"),
-  // add subscription details etc. if needed
-}).index("by_owner", ["ownerId"]);
-
-// --- Other Existing Tables (Keep as previously defined) ---
-
-export const playbookPrompts = defineTable({ /* ... as before ... */ })
-  .index("by_step", ["step"]);
-export const courseModules = defineTable({ /* ... as before ... */ })
-  .index("by_moduleNumber", ["moduleNumber"]);
-export const userFoundations = defineTable({ /* ... as before ... */ })
-  .index("by_userId", ["userId"]);
-export const userPromptExecutions = defineTable({ /* ... as before ... */ })
-  .index("by_user_step", ["userId", "elevateStep"]);
-export const userGeneratedAssets = defineTable({ /* ... as before ... */ })
-  .index("by_user_step", ["userId", "elevateStep"]);
-export const userModuleProgress = defineTable({ /* ... as before ... */ })
-  .index("by_user_module", ["userId", "moduleId"]);
-export const userFunnelSnapshots = defineTable({ /* ... as before ... */ })
-  .index("by_user_date", ["userId", "snapshotDate"]);
-
-// Potentially add chat-related tables if integrating directly
-// conversations, conversationParticipants, conversationMessages
-
-// --- Schema Definition ---
 export default defineSchema({
-  // Include base auth tables if using convex/auth
-  ...authTables, // Includes the 'users' table
+  ...authTables,
 
-  // Core Person & Agent Schemas
-  persons, // Represents humans
-  agents, // Represents AI agents (user & system)
-  organizations, // Optional for team structures
+  // Agents (AI or user-created, with rich config)
+  agents: defineTable({
+    name: v.string(),
+    description: v.string(),
+    avatarUrl: v.string(),
+    kind: v.union(v.literal("system_agent"), v.literal("user_agent")),
+    createdBy: v.optional(v.id("users")),
+    goal: v.optional(v.string()),
+    systemPrompt: v.optional(v.string()),
+    instructions: v.optional(v.string()),
+    personality: v.optional(v.string()), // agent's personality, separate from instructions
+    delegatesTo: v.optional(v.array(v.id("agents"))), // agents this agent can delegate to
+    attachedPrompts: v.optional(v.array(v.id("prompts"))),
+    model: v.optional(v.string()),
+    tools: v.optional(v.array(v.id("tools"))),
+    knowledge: v.optional(v.any()),
+    memories: v.optional(v.any()),
+    lastActiveTime: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_creator", ["createdBy"]),
 
-  // Elevate Framework / Playbook Structure
-  playbookPrompts,
-  courseModules,
+  // Tools (for agents to use)
+  tools: defineTable({
+    name: v.string(),
+    description: v.string(),
+    config: v.optional(v.any()),
+    createdBy: v.optional(v.id("users")),
+  })
+    .index("by_creator", ["createdBy"]),
 
-  // User Data & Progress
-  userFoundations,
-  userPromptExecutions,
-  userGeneratedAssets,
-  userModuleProgress,
+  // Groups (user-created, can contain users and agents)
+  groups: defineTable({
+    name: v.string(),
+    ownerId: v.id("users"),
+    createdAt: v.number(),
+  })
+    .index("by_owner", ["ownerId"]),
 
-  // Conceptual Ecom Funnel Data
-  userFunnelSnapshots,
+  // Group Members (users or agents in a group)
+  groupMembers: defineTable(
+    v.union(
+      v.object({
+        groupId: v.id("groups"),
+        kind: v.literal("user"),
+        userId: v.id("users"),
+        role: v.optional(v.string()), // e.g., "admin", "member", "observer"
+        addedBy: v.id("users"),
+        addedAt: v.number(),
+        createdAt: v.number(),
+        updatedAt: v.optional(v.number()),
+        createdBy: v.optional(v.id("users")),
+        updatedBy: v.optional(v.id("users")),
+      }),
+      v.object({
+        groupId: v.id("groups"),
+        kind: v.literal("agent"),
+        agentId: v.id("agents"),
+        role: v.optional(v.string()),
+        addedBy: v.id("users"),
+        addedAt: v.number(),
+        createdAt: v.number(),
+        updatedAt: v.optional(v.number()),
+        createdBy: v.optional(v.id("users")),
+        updatedBy: v.optional(v.id("users")),
+      })
+    )
+  )
+    .index("by_group", ["groupId"])
+    .index("by_user", ["userId"])
+    .index("by_agent", ["agentId"]),
 
-  // Add chat-related tables if applicable
-  // conversations,
-  // conversationParticipants,
-  // conversationMessages,
+  // Prompts (templates for agent instructions, etc.)
+  prompts: defineTable({
+    title: v.string(),
+    content: v.string(),
+    tags: v.optional(v.array(v.string())),
+    status: v.optional(v.string()), // e.g., "now", "top", "todo", "done"
+    category: v.optional(v.string()),
+    createdBy: v.id("users"),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_creator", ["createdBy"]),
+
+  // Conversations (group chat, can be linked to a group)
+  conversations: defineTable({
+    title: v.string(),
+    createdBy: v.id("users"),
+    groupId: v.optional(v.id("groups")),
+    lastMessageTime: v.number(),
+  })
+    .index("by_user_and_time", ["createdBy", "lastMessageTime"])
+    .index("by_group", ["groupId"]),
+
+  // Conversation Participants (users or agents in a conversation)
+  conversationParticipants: defineTable(
+    v.union(
+      v.object({
+        kind: v.literal("user"),
+        conversationId: v.id("conversations"),
+        userId: v.id("users"),
+        status: v.string(),
+        isRemoved: v.boolean(),
+        addedAt: v.number(),
+      }),
+      v.object({
+        kind: v.literal("agent"),
+        conversationId: v.id("conversations"),
+        agentId: v.id("agents"),
+        status: v.string(),
+        isRemoved: v.boolean(),
+        addedAt: v.number(),
+      })
+    )
+  )
+    .index("by_conversationId", ["conversationId"])
+    .index("by_userId", ["userId"])
+    .index("by_agentId", ["agentId"]),
+
+  // Conversation Messages (messages in a conversation)
+  conversationMessages: defineTable({
+    conversationId: v.id("conversations"),
+    authorParticipantId: v.id("conversationParticipants"),
+    kind: v.union(v.literal("participant"), v.literal("system")),
+    type: v.optional(v.string()), // e.g., "email", "chat", "system"
+    status: v.optional(v.string()), // e.g., "now", "top", "todo", "done"
+    tags: v.optional(v.array(v.string())), // message-level tags/labels
+    content: v.string(),
+    attachments: v.optional(v.array(v.any())), // file/image support
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_conversationId", ["conversationId"]),
+
+  // --- Agent Tools (join table for agent-tool config/permissions) ---
+  agentTools: defineTable({
+    agentId: v.id("agents"),
+    toolId: v.id("tools"),
+    config: v.optional(v.any()), // tool-specific config/permissions
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_agent", ["agentId"])
+    .index("by_tool", ["toolId"]),
+
+  // --- Attachments (generic prompt attachments to agents or groups) ---
+  attachments: defineTable({
+    ownerType: v.union(v.literal("agent"), v.literal("group")),
+    ownerId: v.string(), // id as string for flexibility
+    promptId: v.id("prompts"),
+    createdAt: v.number(),
+    createdBy: v.optional(v.id("users")),
+  })
+    .index("by_owner", ["ownerType", "ownerId"])
+    .index("by_prompt", ["promptId"]),
+
+  // --- Support Tickets (support/community engagement) ---
+  supportTickets: defineTable({
+    userId: v.id("users"),
+    moduleId: v.optional(v.id("courseModules")),
+    subject: v.string(),
+    message: v.string(),
+    status: v.optional(v.string()), // e.g., "open", "closed"
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_user", ["userId"])
+    .index("by_module", ["moduleId"]),
+
+  // --- User Feedback (CSAT/NPS, self-reported results) ---
+  userFeedback: defineTable({
+    userId: v.id("users"),
+    moduleId: v.optional(v.id("courseModules")),
+    csat: v.optional(v.number()), // Customer Satisfaction
+    nps: v.optional(v.number()), // Net Promoter Score
+    feedback: v.optional(v.string()),
+    selfReportedResults: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_user", ["userId"])
+    .index("by_module", ["moduleId"]),
+
+  // --- A/B Tests ---
+  abTests: defineTable({
+    userId: v.id("users"),
+    testName: v.string(),
+    variant: v.string(),
+    result: v.optional(v.string()),
+    metric: v.optional(v.string()),
+    value: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_user", ["userId"]),
+
+  // --- Customers (end customer CRM) ---
+  customers: defineTable({
+    userId: v.id("users"), // owner (student)
+    name: v.string(),
+    email: v.optional(v.string()),
+    segment: v.optional(v.string()), // e.g., 'Checklist Downloaders'
+    tags: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+    phone: v.optional(v.string()),
+    address: v.optional(v.string()),
+    company: v.optional(v.string()),
+    marketingConsent: v.optional(v.boolean()),
+    preferredChannel: v.optional(v.string()),
+    communicationPreferences: v.optional(v.any()),
+  })
+    .index("by_user", ["userId"]),
+
+  // --- Customer Journey Events ---
+  customerJourneyEvents: defineTable({
+    customerId: v.id("customers"),
+    userId: v.id("users"), // owner (student)
+    step: v.string(), // e.g., 'Hook', 'Gift', 'Sell', etc.
+    eventType: v.optional(v.string()), // e.g., 'opt-in', 'purchase', 'review'
+    channel: v.optional(v.string()),
+    details: v.optional(v.string()),
+    timestamp: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")),
+    updatedBy: v.optional(v.id("users")),
+  })
+    .index("by_customer", ["customerId"])
+    .index("by_user", ["userId"]),
 });
 ```
 
-**Explanation of Changes & "Beautiful Person" Schema:**
+## Summary Table
 
-1.  **`persons` Table:**
-    *   Creates a distinct table to represent *human individuals*.
-    *   `userId` (optional `Id<"users">`): This is the critical link. If a person is also an authenticated user, this field connects their person record to their login account (`users` table from `authTables`). It's optional because you might store info about team members or contacts who don't log in.
-    *   `name`, `firstName`, `lastName`, `email`, `avatarUrl`: Standard contact information.
-    *   `role`: Important for defining their relationship to the system/course (e.g., "Student," "Admin," "Prospect Contact").
-    *   `organizationId`: Allows grouping people into teams or companies (requires the simple `organizations` table).
-    *   `metadata`: Flexible field for additional unstructured info.
+| Table                    | Purpose                                 | Key Fields/Indexes                        |
+|--------------------------|-----------------------------------------|-------------------------------------------|
+| users                    | Authenticated users                     | Convex Auth                               |
+| agents                   | AI/user agents with config              | by_creator                                |
+| tools                    | Tools for agents                        | by_creator                                |
+| groups                   | User-created groups                     | by_owner                                  |
+| groupMembers             | Users/agents in groups                  | by_group, by_user, by_agent               |
+| prompts                  | Prompt templates                        | by_creator                                |
+| conversations            | Group chats (optionally linked to group)| by_user_and_time, by_group                |
+| conversationParticipants | Users/agents in conversations           | by_conversationId, by_userId, by_agentId  |
+| conversationMessages     | Messages in conversations               | by_conversationId                         |
 
-2.  **`agents` Table Refined:**
-    *   **`commonAgentFields`:** Extracted common fields for better structure.
-    *   **`user_agent` kind:** Remains largely the same, clearly linked to a `createdBy` user (`Id<"users">`). Added `configuration` field for potential user-specific settings or prompt overrides.
-    *   **`system_agent` kind:** Replaced the generic `systemAgentKind` with a more descriptive `systemRole` validator. This **explicitly lists the different system agent types** you defined (Director, Sage, Teacher, Writer, SEO, Researcher, Connector, Seller, MediaBuyer, Advocate, Guide). This makes querying for specific system agents much easier and the schema more self-documenting. Added `baseInstructions` to potentially store core role-defining prompts directly in the DB.
+## Improvements and Extensibility
 
-3.  **`organizations` Table (Conceptual):** Added a simple table to support grouping `persons` if needed for team features later.
+- **Agents**: Now support goals, system prompts, instructions, attached prompts, model selection, tools, knowledge, and memories for advanced AI workflows.
+- **Groups**: Flexible membership (users and agents), supporting collaborative work and agent-augmented teams.
+- **Tools**: Extensible, can be assigned to agents for custom capabilities.
+- **Prompts**: Reusable templates for agent instructions or user workflows.
+- **Conversations**: Support for group chat, with both users and agents as participants, and optional group linkage.
+- **Scalable**: Add more fields/tables as needed (files, analytics, etc.).
 
-**Integration & How it Works:**
+This schema is designed for modern, collaborative, and AI-augmented applications, and can be easily extended to support new features and integrations.
 
-*   When a user signs up/logs in via `authTables`, you might create a corresponding entry in the `persons` table, linking it via the `userId`.
-*   The `agents` table clearly distinguishes between AI agents created *by* users (`user_agent`) and the specialized system agents (`system_agent`) that facilitate the ONE Playbook experience.
-*   The `Director` agent (`systemRole: "Director"`) orchestrates interactions, potentially mentioning (`@`) specific system agents like `@Teacher` or `@Writer`, or user-created `@UserAgentName`.
-*   The `@Sage` agent (`systemRole: "Sage"`) would query the specific user's `userFoundations` table to retrieve context.
-*   Other agents take instructions based on their `systemRole` and associated `baseInstructions`/`configuration`.
+/**
+Improvements in this version:
+- Added agentTools join table for per-agent tool configuration and permissions.
+- Added attachments table for generic prompt attachments to agents or groups.
+- Added createdAt, updatedAt, createdBy, updatedBy fields to all major tables for auditability and collaborative tracking.
+- Added role field to groupMembers for fine-grained permissions and access control.
+- Added type, status, tags, and attachments fields to conversationMessages for filtering, tabs, labels, and file/image support.
+- Added status, category, and tags fields to courseModules and prompts for filtering and organization (e.g., ToDo/Done/Now/Top tabs).
+*/
 
-This structure provides a clear distinction between human entities (`persons`, `users`) and AI entities (`agents`), while allowing for specialized roles within the AI team to guide the student effectively through the Elevate Framework.
+/**
+Analytics-Focused Improvements:
+- Added supportTickets table for support/community engagement analytics.
+- Added userFeedback table for CSAT/NPS and self-reported results.
+- Added abTests table for A/B test tracking.
+- Added customers and customerJourneyEvents tables for end customer journey/CRM analytics, including segment tagging.
+*/
+
+/**
+Agent Modeling Improvements:
+- Added personality field (optional) to agents for explicit personality modeling, separate from instructions.
+- Added delegatesTo field (optional) to agents for modeling agent delegation/team structure.
+*/
+
+/**
+Marketing & Funnel Perfection Improvements:
+- Added full contact, company, consent, and communication preference fields to users and customers.
+- Added currentFunnelStage and lastActiveAt to users for funnel tracking and engagement.
+- Added channel, campaignId, and experimentId to userFunnelSnapshots for advanced e-commerce analytics and attribution.
+- Added userActivityLog table for unified, queryable user action history.
+*/
