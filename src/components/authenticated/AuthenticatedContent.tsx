@@ -17,10 +17,10 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
 const SIDEBAR_NAV = [
-  { label: "Conversations", icon: BookOpen, count: 128 },
-  { label: "Agents", icon: Users, count: 20 },
-  { label: "Tools", icon: Wrench, count: 10 },
-  { label: "People", icon: User, count: 128 },
+  { key: "conversations", label: "Conversations", icon: BookOpen, count: 128 },
+  { key: "agents", label: "Agents", icon: Users, count: 20 },
+  { key: "tools", label: "Tools", icon: Wrench, count: 10 },
+  { key: "people", label: "People", icon: User, count: 128 },
 ];
 
 const MIDDLE_TABS = [
@@ -39,14 +39,14 @@ export const AuthenticatedContent: React.FC = () => {
   const route = useRoute();
   const currentConversationId = useCurrentConversationId();
   const currentAgentId = useCurrentAgentId();
-  const [activeTab, setActiveTab] = React.useState<"conversations" | "agents">("conversations");
+  const [activeNav, setActiveNav] = React.useState<"conversations" | "agents">("conversations");
   const [middleTab, setMiddleTab] = React.useState("now");
   const me = useQuery(api.users.queries.getMe);
 
-  // Auto-switch sidebar tab if navigating directly
+  // Auto-switch sidebar nav if navigating directly
   React.useEffect(() => {
-    if (route.name === "conversation") setActiveTab("conversations");
-    if (route.name === "agent") setActiveTab("agents");
+    if (route.name === "conversation") setActiveNav("conversations");
+    if (route.name === "agent") setActiveNav("agents");
   }, [route.name]);
 
   // --- Layout ---
@@ -65,7 +65,15 @@ export const AuthenticatedContent: React.FC = () => {
         <NavigationMenu orientation="vertical" className="w-full mb-4">
           <NavigationMenuList className="flex flex-col space-y-2 w-full">
             {SIDEBAR_NAV.map((item) => (
-              <NavigationMenuItem key={item.label} className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
+              <NavigationMenuItem
+                key={item.key}
+                className={`flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md cursor-pointer ${
+                  activeNav === item.key ? "bg-gray-100 font-semibold" : ""
+                }`}
+                onClick={() => {
+                  if (item.key === "conversations" || item.key === "agents") setActiveNav(item.key);
+                }}
+              >
                 <div className="flex items-center">
                   <item.icon className="h-5 w-5 mr-3" />
                   <span>{item.label}</span>
@@ -75,26 +83,11 @@ export const AuthenticatedContent: React.FC = () => {
             ))}
           </NavigationMenuList>
         </NavigationMenu>
-        {/* Conversations/Agents tab */}
-        <div className="flex border-b mb-2">
-          <Button
-            variant={activeTab === "conversations" ? "default" : "ghost"}
-            className="flex-1 rounded-none text-primary-foreground"
-            onClick={() => setActiveTab("conversations")}
-          >
-            Conversations
-          </Button>
-          <Button
-            variant={activeTab === "agents" ? "default" : "ghost"}
-            className="flex-1 rounded-none text-primary-foreground"
-            onClick={() => setActiveTab("agents")}
-          >
-            Agents
-          </Button>
-        </div>
+        {/* Removed Conversations/Agents tab buttons */}
         <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           <div className="flex-1 overflow-y-auto">
-            {activeTab === "conversations" ? <MainConversationList /> : <MainAgentList />}
+            {activeNav === "conversations" ? <MainConversationList /> : null}
+            {activeNav === "agents" ? <MainAgentList /> : null}
           </div>
         </div>
       </div>
@@ -121,7 +114,8 @@ export const AuthenticatedContent: React.FC = () => {
         </div>
         {/* Dynamic conversation/agent list as before, but you may want to style ConversationItem/AgentItem as cards/previews here for a more modern look */}
         <div className="flex-1 overflow-y-auto">
-          {activeTab === "conversations" ? <MainConversationList /> : <MainAgentList />}
+          {activeNav === "conversations" ? <MainConversationList /> : null}
+          {activeNav === "agents" ? <MainAgentList /> : null}
         </div>
       </div>
 
