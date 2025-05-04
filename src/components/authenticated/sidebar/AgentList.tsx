@@ -44,9 +44,8 @@ export const AgentList = () => {
           <div
             key={agent._id}
             onClick={() => routes.agent({ agentId: agent._id }).push()}
-            className={`p-4 cursor-pointer hover:bg-accent flex items-center gap-3 ${
-              agent._id === currentAgentId ? "bg-accent" : ""
-            }`}
+            className={`bg-white rounded-xl border mb-3 px-5 py-4 cursor-pointer transition-all duration-150 shadow-sm border-gray-200 hover:bg-gray-50 hover:shadow-md flex items-center gap-3
+              ${agent._id === currentAgentId ? "border-blue-600 ring-2 ring-blue-600" : ""}`}
           >
             <AgentAvatar
               size="sm"
@@ -54,10 +53,10 @@ export const AgentList = () => {
               name={agent.name}
             />
             <div className="min-w-0 flex-1">
-              <div className="font-medium text-primary-foreground truncate">
+              <div className="font-semibold text-gray-900 text-base mb-1 truncate">
                 {agent.name}
               </div>
-              <div className="text-sm text-muted-foreground truncate">
+              <div className="text-xs text-gray-500 mb-1 truncate">
                 {agent.description}
               </div>
             </div>
