@@ -928,3 +928,22 @@ body {
 .dark .prose {
   color: var(--one-foreground);
 }
+
+/* Dark scrollbars for all scrollable areas */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #101014;
+}
+::-webkit-scrollbar-thumb {
+  background: #18181b;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #101014;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #18181b #101014;
+}
