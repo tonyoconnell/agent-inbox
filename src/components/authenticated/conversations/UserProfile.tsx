@@ -7,6 +7,7 @@ import { useQuery } from "convex/react";
 import { useTheme } from "@/hooks/use-theme";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "../../ui/button";
+import { routes } from "@/routes";
 
 interface UserProfileProps {}
 
@@ -23,7 +24,16 @@ export const UserProfile: React.FC<UserProfileProps> = ({}) => {
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="font-medium text-primary-foreground truncate">
-            {me?.name}
+            {me?.name ? (
+              <a
+                href={routes.profile().href}
+                className="hover:underline hover:text-primary transition-colors"
+              >
+                {me.name}
+              </a>
+            ) : (
+              me?.name
+            )}
           </div>
           <div className="text-xs text-muted-foreground/80 truncate">
             {me?.email}

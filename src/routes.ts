@@ -14,6 +14,7 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     },
     (p) => `/agent/${p.agentId}`,
   ),
+  profile: defineRoute("/profile"),
 });
 
 export type ConversationParams = {
