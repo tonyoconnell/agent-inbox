@@ -7,31 +7,76 @@ import { Id } from "convex/_generated/dataModel";
 import { AgentProfile } from "./agents/AgentProfile";
 import { UserProfile } from "../authenticated/conversations/UserProfile";
 import { Button } from "../ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { BookOpen, Users, Wrench, User, Search, Mail } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
-// Sidebar tab state
-const SIDEBAR_TABS = ["conversations", "agents"] as const;
-type SidebarTab = typeof SIDEBAR_TABS[number];
+const SIDEBAR_NAV = [
+  { label: "Conversations", icon: BookOpen, count: 128 },
+  { label: "Agents", icon: Users, count: 20 },
+  { label: "Tools", icon: Wrench, count: 10 },
+  { label: "People", icon: User, count: 128 },
+];
+
+const MIDDLE_TABS = [
+  { value: "now", label: "Now" },
+  { value: "top", label: "Top" },
+  { value: "todo", label: "ToDo" },
+  { value: "done", label: "Done" },
+];
+
+const CATEGORY_TAGS = [
+  { label: "Meeting", variant: "default", className: "bg-gray-800 text-white hover:bg-gray-700" },
+  { label: "Work", variant: "outline", className: "" },
+];
 
 export const AuthenticatedContent: React.FC = () => {
   const route = useRoute();
   const currentConversationId = useCurrentConversationId();
   const currentAgentId = useCurrentAgentId();
-  const [activeTab, setActiveTab] = React.useState<SidebarTab>("conversations");
+  const [activeTab, setActiveTab] = React.useState<"conversations" | "agents">("conversations");
+  const [middleTab, setMiddleTab] = React.useState("now");
+  const me = useQuery(api.users.queries.getMe);
 
-  // If navigating directly to a conversation or agent, auto-switch tab
+  // Auto-switch sidebar tab if navigating directly
   React.useEffect(() => {
     if (route.name === "conversation") setActiveTab("conversations");
     if (route.name === "agent") setActiveTab("agents");
   }, [route.name]);
 
+  // --- Layout ---
   return (
-    <div className="h-screen flex bg-background overflow-hidden">
+    <div className="flex h-screen bg-white">
       {/* Left Sidebar */}
-      <div className="w-64 border-r flex flex-col">
-        <div className="h-16 border-b border-border flex items-center px-4">
-          <img src="/logo.svg" alt="ONE" className="h-[40px] w-auto object-contain" />
+      <div className="w-64 border-r p-4 flex flex-col">
+        {/* User profile at top */}
+        <div className="flex items-center space-x-2 mb-6">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>{me?.name?.[0] ?? "U"}</AvatarFallback>
+          </Avatar>
+          <span className="font-medium truncate">{me?.name ?? "Anthony O'Connell"}</span>
         </div>
-        <div className="flex border-b">
+        {/* Navigation menu */}
+        <NavigationMenu orientation="vertical" className="w-full mb-4">
+          <NavigationMenuList className="flex flex-col space-y-2 w-full">
+            {SIDEBAR_NAV.map((item) => (
+              <NavigationMenuItem key={item.label} className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
+                <div className="flex items-center">
+                  <item.icon className="h-5 w-5 mr-3" />
+                  <span>{item.label}</span>
+                </div>
+                <Badge variant="secondary" className="bg-gray-100">{item.count}</Badge>
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
+        {/* Conversations/Agents tab */}
+        <div className="flex border-b mb-2">
           <Button
             variant={activeTab === "conversations" ? "default" : "ghost"}
             className="flex-1 rounded-none text-primary-foreground"
@@ -52,18 +97,58 @@ export const AuthenticatedContent: React.FC = () => {
             {activeTab === "conversations" ? <MainConversationList /> : <MainAgentList />}
           </div>
         </div>
-        <UserProfile />
       </div>
 
-      {/* Middle Panel: List of conversations or agents */}
-      <div className="w-96 border-r flex flex-col min-w-[24rem] max-w-[28rem] bg-card">
-        {activeTab === "conversations" ? <MainConversationList /> : <MainAgentList />}
+      {/* Middle Panel */}
+      <div className="w-1/3 border-r flex flex-col min-w-[24rem] max-w-[28rem] bg-card">
+        <div className="px-4 pt-4">
+          <Tabs value={middleTab} onValueChange={setMiddleTab} className="w-full">
+            <TabsList className="grid grid-cols-4 mb-4">
+              {MIDDLE_TABS.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value}>{tab.label}</TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input placeholder="Search" className="pl-10 bg-gray-50 border-gray-200" />
+          </div>
+          <div className="flex space-x-2 mb-4">
+            {CATEGORY_TAGS.map((tag) => (
+              <Badge key={tag.label} variant={tag.variant as any} className={tag.className}>{tag.label}</Badge>
+            ))}
+          </div>
+        </div>
+        {/* Dynamic conversation/agent list as before, but you may want to style ConversationItem/AgentItem as cards/previews here for a more modern look */}
+        <div className="flex-1 overflow-y-auto">
+          {activeTab === "conversations" ? <MainConversationList /> : <MainAgentList />}
+        </div>
       </div>
 
-      {/* Right Panel: Conversation body or agent profile */}
+      {/* Right Panel */}
       <div className="flex-1 flex flex-col min-w-0">
         {route.name === "conversation" && route.params.conversationId ? (
-          <ChatArea conversationId={route.params.conversationId as Id<"conversations">} />
+          <>
+            <div className="flex-1 flex flex-col">
+              <ChatArea conversationId={route.params.conversationId as Id<"conversations">} />
+            </div>
+            {/* Action buttons and recipient tags at the bottom */}
+            <div className="border-t p-4 flex justify-between items-center">
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">Save</Button>
+                <Button variant="outline" size="sm">Reply</Button>
+                <Button variant="outline" size="sm">Forward</Button>
+                <Button variant="outline" size="sm">Complete</Button>
+              </div>
+              <Button variant="outline" size="sm">Share</Button>
+            </div>
+            <div className="border-t p-4">
+              <div className="flex space-x-2">
+                <Badge variant="outline" className="bg-gray-100">@Teacher One</Badge>
+                <Badge variant="outline" className="bg-gray-100">@Anthony O'Connell</Badge>
+              </div>
+            </div>
+          </>
         ) : route.name === "agent" && route.params.agentId ? (
           <AgentProfile agentId={route.params.agentId as Id<"agents">} />
         ) : (
