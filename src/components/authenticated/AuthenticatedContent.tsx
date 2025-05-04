@@ -15,13 +15,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Users, Wrench, User, Search } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-
-const SIDEBAR_NAV = [
-  { key: "conversations", label: "Conversations", icon: BookOpen, count: 128 },
-  { key: "agents", label: "Agents", icon: Users, count: 20 },
-  { key: "tools", label: "Tools", icon: Wrench, count: 10 },
-  { key: "people", label: "People", icon: User, count: 128 },
-];
+import { toolDefinitions } from "../../../shared/tools";
 
 const MIDDLE_TABS = [
   { value: "now", label: "Now" },
@@ -42,6 +36,19 @@ export const AuthenticatedContent: React.FC = () => {
   const [activeNav, setActiveNav] = React.useState<"conversations" | "agents">("conversations");
   const [middleTab, setMiddleTab] = React.useState("now");
   const me = useQuery(api.users.queries.getMe);
+  const conversations = useQuery(api.conversations.queries.listMine) ?? [];
+  const agents = useQuery(api.agents.queries.listMine) ?? [];
+  // Tools are static in shared/tools
+  const toolsCount = Object.keys(toolDefinitions).length;
+  // People: set to 1 (current user) for now
+  const peopleCount = 1;
+
+  const SIDEBAR_NAV = [
+    { key: "conversations", label: "Conversations", icon: BookOpen, count: conversations.length },
+    { key: "agents", label: "Agents", icon: Users, count: agents.length },
+    { key: "tools", label: "Tools", icon: Wrench, count: toolsCount },
+    { key: "people", label: "People", icon: User, count: peopleCount },
+  ];
 
   // Auto-switch sidebar nav if navigating directly
   React.useEffect(() => {
