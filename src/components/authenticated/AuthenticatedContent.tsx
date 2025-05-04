@@ -51,22 +51,20 @@ export const AuthenticatedContent: React.FC = () => {
 
   // --- Layout ---
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[#101014] text-white">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-50 border-r border-gray-200 p-6 flex flex-col">
-        <div className="flex items-center space-x-3 mb-8">
-          <Avatar className="h-9 w-9">
-            <AvatarFallback>{me?.name?.[0] ?? "U"}</AvatarFallback>
-          </Avatar>
-          <span className="font-semibold text-gray-900 truncate text-base">{me?.name ?? "Anthony O'Connell"}</span>
-        </div>
-        <NavigationMenu orientation="vertical" className="w-full">
-          <NavigationMenuList className="flex flex-col gap-1 w-full">
+      <div className="w-72 flex flex-col justify-between bg-[#18181b] border-r border-[#23232a]">
+        <div>
+          {/* Logo */}
+          <div className="flex items-center gap-3 px-6 py-6">
+            <span className="font-bold text-lg tracking-wide">ONE</span>
+          </div>
+          {/* Navigation */}
+          <nav className="px-2">
             {SIDEBAR_NAV.map((item) => (
-              <NavigationMenuItem
+              <button
                 key={item.key}
-                className={`flex items-center justify-between w-full px-3 py-2 rounded-lg cursor-pointer transition-colors
-                  ${activeNav === item.key ? "bg-gray-900 text-white" : "text-gray-700 hover:bg-gray-100"}`}
+                className={`flex items-center justify-between w-full px-4 py-2 rounded-lg mb-1 transition-colors text-left ${activeNav === item.key ? "bg-[#23232a] text-white" : "text-gray-300 hover:bg-[#23232a]"}`}
                 onClick={() => {
                   if (item.key === "conversations" || item.key === "agents") setActiveNav(item.key);
                 }}
@@ -75,38 +73,54 @@ export const AuthenticatedContent: React.FC = () => {
                   <item.icon className="h-5 w-5" />
                   <span className="font-medium text-base">{item.label}</span>
                 </div>
-                <Badge variant="secondary" className={`rounded-full px-2 py-0.5 text-xs font-semibold ${activeNav === item.key ? "bg-white text-gray-900" : "bg-gray-200 text-gray-700"}`}>{item.count}</Badge>
-              </NavigationMenuItem>
+                <span className={`ml-2 text-xs font-semibold rounded-full px-2 py-0.5 ${activeNav === item.key ? "bg-white text-[#18181b]" : "bg-[#23232a] text-gray-300"}`}>{item.count}</span>
+              </button>
             ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+          </nav>
+          {/* Grouped Conversations */}
+          <div className="mt-8 px-2">
+            {/* Example groups, replace with dynamic grouping if available */}
+            <div className="mb-4">
+              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Recent</div>
+              {/* Render recent conversations here */}
+              {/* ... */}
+            </div>
+            <div className="mb-4">
+              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Previous 7 Days</div>
+              {/* Render previous 7 days conversations here */}
+              {/* ... */}
+            </div>
+            <div className="mb-4">
+              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Previous 30 Days</div>
+              {/* Render previous 30 days conversations here */}
+              {/* ... */}
+            </div>
+            <div className="mb-4">
+              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Previous Years</div>
+              {/* Render previous years conversations here */}
+              {/* ... */}
+            </div>
+          </div>
+        </div>
+        {/* User Profile at bottom */}
+        <div className="flex items-center gap-3 px-6 py-5 border-t border-[#23232a] bg-[#16161a]">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>{me?.name?.[0] ?? "U"}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col min-w-0">
+            <span className="font-medium text-sm truncate">{me?.name ?? "John Doe"}</span>
+            <span className="text-xs text-gray-400 truncate">{me?.email ?? "m@example.com"}</span>
+          </div>
+        </div>
       </div>
 
       {/* Middle Panel */}
-      <div className="w-1/3 min-w-[24rem] max-w-[28rem] bg-gray-100 border-r border-gray-200 flex flex-col">
+      <div className="w-1/3 min-w-[24rem] max-w-[28rem] bg-[#18181b] border-r border-[#23232a] flex flex-col">
         <div className="px-6 pt-6 pb-2">
-          <Tabs value={middleTab} onValueChange={setMiddleTab} className="w-full">
-            <TabsList className="flex gap-2 mb-4 bg-transparent">
-              {MIDDLE_TABS.map((tab) => (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="rounded-full px-4 py-1.5 text-sm font-medium data-[state=active]:bg-gray-900 data-[state=active]:text-white data-[state=inactive]:bg-white data-[state=inactive]:text-gray-700 border border-gray-300 data-[state=active]:border-gray-900 shadow-sm"
-                >
-                  {tab.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          <div className="relative mb-4">
-            <Search className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
-            <Input placeholder="Search" className="pl-12 pr-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm focus:ring-2 focus:ring-gray-200" />
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-lg font-semibold">{activeNav === "conversations" ? "Conversations" : "Agents"}</span>
           </div>
-          <div className="flex gap-2 mb-4">
-            {CATEGORY_TAGS.map((tag) => (
-              <span key={tag.label} className={tag.className}>{tag.label}</span>
-            ))}
-          </div>
+          {/* Tabs and search can be added here if needed */}
         </div>
         <div className="flex-1 overflow-y-auto px-4 pb-4">
           {activeNav === "conversations" ? <MainConversationList /> : null}
@@ -115,32 +129,17 @@ export const AuthenticatedContent: React.FC = () => {
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
+      <div className="flex-1 flex flex-col min-w-0 bg-[#101014]">
         {route.name === "conversation" && route.params.conversationId ? (
           <>
             <div className="flex-1 flex flex-col">
               <ChatArea conversationId={route.params.conversationId as Id<"conversations">} />
             </div>
-            <div className="border-t border-gray-200 p-4 flex justify-between items-center bg-white">
-              <div className="flex space-x-2">
-                <button className="rounded-full border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Save</button>
-                <button className="rounded-full border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Reply</button>
-                <button className="rounded-full border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Forward</button>
-                <button className="rounded-full border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Complete</button>
-              </div>
-              <button className="rounded-full border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Share</button>
-            </div>
-            <div className="border-t border-gray-200 p-4 bg-white">
-              <div className="flex gap-2">
-                <span className="rounded-full bg-gray-100 border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700">@Teacher One</span>
-                <span className="rounded-full bg-gray-100 border border-gray-200 px-3 py-1 text-xs font-medium text-gray-700">@Anthony O'Connell</span>
-              </div>
-            </div>
           </>
         ) : route.name === "agent" && route.params.agentId ? (
           <AgentProfile agentId={route.params.agentId as Id<"agents">} />
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-white">
+          <div className="flex-1 flex items-center justify-center bg-[#101014]">
             <div className="text-center">
               <h1 className="text-2xl font-bold mb-4">Welcome to Agent Inbox</h1>
               <p className="text-gray-500">
