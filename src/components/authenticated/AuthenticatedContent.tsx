@@ -130,11 +130,6 @@ export const AuthenticatedContent: React.FC = () => {
             <Button variant="ghost" size="sm" className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]">Unread</Button>
           </div>
         </div>
-        {/* Search bar */}
-        <div className="relative px-6 mb-4">
-          <Search className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
-          <Input placeholder="Search" className="pl-12 pr-4 py-2 rounded-full bg-[#23232a] border border-[#23232a] text-white placeholder:text-gray-400 shadow-sm focus:ring-2 focus:ring-gray-700" />
-        </div>
         {/* List of conversations/agents as cards */}
         <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-thin scrollbar-thumb-[#18181b] scrollbar-track-[#101014]">
           {activeNav === "conversations" ? <MainConversationList /> : null}

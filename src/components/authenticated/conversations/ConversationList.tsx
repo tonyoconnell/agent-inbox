@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useApiErrorHandler } from "../../misc/errors";
 import { ConversationItem } from "./ConversationItem";
 import { useCurrentConversationId, routes } from "../../../routes";
@@ -47,12 +47,15 @@ export const ConversationList: React.FC<ConversationListProps> = ({}) => {
           <Plus className="h-5 w-5" />
           New Conversation
         </button>
-        <Input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search conversations..."
-          className="mt-4 bg-[#23232a] border border-[#23232a] text-white placeholder:text-gray-400 rounded-full px-4 py-2"
-        />
+        <div className="relative mt-4">
+          <Search className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search conversations..."
+            className="pl-12 pr-4 py-2 bg-[#23232a] border border-[#23232a] text-white placeholder:text-gray-400 rounded-full"
+          />
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto">
         {filteredConversations.map((conversation) => (
