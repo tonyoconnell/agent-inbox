@@ -49,89 +49,68 @@ export const AuthenticatedContent: React.FC = () => {
     if (route.name === "agent") setActiveNav("agents");
   }, [route.name]);
 
-  // --- Layout ---
   return (
     <div className="flex h-screen bg-[#101014] text-white">
       {/* Sidebar */}
-      <div className="w-72 flex flex-col justify-between bg-[#18181b] border-r border-[#23232a]">
-        <div>
-          {/* Logo */}
-          <div className="flex items-center gap-3 px-6 py-6">
-            <span className="font-bold text-lg tracking-wide">ONE</span>
-          </div>
-          {/* Navigation */}
-          <nav className="px-2">
-            {SIDEBAR_NAV.map((item) => (
-              <button
-                key={item.key}
-                className={`flex items-center justify-between w-full px-4 py-2 rounded-lg mb-1 transition-colors text-left ${activeNav === item.key ? "bg-[#23232a] text-white" : "text-gray-300 hover:bg-[#23232a]"}`}
-                onClick={() => {
-                  if (item.key === "conversations" || item.key === "agents") setActiveNav(item.key);
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5" />
-                  <span className="font-medium text-base">{item.label}</span>
-                </div>
-                <span className={`ml-2 text-xs font-semibold rounded-full px-2 py-0.5 ${activeNav === item.key ? "bg-white text-[#18181b]" : "bg-[#23232a] text-gray-300"}`}>{item.count}</span>
-              </button>
-            ))}
-          </nav>
-          {/* Grouped Conversations */}
-          <div className="mt-8 px-2">
-            {/* Example groups, replace with dynamic grouping if available */}
-            <div className="mb-4">
-              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Recent</div>
-              {/* Render recent conversations here */}
-              {/* ... */}
-            </div>
-            <div className="mb-4">
-              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Previous 7 Days</div>
-              {/* Render previous 7 days conversations here */}
-              {/* ... */}
-            </div>
-            <div className="mb-4">
-              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Previous 30 Days</div>
-              {/* Render previous 30 days conversations here */}
-              {/* ... */}
-            </div>
-            <div className="mb-4">
-              <div className="uppercase text-xs text-gray-500 mb-2 px-2">Previous Years</div>
-              {/* Render previous years conversations here */}
-              {/* ... */}
-            </div>
-          </div>
-        </div>
-        {/* User Profile at bottom */}
-        <div className="flex items-center gap-3 px-6 py-5 border-t border-[#23232a] bg-[#16161a]">
-          <Avatar className="h-8 w-8">
+      <aside className="w-72 flex flex-col bg-[#18181b] border-r border-[#23232a]">
+        {/* User Profile at top */}
+        <div className="flex items-center gap-3 px-6 py-5 border-b border-[#23232a]">
+          <Avatar className="h-9 w-9">
             <AvatarFallback>{me?.name?.[0] ?? "U"}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col min-w-0">
-            <span className="font-medium text-sm truncate">{me?.name ?? "John Doe"}</span>
+            <span className="font-semibold text-base truncate">{me?.name ?? "John Doe"}</span>
             <span className="text-xs text-gray-400 truncate">{me?.email ?? "m@example.com"}</span>
           </div>
         </div>
-      </div>
+        {/* Navigation */}
+        <nav className="flex-1 px-2 py-4">
+          {SIDEBAR_NAV.map((item) => (
+            <button
+              key={item.key}
+              className={`flex items-center justify-between w-full px-4 py-2 rounded-lg mb-1 transition-colors text-left ${activeNav === item.key ? "bg-[#23232a] text-white" : "text-gray-300 hover:bg-[#23232a]"}`}
+              onClick={() => {
+                if (item.key === "conversations" || item.key === "agents") setActiveNav(item.key);
+              }}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon className="h-5 w-5" />
+                <span className="font-medium text-base">{item.label}</span>
+              </div>
+              <span className={`ml-2 text-xs font-semibold rounded-full px-2 py-0.5 ${activeNav === item.key ? "bg-white text-[#18181b]" : "bg-[#23232a] text-gray-300"}`}>{item.count}</span>
+            </button>
+          ))}
+        </nav>
+      </aside>
 
       {/* Middle Panel */}
-      <div className="w-1/3 min-w-[24rem] max-w-[28rem] bg-[#18181b] border-r border-[#23232a] flex flex-col">
-        <div className="px-6 pt-6 pb-2">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg font-semibold">{activeNav === "conversations" ? "Conversations" : "Agents"}</span>
+      <main className="w-1/3 min-w-[24rem] max-w-[28rem] bg-[#18181b] border-r border-[#23232a] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-2">
+          <span className="text-lg font-semibold">{activeNav === "conversations" ? "Conversations" : "Agents"}</span>
+          {/* Filter buttons (example) */}
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]">All</Button>
+            <Button variant="ghost" size="sm" className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]">Unread</Button>
           </div>
-          {/* Tabs and search can be added here if needed */}
         </div>
-        <div className="flex-1 overflow-y-auto px-4 pb-4">
+        {/* Search bar */}
+        <div className="relative px-6 mb-4">
+          <Search className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
+          <Input placeholder="Search" className="pl-12 pr-4 py-2 rounded-full bg-[#23232a] border border-[#23232a] text-white placeholder:text-gray-400 shadow-sm focus:ring-2 focus:ring-gray-700" />
+        </div>
+        {/* List of conversations/agents as cards */}
+        <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2">
           {activeNav === "conversations" ? <MainConversationList /> : null}
           {activeNav === "agents" ? <MainAgentList /> : null}
         </div>
-      </div>
+      </main>
 
       {/* Right Panel */}
-      <div className="flex-1 flex flex-col min-w-0 bg-[#101014]">
+      <section className="flex-1 flex flex-col min-w-0 bg-[#101014]">
         {route.name === "conversation" && route.params.conversationId ? (
           <>
+            {/* Header with actions, subject, sender, time can be added in ChatArea or here if needed */}
             <div className="flex-1 flex flex-col">
               <ChatArea conversationId={route.params.conversationId as Id<"conversations">} />
             </div>
@@ -148,7 +127,7 @@ export const AuthenticatedContent: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };

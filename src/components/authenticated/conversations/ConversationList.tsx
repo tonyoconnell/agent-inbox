@@ -29,18 +29,10 @@ export const ConversationList: React.FC<ConversationListProps> = ({}) => {
 
   return (
     <>
-      <div className="h-24 border-b border-border relative overflow-hidden">
-        <img
-          src="/logo.svg"
-          alt="Agent Inbox"
-          className="absolute -right-0 -top-2 h-32 object-cover"
-        />
-        <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-card to-transparent" />
-      </div>
       <div className="p-4">
         <button
           onClick={handleCreateConversation}
-          className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          className="w-full bg-[#2563eb] text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 font-semibold shadow-sm hover:bg-[#1d4ed8] transition-colors duration-150"
         >
           <Plus className="h-5 w-5" />
           New Conversation
