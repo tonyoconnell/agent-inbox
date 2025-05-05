@@ -20,11 +20,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Users, Wrench, User, Search } from "lucide-react";
+import { BookOpen, Users, Wrench, User, Search, Menu, X } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toolDefinitions } from "../../../shared/tools";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "@/components/ui/dialog";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const MIDDLE_TABS = [
   { value: "now", label: "Now" },
@@ -63,7 +66,6 @@ export const AuthenticatedContent: React.FC = () => {
   const toolsCount = Object.keys(toolDefinitions).length;
   // People: set to 1 (current user) for now
   const peopleCount = 1;
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const SIDEBAR_NAV = [
     {
@@ -84,153 +86,84 @@ export const AuthenticatedContent: React.FC = () => {
   }, [route.name]);
 
   return (
-    <div className="flex h-screen bg-[#101014] text-white">
-      {/* Sidebar */}
-      <aside
-        className={`transition-all duration-200 flex flex-col bg-[#18181b] border-r border-[#23232a] ${
-          sidebarCollapsed ? "w-14" : "w-56"
-        }`}
-      >
-        {/* Collapse/Expand Button */}
-        <button
-          className="absolute top-4 right-2 z-10 p-1 rounded hover:bg-[#23232a]"
-          onClick={() => setSidebarCollapsed((c) => !c)}
-          aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+    <SidebarProvider>
+      <div className="flex flex-col md:flex-row h-screen bg-[#101014] text-white">
+        {/* Sidebar trigger for mobile */}
+        <div className="md:hidden p-2">
+          <SidebarTrigger />
+        </div>
+        {/* Sidebar: visible on all screens via shadcn/ui */}
+        <AppSidebar
+          user={{
+            name: me?.name ?? "John Doe",
+            email: me?.email ?? "john@example.com",
+            image: me?.image,
+          }}
+          navItems={SIDEBAR_NAV}
+          activeNav={activeNav}
+          onNavChange={(key) => setActiveNav(key as "conversations" | "agents")}
+        />
+        {/* Middle Panel */}
+        <main
+          className="flex flex-col bg-[#18181b] border-r border-[#23232a] w-full md:w-[28rem] min-w-0 max-w-full md:max-w-[28rem] transition-all duration-200"
         >
-          <span className="sr-only">Toggle Sidebar</span>
-          <svg
-            width="20"
-            height="20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            {sidebarCollapsed ? (
-              <path d="M9 18l6-6-6-6" />
-            ) : (
-              <path d="M15 6l-6 6 6 6" />
-            )}
-          </svg>
-        </button>
-        {/* User Profile at top */}
-        {!sidebarCollapsed && (
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-[#23232a]">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback>{me?.name?.[0] ?? "U"}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col min-w-0">
-              <span className="font-semibold text-base truncate">
-                {me?.name ?? "John Doe"}
-              </span>
-              <span className="text-xs text-gray-400 truncate">
-                {me?.email ?? "m@example.com"}
-              </span>
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 pt-6 pb-2">
+            <span className="text-lg font-semibold">
+              {activeNav === "conversations" ? "Conversations" : "Agents"}
+            </span>
+            {/* Filter buttons (example) */}
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]"
+              >
+                All
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]"
+              >
+                Unread
+              </Button>
             </div>
           </div>
-        )}
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4">
-          {SIDEBAR_NAV.map((item) => (
-            <button
-              key={item.key}
-              className={`flex items-center justify-center ${
-                sidebarCollapsed ? "px-0" : "justify-between w-full px-4"
-              } py-2 rounded-lg mb-1 transition-colors text-left ${
-                activeNav === item.key
-                  ? "bg-[#23232a] text-white"
-                  : "text-gray-300 hover:bg-[#23232a]"
-              }`}
-              onClick={() => {
-                if (item.key === "conversations" || item.key === "agents")
-                  setActiveNav(item.key);
-              }}
-            >
-              <div className="flex items-center gap-3 justify-center w-full">
-                <item.icon className="h-5 w-5" />
-                {!sidebarCollapsed && (
-                  <span className="font-medium text-base">{item.label}</span>
-                )}
+          {/* List of conversations/agents as cards */}
+          <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-thin scrollbar-thumb-[#18181b] scrollbar-track-[#101014]">
+            {activeNav === "conversations" ? <MainConversationList /> : null}
+            {activeNav === "agents" ? <MainAgentList /> : null}
+          </div>
+        </main>
+        {/* Right Panel */}
+        <section className="flex-1 flex flex-col min-w-0 bg-[#101014]">
+          {route.name === "conversation" && route.params.conversationId ? (
+            <>
+              <div className="flex-1 flex flex-col">
+                <ChatArea
+                  conversationId={
+                    route.params.conversationId as Id<"conversations">
+                  }
+                />
               </div>
-              {!sidebarCollapsed && (
-                <span
-                  className={`ml-2 text-xs font-semibold rounded-full px-2 py-0.5 ${activeNav === item.key ? "bg-white text-[#18181b]" : "bg-[#23232a] text-gray-300"}`}
-                >
-                  {item.count}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      {/* Middle Panel */}
-      <main
-        className="transition-all duration-200 flex flex-col bg-[#18181b] border-r border-[#23232a]"
-        style={{
-          width: sidebarCollapsed ? "20vw" : "28vw",
-          minWidth: sidebarCollapsed ? "14rem" : "22rem",
-          maxWidth: sidebarCollapsed ? "24rem" : "28rem",
-        }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-2">
-          <span className="text-lg font-semibold">
-            {activeNav === "conversations" ? "Conversations" : "Agents"}
-          </span>
-          {/* Filter buttons (example) */}
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]"
-            >
-              All
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="rounded-full px-4 py-1.5 text-xs font-medium text-gray-300 hover:bg-[#23232a]"
-            >
-              Unread
-            </Button>
-          </div>
-        </div>
-        {/* List of conversations/agents as cards */}
-        <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-thin scrollbar-thumb-[#18181b] scrollbar-track-[#101014]">
-          {activeNav === "conversations" ? <MainConversationList /> : null}
-          {activeNav === "agents" ? <MainAgentList /> : null}
-        </div>
-      </main>
-
-      {/* Right Panel */}
-      <section className="flex-1 flex flex-col min-w-0 bg-[#101014]">
-        {route.name === "conversation" && route.params.conversationId ? (
-          <>
-            {/* Header with actions, subject, sender, time can be added in ChatArea or here if needed */}
-            <div className="flex-1 flex flex-col">
-              <ChatArea
-                conversationId={
-                  route.params.conversationId as Id<"conversations">
-                }
-              />
+            </>
+          ) : route.name === "agent" && route.params.agentId ? (
+            <AgentProfile agentId={route.params.agentId as Id<"agents">} />
+          ) : (
+            <div className="flex-1 flex items-center justify-center bg-[#101014]">
+              <div className="text-center">
+                <h1 className="text-2xl font-bold mb-4">
+                  Welcome to Agent Inbox
+                </h1>
+                <p className="text-gray-500">
+                  Select a conversation or agent to get started
+                </p>
+              </div>
             </div>
-          </>
-        ) : route.name === "agent" && route.params.agentId ? (
-          <AgentProfile agentId={route.params.agentId as Id<"agents">} />
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-[#101014]">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold mb-4">
-                Welcome to Agent Inbox
-              </h1>
-              <p className="text-gray-500">
-                Select a conversation or agent to get started
-              </p>
-            </div>
-          </div>
-        )}
-      </section>
-    </div>
+          )}
+        </section>
+      </div>
+    </SidebarProvider>
   );
 };

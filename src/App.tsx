@@ -5,20 +5,25 @@ import { UnauthenticatedContent } from "./components/unauthenticated/Unauthentic
 import { toast, Toaster } from "sonner";
 import { RouteProvider } from "./routes";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function App() {
   return (
     <RouteProvider>
       <ConvexQueryCacheProvider>
-        <div className="min-h-screen bg-background">
-          <Authenticated>
-            <AuthenticatedContent />
-          </Authenticated>
-          <Unauthenticated>
-            <UnauthenticatedContent />
-          </Unauthenticated>
-        </div>
-        <Toaster />
+        <SidebarProvider>
+          <div className="min-h-screen bg-background flex">
+            <main className="flex-1 min-w-0">
+              <Authenticated>
+                <AuthenticatedContent />
+              </Authenticated>
+              <Unauthenticated>
+                <UnauthenticatedContent />
+              </Unauthenticated>
+            </main>
+          </div>
+          <Toaster />
+        </SidebarProvider>
       </ConvexQueryCacheProvider>
     </RouteProvider>
   );
