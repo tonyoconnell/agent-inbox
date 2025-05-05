@@ -17,8 +17,7 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
 }) => (
   <div
     onClick={() => onSelect(id)}
-    className={`rounded-xl border mb-3 px-5 py-4 cursor-pointer transition-all duration-150 shadow-sm border-[#2d2d36] hover:bg-[#282832] hover:shadow-md ${isSelected ? "border-[#23232a]" : "bg-[#23232a]"}`}
-    style={isSelected ? { background: "hsla(var(--one-muted), 0.08)" } : {}}
+    className={`rounded-xl border mb-3 px-5 py-4 cursor-pointer transition-all duration-150 shadow-sm hover:bg-[#282832] hover:shadow-md ${isSelected ? "border-white bg-[#23232a]" : "border-[#2d2d36] bg-[#23232a]"}`}
   >
     <div className="font-semibold text-white text-base mb-1">{title}</div>
     <div className="text-xs text-gray-400 mb-1">

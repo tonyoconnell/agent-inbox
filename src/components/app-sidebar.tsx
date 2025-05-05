@@ -36,7 +36,7 @@ export function AppSidebar({
   return (
     <Sidebar className="border-r border-border shadow-sm backdrop-blur-sm bg-sidebar/80 min-h-screen">
       <SidebarHeader>
-        <div className="flex items-center gap-3 px-4 py-6">
+        <div className="flex items-center gap-3 px-2 py-6">
           <Avatar className="w-10 h-10">
             {user.image ? (
               <AvatarImage src={user.image} alt={user.name} />
@@ -52,16 +52,16 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground px-4 pb-2">Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground px-2 pb-2">Main</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1 px-2">
+            <SidebarMenu className="space-y-1 px-1">
               {navItems.map((item) => {
                 const active = activeNav === item.key;
                 return (
                   <SidebarMenuItem key={item.key}>
                     <SidebarMenuButton asChild isActive={active}>
                       <button
-                        className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg transition-colors relative
+                        className={`flex items-center gap-3 w-full px-2 py-2 rounded-lg transition-colors relative
                           ${active ? "bg-accent/80 text-accent-foreground font-semibold shadow border-l-4 border-primary" : "hover:bg-muted/60 text-muted-foreground"}
                         `}
                         style={active ? { boxShadow: "0 2px 8px rgba(0,0,0,0.08)" } : {}}

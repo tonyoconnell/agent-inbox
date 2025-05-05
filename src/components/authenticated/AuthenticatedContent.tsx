@@ -105,7 +105,7 @@ export const AuthenticatedContent: React.FC = () => {
         />
         {/* Middle Panel */}
         <main
-          className="flex flex-col bg-[#18181b] border-r border-[#23232a] w-full md:w-[28rem] min-w-0 max-w-full md:max-w-[28rem] transition-all duration-200"
+          className="flex flex-col bg-[#18181b] border-r border-[#23232a] w-full md:w-[22.4rem] min-w-0 max-w-full md:max-w-[22.4rem] transition-all duration-200"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-6 pb-2">
