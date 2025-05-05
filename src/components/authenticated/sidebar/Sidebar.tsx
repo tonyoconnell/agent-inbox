@@ -3,14 +3,33 @@ import { ConversationList } from "./ConversationList";
 import { AgentList } from "./AgentList";
 import { Button } from "../../ui/button";
 import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
+import { routes } from "@/routes";
+import { api } from "@/../convex/_generated/api";
+import { useQuery } from "convex/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Tab = "conversations" | "agents";
 
 export const Sidebar = () => {
   const [activeTab, setActiveTab] = React.useState<Tab>("conversations");
+  const me = useQuery(api.users.queries.getMe);
 
   return (
     <div className="flex flex-col h-full border-r">
+      <a
+        href={routes.profile().href}
+        className="flex items-center gap-2 px-4 py-3 hover:bg-accent/30 transition group"
+        style={{ minHeight: 56 }}
+        onClick={e => { e.preventDefault(); routes.profile().push(); }}
+      >
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={me?.image} />
+          <AvatarFallback>{me?.name?.[0] ?? "U"}</AvatarFallback>
+        </Avatar>
+        <span className="font-medium truncate group-hover:underline">
+          {me?.name || "User"}
+        </span>
+      </a>
       <div className="h-16 border-b border-border flex items-center px-4">
         <img
           src="/logo.svg"
@@ -39,7 +58,9 @@ export const Sidebar = () => {
           {activeTab === "conversations" ? <ConversationList /> : <AgentList />}
         </div>
       </div>
-      <UserProfile />
+      <a href={routes.profile().href} className="block rounded transition hover:ring-2 hover:ring-primary/40 hover:bg-accent/30">
+        <UserProfile />
+      </a>
     </div>
   );
 };

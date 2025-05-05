@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -195,61 +194,62 @@
   --ring: var(--one-ring);
 }
 
-/* High Contrast Theme - Slate */
-.high-contrast, [data-theme="high-contrast"] {
-  /* Core colors */
-  --one-black: hsl(215 28% 15%);      /* Slate 900 */
-  --one-dark: hsl(217 33% 17%);       /* Slate 800 */
-  --one-background: hsl(222 47% 11%); /* Slate 950 - Deep blue-black */
-  --one-white: hsl(0 0% 100%);        /* Pure white */
-  
-  /* Semantic mappings */
+/* Dark Theme */
+.dark, [data-theme="dark"] {
+  --one-black: hsl(0 0% 0%);
+  --one-dark: hsl(0 0% 10%);
+  --one-background: hsl(0 0% 13%);
+  --one-white: hsl(0 0% 100%);
   --one-background-main: var(--one-background);
   --one-background-nav: var(--one-dark);
   --one-background-logo: var(--one-black);
-  --one-background-card: hsl(215 28% 20%);         /* Darker card background */
-  
-  /* Text colors */
-  --one-foreground: hsl(214 15% 95%);              /* Nearly white text */
-  --one-foreground-muted: hsl(210 40% 93%);
-  
-  /* Primary action colors */
-  --one-primary: hsl(217 91% 60%);                 /* Blue 500 - Vibrant blue */
-  --one-primary-foreground: hsl(0 0% 100%);
-  
-  /* Secondary elements */
-  --one-secondary: hsl(215 25% 25%);               /* Slate 600 */
-  --one-secondary-foreground: hsl(214 15% 95%);
-  
-  /* Accent colors */
-  --one-accent: hsl(199 89% 48%);                  /* Sky 500 - Bright cyan */
-  --one-accent-foreground: hsl(0 0% 100%);
-  
-  /* Interface elements */
-  --one-muted: hsl(215 25% 25%);                   /* Slate 600 */
-  --one-muted-foreground: hsl(214 15% 85%);
-  --one-card: hsl(215 28% 20%);                    /* Clearly darker than background */
-  --one-card-foreground: hsl(214 15% 95%);
-  --one-popover: hsl(215 28% 20%);
-  --one-popover-foreground: hsl(214 15% 95%);
-  
-  /* Border colors - More defined borders for contrast */
-  --one-border: hsla(214, 32%, 91%, 0.15);
-  --one-border-nav: hsla(214, 32%, 91%, 0.1);
-  
-  /* Input elements */
-  --one-input: hsl(215 25% 22%);                   /* Darker input background */
-  --one-input-foreground: hsl(214 15% 95%);
-  --one-ring: hsla(217, 91%, 60%, 0.6);
-
-  /* Chart colors - Vibrant for better distinction */
-  --one-chart-1: hsl(217 91% 60%);                 /* Blue 500 */
-  --one-chart-2: hsl(199 89% 48%);                 /* Sky 500 */
-  --one-chart-3: hsl(152 76% 50%);                 /* Emerald 500 - Brighter */
-  --one-chart-4: hsl(262 83% 62%);                 /* Violet 500 - Brighter */
-  --one-chart-5: hsl(334 85% 50%);                 /* Rose 500 - Brighter */
-
-  /* Update Tailwind compatibility vars */
+  --one-background-card: hsl(0 0% 17%);
+  --one-foreground: var(--one-white);
+  --one-foreground-muted: hsl(220 5% 70%);
+  --one-primary: hsl(220 100% 50%);
+  --one-primary-foreground: var(--one-white);
+  --one-secondary: hsl(220 7% 18%);
+  --one-secondary-foreground: var(--one-white);
+  --one-accent: hsl(220 100% 50%);
+  --one-accent-foreground: var(--one-white);
+  --one-muted: hsl(220 7% 18%);
+  --one-muted-foreground: hsl(220 5% 65%);
+  --one-card: hsl(0 0% 17%);
+  --one-card-foreground: var(--one-white);
+  --one-popover: hsl(0 0% 17%);
+  --one-popover-foreground: var(--one-white);
+  --one-border: hsla(0, 0%, 100%, 0.06);
+  --one-border-nav: hsla(0, 0%, 100%, 0.03);
+  --one-input: hsl(220 7% 18%);
+  --one-input-foreground: var(--one-white);
+  --one-ring: hsl(220 100% 50%);
+  --one-destructive: hsl(0 84% 60%);
+  --one-destructive-foreground: hsl(0 0% 100%);
+  --one-success: hsl(142 76% 36%);
+  --one-success-foreground: hsl(0 0% 100%);
+  --one-warning: hsl(38 92% 50%);
+  --one-warning-foreground: hsl(0 0% 0%);
+  --one-info: hsl(220 70% 50%);
+  --one-info-foreground: hsl(0 0% 100%);
+  --one-chart-1: hsl(220 100% 50%);
+  --one-chart-2: hsl(160 60% 45%);
+  --one-chart-3: hsl(30 80% 55%);
+  --one-chart-4: hsl(280 65% 60%);
+  --one-chart-5: hsl(340 75% 55%);
+  --one-duration-fast: 150ms;
+  --one-duration-normal: 250ms;
+  --one-duration-slow: 400ms;
+  --one-spacing-unit: 0.25rem;
+  --one-radius-sm: 0.125rem;
+  --one-radius-md: 0.25rem;
+  --one-radius-lg: 0.375rem;
+  --radius: var(--one-radius-md);
+  --one-sidebar-width: 64px;
+  --one-panel-quarter-width: 350px;
+  --one-panel-half-width: 50%;
+  --one-panel-full-width: 100%;
+  --one-panel-floating-width: 400px;
+  --one-panel-floating-height: 600px;
   --background: var(--one-background-main);
   --foreground: var(--one-foreground);
   --card: var(--one-card);
@@ -264,6 +264,8 @@
   --muted-foreground: var(--one-muted-foreground);
   --accent: var(--one-accent);
   --accent-foreground: var(--one-accent-foreground);
+  --destructive: var(--one-destructive);
+  --destructive-foreground: var(--one-destructive-foreground);
   --border: var(--one-border);
   --input: var(--one-input);
   --ring: var(--one-ring);
@@ -917,4 +919,31 @@ body {
   background: transparent;
   border: none;
   color: inherit;
+}
+
+/* Tailwind Typography (prose) customizations */
+.prose {
+  color: var(--one-foreground);
+}
+.dark .prose {
+  color: var(--one-foreground);
+}
+
+/* Dark scrollbars for all scrollable areas */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #101014;
+}
+::-webkit-scrollbar-thumb {
+  background: #18181b;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #101014;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #18181b #101014;
 }
