@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { BookOpen, Users, Wrench, User } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
 export interface SidebarNavItem {
@@ -34,52 +34,54 @@ export function AppSidebar({
   onNavChange,
 }: AppSidebarProps) {
   return (
-    <Sidebar>
+    <Sidebar className="border-r border-border shadow-sm backdrop-blur-sm bg-sidebar/80 min-h-screen">
       <SidebarHeader>
-        <div className="flex items-center gap-3 px-4 py-4">
+        <div className="flex items-center gap-3 px-4 py-6">
           <Avatar className="w-10 h-10">
-            {/* If you have user.image, use AvatarImage */}
-            <AvatarFallback>{user.name[0]}</AvatarFallback>
+            {user.image ? (
+              <AvatarImage src={user.image} alt={user.name} />
+            ) : (
+              <AvatarFallback>{user.name[0]}</AvatarFallback>
+            )}
           </Avatar>
           <div className="flex flex-col min-w-0">
-            <span className="font-semibold text-base truncate">{user.name}</span>
-            <span className="text-xs text-gray-400 truncate">{user.email}</span>
+            <span className="font-semibold text-base truncate text-sidebar-foreground">{user.name}</span>
+            <span className="text-xs text-muted-foreground truncate">{user.email}</span>
           </div>
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground px-4 pb-2">Main</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.key}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={activeNav === item.key}
-                  >
-                    <button
-                      className={`flex items-center w-full justify-between px-2 py-2 rounded-lg transition-colors ${
-                        activeNav === item.key ? "bg-accent text-accent-foreground" : "hover:bg-muted"
-                      }`}
-                      onClick={() => onNavChange(item.key)}
-                    >
-                      <span className="flex items-center gap-2">
-                        <item.icon className="mr-2" />
+            <SidebarMenu className="space-y-1 px-2">
+              {navItems.map((item) => {
+                const active = activeNav === item.key;
+                return (
+                  <SidebarMenuItem key={item.key}>
+                    <SidebarMenuButton asChild isActive={active}>
+                      <button
+                        className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg transition-colors relative
+                          ${active ? "bg-accent/80 text-accent-foreground font-semibold shadow border-l-4 border-primary" : "hover:bg-muted/60 text-muted-foreground"}
+                        `}
+                        style={active ? { boxShadow: "0 2px 8px rgba(0,0,0,0.08)" } : {}}
+                        onClick={() => onNavChange(item.key)}
+                      >
+                        <item.icon className="w-5 h-5" />
                         <span>{item.label}</span>
-                      </span>
-                      {typeof item.count === "number" && (
-                        <Badge
-                          variant={activeNav === item.key ? "default" : "secondary"}
-                          className="ml-2 text-xs font-semibold rounded-full px-2 py-0.5"
-                        >
-                          {item.count}
-                        </Badge>
-                      )}
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                        {typeof item.count === "number" && item.count > 0 && (
+                          <Badge
+                            variant={active ? "default" : "secondary"}
+                            className="ml-auto bg-muted text-white text-xs rounded-full px-2 py-0.5 border-none"
+                          >
+                            {item.count}
+                          </Badge>
+                        )}
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
