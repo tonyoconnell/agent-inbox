@@ -1,6 +1,6 @@
 ![agent inbox screenshot](./media/screenshot.png)
 
-# Agent Inbox
+# Agent ONE
 
 A multi-agent AI chat running on Convex
 
