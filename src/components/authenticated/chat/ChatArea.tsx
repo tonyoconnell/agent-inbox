@@ -32,15 +32,15 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
 
   return (
     <ChatProvider>
-      <div className="flex flex-col flex-1 min-h-0 bg-background">
+      <div className="flex flex-col h-full w-full bg-sidebar">
         <ConversationHeader conversation={conversation} />
-        <div className="relative flex-1 min-h-0">
-          <div className="flex flex-col-reverse h-full min-h-0">
-            <div className="sticky bottom-0 left-0 right-0 z-10 bg-background border-t border-gray-200" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <div className="relative flex-1 w-full">
+          <div className="flex flex-col-reverse h-full w-full">
+            <div className="sticky bottom-0 left-0 right-0 z-10 bg-sidebar border-t border-gray-200" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
               <ChatInput conversationId={conversationId} />
             </div>
-            <div className="flex-1 overflow-y-auto px-2 pb-4 pt-2 min-h-0">
-              <div className="space-y-4">
+            <div className="flex-1 overflow-y-auto px-2 pb-4 pt-2 min-h-0 w-full">
+              <div className="space-y-4 w-full">
                 {!messages ? (
                   <>
                     <div className="flex justify-start">

@@ -12,8 +12,8 @@ export default function App() {
     <RouteProvider>
       <ConvexQueryCacheProvider>
         <SidebarProvider>
-          <div className="min-h-screen bg-background flex">
-            <main className="flex-1 min-w-0">
+          <div className="min-h-screen w-full bg-background flex">
+            <main className="flex-1 min-w-0 w-full">
               <Authenticated>
                 <AuthenticatedContent />
               </Authenticated>

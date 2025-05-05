@@ -87,7 +87,7 @@ export const AuthenticatedContent: React.FC = () => {
 
   return (
     <SidebarProvider>
-      <div className="flex flex-col md:flex-row h-screen bg-[#101014] text-white">
+      <div className="flex flex-col md:flex-row h-screen w-full bg-[#101014] text-white">
         {/* Sidebar trigger for mobile */}
         <div className="md:hidden p-2">
           <SidebarTrigger />
@@ -105,7 +105,7 @@ export const AuthenticatedContent: React.FC = () => {
         />
         {/* Middle Panel */}
         <main
-          className="flex flex-col bg-[#18181b] border-r border-[#23232a] w-full md:w-[22.4rem] min-w-0 max-w-full md:max-w-[22.4rem] transition-all duration-200"
+          className="flex flex-col bg-[#18181b] border-r border-[#23232a] w-full md:w-[22.4rem] min-w-0 transition-all duration-200"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-6 pb-2">
@@ -137,7 +137,7 @@ export const AuthenticatedContent: React.FC = () => {
           </div>
         </main>
         {/* Right Panel */}
-        <section className="flex-1 flex flex-col min-w-0 bg-[#101014]">
+        <section className="flex-1 min-w-0 flex flex-col bg-sidebar">
           {route.name === "conversation" && route.params.conversationId ? (
             <>
               <div className="flex-1 flex flex-col">
@@ -151,7 +151,7 @@ export const AuthenticatedContent: React.FC = () => {
           ) : route.name === "agent" && route.params.agentId ? (
             <AgentProfile agentId={route.params.agentId as Id<"agents">} />
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-[#101014]">
+            <div className="flex-1 flex items-center justify-center bg-sidebar">
               <div className="text-center">
                 <h1 className="text-2xl font-bold mb-4">
                   Welcome to Agent Inbox

@@ -142,7 +142,6 @@ Read file: src/components/authenticated/agents/AgentProfile.tsx
 
 ## Updated Mobile Plan Section for docs/mobile.md
 
-```markdown
 ## 7. App.tsx & Core Components Mobile Audit
 
 ### Key Issues
@@ -187,7 +186,4 @@ Read file: src/components/authenticated/agents/AgentProfile.tsx
 - Update middle panel and chat window for full responsiveness.
 - Adjust grid layouts and logo sizing for mobile.
 - Test all areas for seamless mobile experience.
-```
-
-Would you like this section added to your mobile.md file?
 
