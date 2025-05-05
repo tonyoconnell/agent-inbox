@@ -3,13 +3,9 @@ import { MentionsInput, Mention, SuggestionDataItem } from "react-mentions";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { AgentAvatar } from "@/components/ui/agent-avatar";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useApiErrorHandler } from "@/components/misc/errors";
-import { ReactNode } from "react";
-import { useChatContext } from "./ChatContext";
+import { Send } from "lucide-react";
 
-// Define our custom suggestion data type
 interface CustomSuggestionData extends SuggestionDataItem {
   type: "agent" | "user";
   avatarUrl?: string;
@@ -23,56 +19,33 @@ interface ChatInputProps {
 export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   const [message, setMessage] = React.useState("");
   const agents = useQuery(api.agents.queries.listMine) ?? [];
-  const sendMessage = useMutation(
-    api.conversationMessages.mutations.sendFromMe,
-  );
-  const apiError = useApiErrorHandler();
-  const {
-    replyToMention,
-    setReplyToMention,
-    shouldFocusInput,
-    setShouldFocusInput,
-  } = useChatContext();
+  const sendMessage = useMutation(api.conversationMessages.mutations.sendFromMe);
+  const onApiError = useApiErrorHandler();
   const mentionsRef = React.useRef<HTMLDivElement>(null);
 
-  // Apply the reply mention when it changes
+  // Auto-resize MentionsInput
   React.useEffect(() => {
-    if (replyToMention) {
-      setMessage(replyToMention);
-      setReplyToMention(null); // Clear after applying
-    }
-  }, [replyToMention, setReplyToMention]);
-
-  // Handle focus when triggered
-  React.useEffect(() => {
-    if (shouldFocusInput && mentionsRef.current) {
-      // Focus the input element inside the mentions wrapper
-      const input =
-        mentionsRef.current.querySelector("textarea") ||
-        mentionsRef.current.querySelector("input");
-      if (input) {
-        input.focus();
-        setShouldFocusInput(false);
+    if (mentionsRef.current) {
+      const textarea = mentionsRef.current.querySelector("textarea");
+      if (textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`;
       }
     }
-  }, [shouldFocusInput, setShouldFocusInput]);
+  }, [message]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
-
-    setMessage("");
-
-    await sendMessage({
-      content: message,
-      conversationId: conversationId,
-    }).catch(apiError);
+    sendMessage({ content: message, conversationId })
+      .then(() => setMessage(""))
+      .catch(onApiError);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e);
+      handleSubmit(e as any);
     }
   };
 
@@ -86,10 +59,10 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   ];
 
   return (
-    <div className="p-4 sticky bottom-0 z-10">
+    <div className="w-full px-4 pb-4">
       <form
         onSubmit={handleSubmit}
-        className="flex gap-2 bg-card shadow-lg p-2 rounded-lg border border-border"
+        className="flex items-end gap-2 bg-[#23232a] border border-[#23232a] rounded-2xl px-4 py-2 overflow-hidden"
       >
         <div className="flex-1 min-w-0" ref={mentionsRef}>
           <MentionsInput
@@ -99,21 +72,28 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
             className="mentions"
             style={{
               control: {
-                backgroundColor: "transparent",
-                fontSize: 16,
-                fontWeight: "normal",
+                backgroundColor: "#23232a",
+                fontSize: 17,
+                fontWeight: 400,
+                color: "var(--foreground)",
+                borderRadius: 20,
+                border: "none",
+                padding: "10px 0",
+                minHeight: "44px",
               },
               input: {
                 margin: 0,
-                padding: "8px 12px",
+                padding: "0px 24px",
                 overflow: "auto",
-                minHeight: "40px",
-                maxHeight: "120px",
+                minHeight: "44px",
+                maxHeight: "160px",
                 border: "none",
-                borderRadius: 6,
-                backgroundColor: "transparent",
-                color: "inherit",
+                borderRadius: 20,
+                backgroundColor: "#23232a",
+                color: "var(--foreground)",
                 outline: "none",
+                fontSize: 17,
+                fontWeight: 400,
               },
               suggestions: {
                 list: {
@@ -163,74 +143,25 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
                 backgroundColor: "var(--accent)",
                 borderRadius: "6px",
               }}
-              renderSuggestion={
-                ((
-                  suggestion: CustomSuggestionData,
-                  search: string,
-                  highlightedDisplay: ReactNode,
-                ) => (
-                  <div className="flex items-center gap-2 p-0 hover:bg-accent cursor-pointer">
-                    {suggestion.type === "agent" ? (
-                      <AgentAvatar
-                        size="sm"
-                        avatarUrl={suggestion.avatarUrl ?? ""}
-                        name={suggestion.display}
-                      />
-                    ) : (
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={suggestion.avatarUrl} />
-                        <AvatarFallback>
-                          {(suggestion.display?.[0] ?? "U").toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    )}
-                    <span>{highlightedDisplay}</span>
-                  </div>
-                )) as any
-              }
             />
           </MentionsInput>
         </div>
         <button
           type="submit"
-          className="bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90"
+          disabled={!message.trim()}
+          className="w-12 h-12 rounded-full flex items-center justify-center bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition"
         >
-          Send
+          <Send className="w-5 h-5" />
         </button>
       </form>
-
-      <style>
-        {`
-        .mentions {
-          width: 100%;
+      <style>{`
+        .mentions textarea::placeholder {
+          color: var(--muted-foreground);
+          font-size: 17px;
+          font-weight: 400;
+          opacity: 1;
         }
-        .mentions--focused {
-          outline: none;
-        }
-        .mentions__suggestions__list {
-          background-color: var(--background);
-          border: 1px solid var(--border);
-          border-radius: 6px;
-          margin-top: 8px;
-          position: absolute;
-          bottom: 100%;
-          left: 0;
-          right: 0;
-          z-index: 10;
-        }
-        .mentions__suggestions__item {
-          padding: 8px;
-          cursor: pointer;
-        }
-        .mentions__suggestions__item--focused {
-          background-color: var(--accent);
-        }
-        .mentions__highlighter {
-          padding: 8px 12px;
-          overflow: hidden;
-        }
-        `}
-      </style>
+      `}</style>
     </div>
   );
 };
