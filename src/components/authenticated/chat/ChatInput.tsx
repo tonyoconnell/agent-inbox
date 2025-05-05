@@ -62,7 +62,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
     <div className="w-full px-4 pb-4">
       <form
         onSubmit={handleSubmit}
-        className="flex items-end gap-2 bg-[#23232a] border border-[#23232a] rounded-2xl px-4 py-2 overflow-hidden"
+        className="relative flex items-end gap-2 bg-[#23232a] border border-[#23232a] rounded-2xl px-4 py-2"
       >
         <div className="flex-1 min-w-0" ref={mentionsRef}>
           <MentionsInput
@@ -111,7 +111,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
                   left: 0,
                   right: 0,
                   marginBottom: "0.5rem",
-                  zIndex: 1000,
+                  zIndex: 100,
                 },
                 item: {
                   padding: "8px 12px",
