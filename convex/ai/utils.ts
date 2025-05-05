@@ -58,7 +58,7 @@ export const getTriageAgent = async (ctx: ActionCtx) => {
     internal.agents.internalMutations.createSystemAgent,
     {
       systemAgentKind: "triage",
-      name: "System Triage Agent",
+      name: "Director",
       description: `Triage messages to the correct agent`,
       personality: `Helpful, concise`,
       avatarUrl: Agents.createAgentAvatarUrl(`system-triage`),
