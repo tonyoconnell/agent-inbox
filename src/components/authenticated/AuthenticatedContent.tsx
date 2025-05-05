@@ -20,14 +20,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Users, Wrench, User, Search, Menu, X } from "lucide-react";
-import { useQuery } from "convex/react";
+import { BookOpen, Users, Wrench, User, Search, Menu, X, Plus } from "lucide-react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { toolDefinitions } from "../../../shared/tools";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "@/components/ui/dialog";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { routes } from "@/routes";
+import { useApiErrorHandler } from "../misc/errors";
 
 const MIDDLE_TABS = [
   { value: "now", label: "Now" },
@@ -79,6 +81,9 @@ export const AuthenticatedContent: React.FC = () => {
     { key: "people", label: "People", icon: User, count: peopleCount },
   ];
 
+  const createConversation = useMutation(api.conversations.mutations.create);
+  const onApiError = useApiErrorHandler();
+
   // Auto-switch sidebar nav if navigating directly
   React.useEffect(() => {
     if (route.name === "conversation") setActiveNav("conversations");
@@ -88,8 +93,28 @@ export const AuthenticatedContent: React.FC = () => {
   return (
     <SidebarProvider>
       <div className="flex flex-col md:flex-row h-screen w-full bg-[#101014] text-white">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden flex items-center justify-between px-2 py-3 bg-sidebar border-b border-[#23232a]">
+          <SidebarTrigger />
+          <a href="/" aria-label="Home">
+            <img src="/logo.svg" alt="Logo" className="h-8" />
+          </a>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-7"
+            onClick={() => {
+              void createConversation({ title: "New Conversation" })
+                .then((conversationId) => routes.conversation({ conversationId }).push())
+                .catch(onApiError);
+            }}
+            aria-label="New Conversation"
+          >
+            <Plus className="w-5 h-5" />
+          </Button>
+        </div>
         {/* Sidebar trigger for mobile */}
-        <div className="md:hidden p-2">
+        <div className="md:hidden p-2 hidden">
           <SidebarTrigger />
         </div>
         {/* Sidebar: visible on all screens via shadcn/ui */}
@@ -154,10 +179,10 @@ export const AuthenticatedContent: React.FC = () => {
             <div className="flex-1 flex items-center justify-center bg-sidebar">
               <div className="text-center">
                 <h1 className="text-2xl font-bold mb-4">
-                  Welcome to Agent Inbox
+                  Welcome to ONE
                 </h1>
                 <p className="text-gray-500">
-                  Select a conversation or agent to get started
+                  Select or start a new conversation or agent
                 </p>
               </div>
             </div>
