@@ -20,7 +20,10 @@ export const Sidebar = () => {
         href={routes.profile().href}
         className="flex items-center gap-2 px-4 py-3 hover:bg-accent/30 transition group"
         style={{ minHeight: 56 }}
-        onClick={e => { e.preventDefault(); routes.profile().push(); }}
+        onClick={(e) => {
+          e.preventDefault();
+          routes.profile().push();
+        }}
       >
         <Avatar className="h-8 w-8">
           <AvatarImage src={me?.image} />
@@ -58,7 +61,10 @@ export const Sidebar = () => {
           {activeTab === "conversations" ? <ConversationList /> : <AgentList />}
         </div>
       </div>
-      <a href={routes.profile().href} className="block rounded transition hover:ring-2 hover:ring-primary/40 hover:bg-accent/30">
+      <a
+        href={routes.profile().href}
+        className="block rounded transition hover:ring-2 hover:ring-primary/40 hover:bg-accent/30"
+      >
         <UserProfile />
       </a>
     </div>

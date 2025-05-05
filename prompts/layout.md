@@ -10,26 +10,31 @@ date: 2024-02-03
 ## Panel Modes
 
 ### Icon Mode
+
 - Main Content: 100%
 - Right Panel: Fixed 48px icon at bottom right
 - Use Case: Maximum content space with quick chat access
 
 ### Floating Mode
+
 - Main Content: 100%
 - Right Panel: Floating window (320px × 480px)
 - Use Case: Quick chat interactions while viewing content
 
 ### Quarter Mode
+
 - Main Content: 75%
 - Right Panel: 25% (minimum 320px)
 - Use Case: Content-focused with persistent chat
 
 ### Half Mode
+
 - Main Content: 50%
 - Right Panel: 50%
 - Use Case: Equal focus on content and chat
 
 ### Full Mode
+
 - Main Content: 0%
 - Right Panel: 100%
 - Use Case: Dedicated chat experience
@@ -37,51 +42,58 @@ date: 2024-02-03
 ## Responsive Behavior
 
 ### Desktop (>1024px)
+
 - Supports all modes
 - Panel transitions are smooth slides
 - Main content reflows with panel changes
 
 ### Tablet (768px - 1024px)
-- Quarter has minimum width of 320px 
+
+- Quarter has minimum width of 320px
 - Half and Full not available
 - Icon and Floating remain unchanged
 
 ### Mobile (<768px)
+
 - Icon triggers full screen mode
 
 ## Additional Considerations
 
 ### Z-Index Stacking
+
 - Icon Mode: 100
 - Floating Mode: 1000
 - Overlay Modes: 2000
 - Modal Dialogs: 3000
 
 ### Transition Timings
+
 - Panel Expand/Collapse: 200ms
 - Mode Transitions: 300ms
 - Overlay Animations: 250ms
 
 ### Safe Areas
+
 - Respects device safe areas on mobile
 - Adjusts for notches and home indicators
 - Bottom spacing accounts for keyboard
 
 ### Accessibility
+
 - Maintains minimum touch target size (44px)
 - Preserves readable line lengths when resizing
 - Ensures sufficient contrast in collapsed states
 
 ### Performance
+
 - Lazy loads panel content when collapsed
 - Throttles resize calculations
 - Uses CSS containment for layout isolation
 
-
 ## Architectural Principles
 
 1. **Zero Layout Shifts**: Uses CSS grid + fixed positioning for stable render
-2. **Device-Specific Optimization**: 
+2. **Device-Specific Optimization**:
    - Mobile: Full-width single column
    - Tablet and Desktop: Three-column layout
 3. **Performance First**:
@@ -96,6 +108,7 @@ date: 2024-02-03
 ## Enhanced Component Sync
 
 ### Header-Sidebar Coordination
+
 ```typescript
 // Header.tsx
 <header className="...">
@@ -104,25 +117,26 @@ date: 2024-02-03
 </header>
 
 // Left.tsx
-<SidebarProvider 
+<SidebarProvider
   defaultOpen={false}
   onOpenChange={updateNavState} // Syncs with global store
 >
 ```
 
 ### Right Panel Adaptive Sizing
+
 ```typescript
 // Right.tsx
 const Right = () => {
   const currentSize = useStore(rightSize); // Shared across components
   // Maintains chat history during resizing
-
-}
+};
 ```
 
 ## Performance Optimization Guide
 
 ### Astro Directives Usage
+
 ```astro
 // Layout.astro
 <Header client:load /> // Hydrate on load
@@ -132,6 +146,7 @@ const Right = () => {
 ### Lighthouse 100% Strategy
 
 1. **Critical CSS Inlining**:
+
    ```astro
    <style>
      /* Grid system + font faces */
@@ -139,13 +154,14 @@ const Right = () => {
    ```
 
 2. **Resource Prioritization**:
+
    ```html
-   <link rel="preload" href="/logo.svg" as="image">
+   <link rel="preload" href="/logo.svg" as="image" />
    ```
 
 3. **Image Optimization**:
    ```astro
-   <Image 
+   <Image
      src="/hero.jpg"
      alt="Hero"
      widths={[400, 800, 1200]}
@@ -156,11 +172,11 @@ const Right = () => {
 
 ## Responsive Whitespace System
 
-| Breakpoint   | Padding | Gap     | Max Width |
-|--------------|---------|---------|-----------|
-| <768px (Mobile) | 1rem    | 1rem    | 100%      |
-| 768-1024px (Tablet) | 1.5rem | 1.5rem  | 90%       |
-| >1024px (Desktop) | 2rem   | 2rem    | 80ch      |
+| Breakpoint          | Padding | Gap    | Max Width |
+| ------------------- | ------- | ------ | --------- |
+| <768px (Mobile)     | 1rem    | 1rem   | 100%      |
+| 768-1024px (Tablet) | 1.5rem  | 1.5rem | 90%       |
+| >1024px (Desktop)   | 2rem    | 2rem   | 80ch      |
 
 ```css
 .main-content {
@@ -179,6 +195,7 @@ const Right = () => {
 ```
 
 Key synchronization points:
+
 1. Mobile menu state shared between Header/Left
 2. Right panel size syncs with viewport breakpoints
 3. Shared theme context across all components
@@ -189,12 +206,15 @@ This layout system provides a highly configurable, mobile-first design for Astro
 ## Core Structure
 
 The layout consists of three main sections:
+
 - Left Sidebar (Navigation)
 - Center Content
 - Right Panel (AI Assistant)
 
 ### Center Content Structure
+
 The center section is organized into three rows:
+
 1. Header - Contains navigation controls and breadcrumbs
 2. Main Content - Your page content
 3. Footer - Optional footer content
@@ -202,6 +222,7 @@ The center section is organized into three rows:
 ## Key Components
 
 ### Layout.astro
+
 The main layout component that orchestrates all parts. Configurable through props:
 
 ```typescript
@@ -210,17 +231,19 @@ interface LayoutProps {
   description?: string;
   children: any;
   chat?: any;
-  header?: boolean;     // Show/hide header
-  footer?: boolean;     // Show/hide footer
-  left?: boolean;       // Show/hide left sidebar
+  header?: boolean; // Show/hide header
+  footer?: boolean; // Show/hide footer
+  left?: boolean; // Show/hide left sidebar
   leftSize?: "expanded" | "collapsed";
-  right?: boolean;      // Show/hide right panel
+  right?: boolean; // Show/hide right panel
   rightSize?: "full" | "half" | "quarter" | "icon";
 }
 ```
 
 ### Header Component
+
 Features:
+
 - Left sidebar toggle (hidden if sidebar is disabled)
 - Logo (centered in the exact center of the page )
 - Right panel toggle (hidden if panel is disabled)
@@ -228,7 +251,9 @@ Features:
 - Sticky positioning with backdrop blur
 
 ### Left Sidebar (Navigation)
+
 Built with shadcn-ui sidebar:
+
 - Collapsible navigation menu
 - Floating variant on desktop
 - Icon-only collapsed state
@@ -237,7 +262,9 @@ Built with shadcn-ui sidebar:
 - Click outside to close on mobile
 
 ### Right Panel (AI Assistant)
+
 Features:
+
 - Four size modes:
   - Full (100% width)
   - Half (50% width)
@@ -254,6 +281,7 @@ Features:
 ## Responsive Behavior
 
 ### Mobile (<768px)
+
 - Left sidebar: Full-width overlay when open
 - Right panel: Full-width overlay or floating icon
 - Single column layout
@@ -261,12 +289,14 @@ Features:
 - Touch-friendly interactions
 
 ### Tablet (768px - 1024px)
+
 - Left sidebar: Icon mode or expanded
 - Right panel: Adjustable width
 - Fluid transitions
 - Optional collapsing of panels
 
 ### Desktop (>1024px)
+
 - Full three-column layout capability
 - Hover interactions for sidebars
 - Maximum content width constraints
@@ -283,7 +313,7 @@ const chatConfig = {
 };
 ---
 
-<Layout 
+<Layout
   title="My Page"
   description="Page description"
   header={true}
@@ -358,39 +388,47 @@ interface Chat {
 
 ```typescript
 const chatConfig = {
-  systemPrompt: [{
-    type: "text",
-    text: "I am Agent ONE, an AI assistant focused on helping developers and businesses maximize value from free software. I provide clear, actionable guidance while maintaining a friendly and professional tone."
-  }],
+  systemPrompt: [
+    {
+      type: "text",
+      text: "I am Agent ONE, an AI assistant focused on helping developers and businesses maximize value from free software. I provide clear, actionable guidance while maintaining a friendly and professional tone.",
+    },
+  ],
   welcome: {
-    message: "👋 I'm Agent ONE, your guide to maximizing business value with free software. What would you like to explore today?",
+    message:
+      "👋 I'm Agent ONE, your guide to maximizing business value with free software. What would you like to explore today?",
     avatar: "/icon.svg",
     suggestions: [
       {
         label: "💡 How can I use ONE commercially?",
-        prompt: "I'm interested in using ONE for my business. Can you explain the commercial rights and possibilities under the ONE License?"
+        prompt:
+          "I'm interested in using ONE for my business. Can you explain the commercial rights and possibilities under the ONE License?",
       },
       {
         label: "🚀 Quick Start Guide",
-        prompt: "What are the first 3 steps to get started with ONE for my project?"
+        prompt:
+          "What are the first 3 steps to get started with ONE for my project?",
       },
       {
         label: "💼 White-Label Options",
-        prompt: "Tell me about the white-label possibilities with ONE. How can I brand it as my own solution?"
-      }
-    ]
-  }
+        prompt:
+          "Tell me about the white-label possibilities with ONE. How can I brand it as my own solution?",
+      },
+    ],
+  },
 };
 ```
 
 ### Configuration Options
 
 #### System Prompt
+
 - Defines the AI assistant's personality and behavior
 - Can include multiple prompt segments
 - Type is currently limited to "text"
 
 #### Welcome Message
+
 - `message`: Initial greeting shown to users
 - `avatar`: Path to the avatar image
 - `suggestions`: Array of quick-start prompts
@@ -400,6 +438,7 @@ const chatConfig = {
 ### Integration with Right Panel
 
 The chat interface appears in the Right Panel component and adapts to all panel sizes:
+
 - Full width: Complete chat experience
 - Half/Quarter: Compact but fully functional
 - Icon mode: Click to expand
@@ -409,6 +448,7 @@ The chat maintains state and history across size changes and remains functional 
 ## Component Loading Strategy
 
 ### Dynamic Imports
+
 For optimal performance, components are loaded based on their priority:
 
 ```astro
@@ -430,13 +470,13 @@ const Chart = await import("../components/Chart").then(mod => mod.Chart);
 
 ### Hydration Directives
 
-| Directive | Usage | Example |
-|-----------|--------|---------|
-| client:load | Critical UI components | Header, Navigation |
-| client:visible | Below-fold content | Charts, Data tables |
-| client:idle | Non-critical features | Footer, Social links |
-| client:media | Device-specific | Mobile menu |
-| client:only | Framework-specific | React components |
+| Directive      | Usage                  | Example              |
+| -------------- | ---------------------- | -------------------- |
+| client:load    | Critical UI components | Header, Navigation   |
+| client:visible | Below-fold content     | Charts, Data tables  |
+| client:idle    | Non-critical features  | Footer, Social links |
+| client:media   | Device-specific        | Mobile menu          |
+| client:only    | Framework-specific     | React components     |
 
 ### Error Handling
 
@@ -457,40 +497,44 @@ const Chart = async () => {
 ## Performance Optimization
 
 ### 1. Component Loading
+
 - Use `client:visible` for below-fold content
 - Implement loading states
 - Provide fallback UI
 - Handle failed imports gracefully
 
 ### 2. Asset Loading
+
 ```astro
 ---
 import { Image } from "astro:assets";
 ---
 
-<Image 
-  src={import("../assets/hero.jpg")} 
+<Image
+  src={import("../assets/hero.jpg")}
   alt="Hero"
-  loading="eager" 
-  width={800} 
-  height={600} 
+  loading="eager"
+  width={800}
+  height={600}
 />
 ```
 
 ### 3. State Management
+
 ```typescript
 // stores/layout-store.ts
-import { atom } from 'nanostores';
+import { atom } from "nanostores";
 
 // Atomic updates prevent unnecessary re-renders
 export const layoutState = atom({
   sidebarOpen: false,
-  rightPanelSize: 'quarter',
-  theme: 'light'
+  rightPanelSize: "quarter",
+  theme: "light",
 });
 ```
 
 ### 4. CSS Strategy
+
 ```css
 /* Critical CSS inlined in head */
 :root {
@@ -514,16 +558,17 @@ export const layoutState = atom({
 ## Component Architecture
 
 ### Layout Grid System
+
 ```astro
 <div class="layout-grid">
   <aside class="left-sidebar" data-state={sidebarOpen ? 'open' : 'closed'}>
     <slot name="sidebar" />
   </aside>
-  
+
   <main class="main-content">
     <slot />
   </main>
-  
+
   <aside class="right-panel" data-size={rightPanelSize}>
     <slot name="panel" />
   </aside>
@@ -540,6 +585,7 @@ export const layoutState = atom({
 ```
 
 ### Error Boundaries
+
 ```typescript
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -560,16 +606,19 @@ function fallbackComponent({ error }) {
 ## Best Practices
 
 1. **Loading States**
+
    - Always show loading indicators
    - Maintain layout stability
    - Prevent content jumps
 
 2. **Error States**
+
    - Graceful fallbacks
    - User-friendly error messages
    - Recovery options
 
 3. **Performance Monitoring**
+
    - Track Core Web Vitals
    - Monitor hydration errors
    - Implement error tracking
@@ -590,11 +639,13 @@ function fallbackComponent({ error }) {
 ## Common Issues
 
 1. **Hydration Mismatch**
+
    - Ensure server and client markup match
    - Use proper client directives
    - Check for undefined window/document usage
 
 2. **Layout Shifts**
+
    - Set explicit dimensions
    - Use CSS containment
    - Implement proper loading states

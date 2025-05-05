@@ -4,6 +4,7 @@ description: "Prompt for Astro 5"
 tags: ["astro"]
 date: 2025-03-16
 ---
+
 # Content Collections
 
 - **Schema Definitions**: Continue using `src/content/config.ts` with `zod` for type-safe content validation.
@@ -76,4 +77,4 @@ date: 2025-03-16
 - **Skipping Animations**: Don't skip view transition animations without reason.
 - **Bypassing Image Optimization**: Never bypass Astro's image optimization features.
 
-By incorporating these practices, you can effectively leverage the features introduced in Astro 5.5 to enhance your project's performance and maintainability. 
+By incorporating these practices, you can effectively leverage the features introduced in Astro 5.5 to enhance your project's performance and maintainability.

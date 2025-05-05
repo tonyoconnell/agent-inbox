@@ -8,6 +8,7 @@ date: 2024-02-03
 # The Problem
 
 When using Shadcn UI components that have subcomponents (like Carousel, Accordion, etc.) directly in Astro files, you might encounter errors such as:
+
 - "useCarousel must be used within a <Carousel />"
 - "Accordion must be used within Accordion"
 
@@ -96,6 +97,7 @@ import Layout from '@/layouts/Layout.astro';
 # When to Use This Pattern
 
 Use this pattern when working with Shadcn UI components that:
+
 - Have subcomponents (Carousel, Accordion, Tabs, etc.)
 - Rely on React context for state management
 - Need to maintain parent-child relationships between components

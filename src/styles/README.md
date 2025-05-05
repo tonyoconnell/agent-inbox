@@ -23,10 +23,10 @@ The ONE design system provides a set of carefully crafted design tokens, compone
 The color system is based on HSL values for maximum flexibility:
 
 ```css
---one-black: hsl(0 0% 0%);        /* Pure black */
---one-dark: hsl(0 0% 10%);        /* #1A1A1A - Slightly lighter sidebar */
---one-background: hsl(0 0% 11%);  /* #1C1C1C - Slightly darker background */
---one-white: hsl(0 0% 100%);      /* Pure white */
+--one-black: hsl(0 0% 0%); /* Pure black */
+--one-dark: hsl(0 0% 10%); /* #1A1A1A - Slightly lighter sidebar */
+--one-background: hsl(0 0% 11%); /* #1C1C1C - Slightly darker background */
+--one-white: hsl(0 0% 100%); /* Pure white */
 ```
 
 ### Semantic Colors
@@ -34,10 +34,12 @@ The color system is based on HSL values for maximum flexibility:
 Colors are mapped to semantic roles:
 
 ```css
---one-background-main: var(--one-background);  /* Main content */
---one-background-nav: var(--one-dark);         /* Sidebar/header */
---one-background-logo: var(--one-black);       /* Logo area */
---one-background-card: hsl(0 0% 14%);          /* Cards - slightly lighter than background */
+--one-background-main: var(--one-background); /* Main content */
+--one-background-nav: var(--one-dark); /* Sidebar/header */
+--one-background-logo: var(--one-black); /* Logo area */
+--one-background-card: hsl(
+  0 0% 14%
+); /* Cards - slightly lighter than background */
 ```
 
 ### Border System
@@ -45,8 +47,8 @@ Colors are mapped to semantic roles:
 Extremely subtle borders for an elegant look:
 
 ```css
---one-border: hsla(0, 0%, 100%, 0.03);      /* 3% opacity white border */
---one-border-nav: hsla(0, 0%, 100%, 0.02);  /* 2% opacity for nav */
+--one-border: hsla(0, 0%, 100%, 0.03); /* 3% opacity white border */
+--one-border-nav: hsla(0, 0%, 100%, 0.02); /* 2% opacity for nav */
 ```
 
 ### High Contrast Slate Theme
@@ -55,14 +57,14 @@ The high contrast slate theme provides better accessibility while maintaining a 
 
 ```css
 /* Core colors */
---one-black: hsl(215 28% 17%);      /* #1e293b - Slate 800 */
---one-dark: hsl(217 33% 17%);       /* #1e2a3b - Slate 900 */
+--one-black: hsl(215 28% 17%); /* #1e293b - Slate 800 */
+--one-dark: hsl(217 33% 17%); /* #1e2a3b - Slate 900 */
 --one-background: hsl(222 47% 11%); /* #0f172a - Slate 950 */
---one-white: hsl(0 0% 100%);        /* #ffffff - Pure white */
+--one-white: hsl(0 0% 100%); /* #ffffff - Pure white */
 
 /* Primary & Accent colors */
---one-primary: hsl(217 91% 60%);    /* #3b82f6 - Blue 500 */
---one-accent: hsl(199 89% 48%);     /* #0ea5e9 - Sky 500 */
+--one-primary: hsl(217 91% 60%); /* #3b82f6 - Blue 500 */
+--one-accent: hsl(199 89% 48%); /* #0ea5e9 - Sky 500 */
 ```
 
 ### Animation Timings
@@ -152,7 +154,9 @@ Consistent animation durations:
   overflow: hidden;
   white-space: nowrap;
   border-right: 3px solid currentColor;
-  animation: typing 3s steps(40) infinite, blink 1s step-end infinite;
+  animation:
+    typing 3s steps(40) infinite,
+    blink 1s step-end infinite;
 }
 ```
 
@@ -180,13 +184,15 @@ The design system includes support for reduced motion preferences:
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+  *,
+  ::before,
+  ::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  
+
   :root {
     --one-duration-fast: 0s;
     --one-duration-normal: 0s;
@@ -204,10 +210,11 @@ The ONE design system is fully compatible with Tailwind CSS. It extends Tailwind
 The design system supports theme switching via data attributes:
 
 ```html
-<html lang="en" class="dark" data-theme="dark">
+<html lang="en" class="dark" data-theme="dark"></html>
 ```
 
 Available themes:
+
 - `dark` (default)
 - `light`
-- `high-contrast` 
+- `high-contrast`

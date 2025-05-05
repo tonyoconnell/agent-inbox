@@ -21,7 +21,9 @@ export const ConversationItem: React.FC<ConversationItemProps> = ({
     style={isSelected ? { background: "hsla(var(--one-muted), 0.08)" } : {}}
   >
     <div className="font-semibold text-white text-base mb-1">{title}</div>
-    <div className="text-xs text-gray-400 mb-1">{new Date(lastMessageTime).toLocaleTimeString()}</div>
+    <div className="text-xs text-gray-400 mb-1">
+      {new Date(lastMessageTime).toLocaleTimeString()}
+    </div>
     {/* Optionally add a preview/summary here if available */}
     {/* <div className="text-sm text-gray-300 mb-2">Preview text here...</div> */}
     {/* Optionally add tags here if available */}

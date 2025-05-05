@@ -5,7 +5,11 @@ import { toast, Toaster } from "sonner";
 import { RouteProvider } from "./routes";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
 // Import shadcn/ui components and icons
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -13,7 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen, Train, Users, Wrench, User, Search, Mail } from "lucide-react";
+import {
+  BookOpen,
+  Train,
+  Users,
+  Wrench,
+  User,
+  Search,
+  Mail,
+} from "lucide-react";
 
 function MailApp() {
   const [activeEmail, setActiveEmail] = React.useState(0);
@@ -22,7 +34,8 @@ function MailApp() {
       id: 1,
       sender: "Emily",
       subject: "Company",
-      preview: "Hi, let's have a meeting tomorrow to discuss the project. I've been reviewing the project details and have some ideas I'd like to share.",
+      preview:
+        "Hi, let's have a meeting tomorrow to discuss the project. I've been reviewing the project details and have some ideas I'd like to share.",
       time: "1 min ago",
       tags: ["Foundation", "Company"],
     },
@@ -30,7 +43,8 @@ function MailApp() {
       id: 2,
       sender: "Weekend Plans",
       subject: "Welcome",
-      preview: "Any plans for the weekend? I was thinking of going hiking in the nearby mountains.",
+      preview:
+        "Any plans for the weekend? I was thinking of going hiking in the nearby mountains.",
       time: "2 days ago",
       tags: ["Weekend", "Work"],
     },
@@ -38,7 +52,8 @@ function MailApp() {
       id: 3,
       sender: "Emily Davis",
       subject: "Re: Question about Budget",
-      preview: "I have a question about the budget for the upcoming project. It seems like there's a discrepancy in the allocation.",
+      preview:
+        "I have a question about the budget for the upcoming project. It seems like there's a discrepancy in the allocation.",
       time: "3 days ago",
       tags: ["Budget", "About", "Work"],
     },
@@ -46,7 +61,8 @@ function MailApp() {
       id: 4,
       sender: "David Lee",
       subject: "New Project Idea",
-      preview: "I have an exciting new project idea to discuss with you. It involves expanding our services to target a niche market.",
+      preview:
+        "I have an exciting new project idea to discuss with you. It involves expanding our services to target a niche market.",
       time: "3 days ago",
       tags: ["Label", "Label", "Label"],
     },
@@ -69,35 +85,45 @@ function MailApp() {
                 <BookOpen className="h-5 w-5 mr-3" />
                 <span>Learn</span>
               </div>
-              <Badge variant="secondary" className="bg-gray-100">128</Badge>
+              <Badge variant="secondary" className="bg-gray-100">
+                128
+              </Badge>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <Train className="h-5 w-5 mr-3" />
                 <span>Train</span>
               </div>
-              <Badge variant="secondary" className="bg-gray-100">9</Badge>
+              <Badge variant="secondary" className="bg-gray-100">
+                9
+              </Badge>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <Users className="h-5 w-5 mr-3" />
                 <span>Agents</span>
               </div>
-              <Badge variant="secondary" className="bg-gray-100">20</Badge>
+              <Badge variant="secondary" className="bg-gray-100">
+                20
+              </Badge>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <Wrench className="h-5 w-5 mr-3" />
                 <span>Tools</span>
               </div>
-              <Badge variant="secondary" className="bg-gray-100">10</Badge>
+              <Badge variant="secondary" className="bg-gray-100">
+                10
+              </Badge>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <User className="h-5 w-5 mr-3" />
                 <span>People</span>
               </div>
-              <Badge variant="secondary" className="bg-gray-100">128</Badge>
+              <Badge variant="secondary" className="bg-gray-100">
+                128
+              </Badge>
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
@@ -114,10 +140,15 @@ function MailApp() {
             </TabsList>
             <div className="relative mb-4">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input placeholder="Search" className="pl-10 bg-gray-50 border-gray-200" />
+              <Input
+                placeholder="Search"
+                className="pl-10 bg-gray-50 border-gray-200"
+              />
             </div>
             <div className="flex space-x-2 mb-4">
-              <Badge className="bg-gray-800 text-white hover:bg-gray-700">Meeting</Badge>
+              <Badge className="bg-gray-800 text-white hover:bg-gray-700">
+                Meeting
+              </Badge>
               <Badge variant="outline">Work</Badge>
             </div>
           </div>
@@ -126,18 +157,26 @@ function MailApp() {
               {emails.map((email, index) => (
                 <div
                   key={email.id}
-                  className={`border-b px-4 py-3 cursor-pointer hover:bg-gray-50 ${activeEmail === index ? 'bg-blue-50' : ''}`}
+                  className={`border-b px-4 py-3 cursor-pointer hover:bg-gray-50 ${activeEmail === index ? "bg-blue-50" : ""}`}
                   onClick={() => setActiveEmail(index)}
                 >
                   <div className="flex justify-between mb-1">
                     <h3 className="font-medium">{email.subject}</h3>
                     <span className="text-xs text-gray-500">{email.time}</span>
                   </div>
-                  <h4 className="text-sm font-medium text-gray-600 mb-1">{email.sender}</h4>
-                  <p className="text-sm text-gray-500 line-clamp-2 mb-2">{email.preview}</p>
+                  <h4 className="text-sm font-medium text-gray-600 mb-1">
+                    {email.sender}
+                  </h4>
+                  <p className="text-sm text-gray-500 line-clamp-2 mb-2">
+                    {email.preview}
+                  </p>
                   <div className="flex space-x-2">
                     {email.tags.map((tag, i) => (
-                      <Badge key={i} variant={i === 0 ? "default" : "outline"} className={i === 0 ? "bg-gray-800" : ""}>
+                      <Badge
+                        key={i}
+                        variant={i === 0 ? "default" : "outline"}
+                        className={i === 0 ? "bg-gray-800" : ""}
+                      >
                         {tag}
                       </Badge>
                     ))}
@@ -154,16 +193,19 @@ function MailApp() {
           <div className="flex items-center mb-4">
             <Mail className="h-5 w-5 mr-2 text-gray-500" />
             <h2 className="font-medium">Company</h2>
-            <p className="ml-auto text-sm text-gray-500">Gather insight and data for your company</p>
+            <p className="ml-auto text-sm text-gray-500">
+              Gather insight and data for your company
+            </p>
           </div>
           <div className="space-y-6 mb-4">
             {[0, 1, 2].map((_, i) => (
               <Card key={i} className="shadow-sm">
                 <CardContent className="pt-6">
                   <p className="text-gray-700">
-                    Hi, let's have a meeting tomorrow to discuss the project. I've been reviewing the project
-                    details and have some ideas I'd like to share. It's crucial that we align on our next steps to
-                    ensure the project's success.
+                    Hi, let's have a meeting tomorrow to discuss the project.
+                    I've been reviewing the project details and have some ideas
+                    I'd like to share. It's crucial that we align on our next
+                    steps to ensure the project's success.
                   </p>
                 </CardContent>
               </Card>
@@ -173,17 +215,31 @@ function MailApp() {
         </div>
         <div className="border-t p-4 flex justify-between items-center">
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm">Save</Button>
-            <Button variant="outline" size="sm">Reply</Button>
-            <Button variant="outline" size="sm">Forward</Button>
-            <Button variant="outline" size="sm">Complete</Button>
+            <Button variant="outline" size="sm">
+              Save
+            </Button>
+            <Button variant="outline" size="sm">
+              Reply
+            </Button>
+            <Button variant="outline" size="sm">
+              Forward
+            </Button>
+            <Button variant="outline" size="sm">
+              Complete
+            </Button>
           </div>
-          <Button variant="outline" size="sm">Share</Button>
+          <Button variant="outline" size="sm">
+            Share
+          </Button>
         </div>
         <div className="border-t p-4">
           <div className="flex space-x-2">
-            <Badge variant="outline" className="bg-gray-100">@Teacher One</Badge>
-            <Badge variant="outline" className="bg-gray-100">@Anthony O'Connell</Badge>
+            <Badge variant="outline" className="bg-gray-100">
+              @Teacher One
+            </Badge>
+            <Badge variant="outline" className="bg-gray-100">
+              @Anthony O'Connell
+            </Badge>
           </div>
         </div>
       </div>

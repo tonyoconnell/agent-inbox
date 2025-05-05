@@ -33,7 +33,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({}) => {
     if (!conversations) return [];
     if (!search.trim()) return conversations;
     return conversations.filter((c) =>
-      c.title.toLowerCase().includes(search.trim().toLowerCase())
+      c.title.toLowerCase().includes(search.trim().toLowerCase()),
     );
   }, [conversations, search]);
 
@@ -51,7 +51,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({}) => {
           <Search className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
           <Input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search conversations..."
             className="pl-12 pr-4 py-2 bg-[#23232a] border border-[#23232a] text-white placeholder:text-gray-400 rounded-full"
           />

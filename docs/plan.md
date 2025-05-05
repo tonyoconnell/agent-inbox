@@ -10,6 +10,7 @@ order: 1
 # ONE Framework App: Project Plan
 
 ## 1. Schema & Backend Foundation
+
 - **Deliverables:**
   - Finalize Convex schema (users, agents, groups, tools, prompts, conversations, messages, analytics, etc.)
   - Implement all backend tables, indexes, and audit fields
@@ -22,6 +23,7 @@ order: 1
   - Must be completed before frontend and AI logic can be fully implemented
 
 ## 2. Core UI & Frontend
+
 - **Deliverables:**
   - Build UI using shadcn/ui, React, Tailwind, and type-route
   - Implement sidebar navigation, conversation list, agent profiles, chat area, and analytics dashboards
@@ -34,6 +36,7 @@ order: 1
   - Requires backend queries/mutations and schema to be in place
 
 ## 3. AI/Agent Logic & Orchestration
+
 - **Deliverables:**
   - Implement agent orchestration, @mention parsing, and message routing
   - Integrate AI SDK (OpenAI, tools, prompt templates)
@@ -46,6 +49,7 @@ order: 1
   - Requires schema, backend, and core UI to be functional
 
 ## 4. Analytics, CRM, and Advanced Features
+
 - **Deliverables:**
   - Implement analytics dashboards (course progress, funnel metrics, customer journey, A/B tests, feedback)
   - Build CRM features (customers, journey events, segmentation)
@@ -58,6 +62,7 @@ order: 1
   - Built on top of core schema, backend, and UI
 
 ## 5. Testing, QA, and Launch
+
 - **Deliverables:**
   - Write unit and integration tests (Vitest, shared logic, backend, frontend)
   - Linting, formatting, and code quality enforcement
@@ -73,7 +78,9 @@ order: 1
 ---
 
 ## Summary
+
 This plan ensures a robust, extensible, and user-friendly product by:
+
 - Building on a strong, real-time schema foundation
 - Sequencing backend, UI, and AI logic for rapid iteration
 - Supporting advanced analytics, CRM, agent modeling, and extensibility for future features
@@ -82,6 +89,7 @@ This plan ensures a robust, extensible, and user-friendly product by:
 ---
 
 ## Developer Checklist: Schema Implementation
+
 - [ ] All new fields (personality, delegatesTo, tags, status, attachments, etc.) are present in schema and handled in backend logic
 - [ ] agentTools join table is implemented and used for per-agent tool config
 - [ ] attachments table is implemented and used for prompt attachments

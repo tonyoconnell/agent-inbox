@@ -4,6 +4,7 @@ description: "For cursor "
 tags: ["code-review", "programming", "security", "performance"]
 date: 2024-02-03
 ---
+
 Rules for vibe coding
 Code structure & organization
 Keep code DRY (Don't Repeat Yourself)

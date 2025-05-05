@@ -10,6 +10,7 @@ date: 2024-02-03
 ## Key Changes from v3
 
 ### 1. Import Syntax
+
 ```css
 /* ❌ Don't use v3 directives */
 @tailwind base;
@@ -21,6 +22,7 @@ date: 2024-02-03
 ```
 
 ### 2. Updated Utility Names
+
 - `shadow-sm` → `shadow-xs`
 - `shadow` → `shadow-sm`
 - `rounded-sm` → `rounded-xs`
@@ -29,6 +31,7 @@ date: 2024-02-03
 - `ring` → `ring-3`
 
 ### 3. Default Changes
+
 - Border colors now use `currentColor` by default (add explicit colors)
 - Ring width is now 1px (use `ring-3` for v3 equivalent)
 - Placeholder text uses current text color at 50% opacity
@@ -36,6 +39,7 @@ date: 2024-02-03
 ## Best Practices
 
 ### 1. Border Usage
+
 ```tsx
 /* ❌ Don't rely on default border color */
 <div class="border">
@@ -45,6 +49,7 @@ date: 2024-02-03
 ```
 
 ### 2. Ring Usage
+
 ```tsx
 /* ❌ Don't use v3 ring style */
 <button class="focus:ring">
@@ -54,12 +59,14 @@ date: 2024-02-03
 ```
 
 ### 3. Gradient Variants
+
 ```tsx
 /* ✅ Use via-none to reset middle color */
 <div class="bg-gradient-to-r from-red-500 via-orange-400 to-yellow-400 dark:via-none dark:from-blue-500 dark:to-teal-400">
 ```
 
 ### 4. Variable Usage
+
 ```tsx
 /* ❌ Don't use v3 variable syntax */
 <div class="bg-[--brand-color]">
@@ -71,6 +78,7 @@ date: 2024-02-03
 ## Component Development
 
 ### 1. Custom Utilities
+
 ```css
 /* ✅ Use @utility for custom utilities */
 @utility custom-class {
@@ -79,6 +87,7 @@ date: 2024-02-03
 ```
 
 ### 2. Container Customization
+
 ```css
 /* ✅ Use @utility for container customization */
 @utility container {
@@ -88,6 +97,7 @@ date: 2024-02-03
 ```
 
 ### 3. Variant Stacking
+
 ```tsx
 /* ❌ Don't use v3 variant order */
 <ul class="py-4 first:*:pt-0 last:*:pb-0">
@@ -99,11 +109,13 @@ date: 2024-02-03
 ## Performance Considerations
 
 ### 1. Hover on Mobile
+
 - Hover styles only apply on devices that support hover
 - Don't rely on hover for critical functionality
 - Use `@custom-variant hover` if needed for legacy behavior
 
 ### 2. Transitions
+
 ```tsx
 /* ✅ Set outline colors explicitly when transitioning */
 <button class="outline-cyan-500 transition hover:outline-2">
@@ -112,6 +124,7 @@ date: 2024-02-03
 ## Theme Configuration
 
 ### 1. CSS Variables
+
 ```css
 /* ✅ Use CSS variables for theme values */
 .my-class {
@@ -120,6 +133,7 @@ date: 2024-02-03
 ```
 
 ### 2. Media Queries
+
 ```css
 /* ✅ Use variable names in theme() function */
 @media (width >= theme(--breakpoint-xl)) {

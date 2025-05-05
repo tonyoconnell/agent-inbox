@@ -6,6 +6,7 @@ tags:
   - agents
 order: 1
 ---
+
 This appears to be a clean, modern email interface design with a strong focus on productivity and organization. Let me describe the UI components and how you could build something similar using shadcn/ui.
 
 ## Overall Layout and Components
@@ -28,10 +29,10 @@ The interface consists of:
 - Search bar
 - Category tags/filters (Meeting, Work)
 - Email previews showing:
-    - Subject line
-    - Brief content preview
-    - Time information (e.g., "1 min ago", "3 days ago")
-    - Tags/labels (Budget, About, Work, etc.)
+  - Subject line
+  - Brief content preview
+  - Time information (e.g., "1 min ago", "3 days ago")
+  - Tags/labels (Budget, About, Work, etc.)
 
 ### Right Panel
 
@@ -57,27 +58,30 @@ Looking at this UI design, here's a detailed breakdown of how you could build it
 ### Component Breakdown
 
 1. **Navigation**
-    
-    - Uses `NavigationMenu` from shadcn/ui
-    - Each item includes an icon from `lucide-react`, text label, and count badge
-    - Active state styling with subtle hover effects
+
+   - Uses `NavigationMenu` from shadcn/ui
+   - Each item includes an icon from `lucide-react`, text label, and count badge
+   - Active state styling with subtle hover effects
+
 2. **Email List**
-    
-    - Uses `Tabs` component for filter categories (Now, Top, ToDo, Done)
-    - Custom search input with icon using the `Input` component
-    - Email preview cards with time stamps, tags, and preview text
-    - Active selection state
+
+   - Uses `Tabs` component for filter categories (Now, Top, ToDo, Done)
+   - Custom search input with icon using the `Input` component
+   - Email preview cards with time stamps, tags, and preview text
+   - Active selection state
+
 3. **Email Content**
-    
-    - Simple card-based layout for each message
-    - Action buttons at bottom using `Button` components with outline variant
-    - Recipient tags using `Badge` components
+
+   - Simple card-based layout for each message
+   - Action buttons at bottom using `Button` components with outline variant
+   - Recipient tags using `Badge` components
+
 4. **Other UI Elements**
-    
-    - `Avatar` component for user representation
-    - `Badge` components for tags and categories
-    - `Separator` for dividing content sections
-    - `Card` components for grouping related content
+
+   - `Avatar` component for user representation
+   - `Badge` components for tags and categories
+   - `Separator` for dividing content sections
+   - `Card` components for grouping related content
 
 ### Styling and Aesthetics
 
@@ -100,93 +104,93 @@ Looking at this UI design, here's a detailed breakdown of how you could build it
 The shadcn/ui library provides an excellent foundation for building this kind of interface, with its clean, accessible components that can be easily customized to match your design needs.
 
 import React, { useState } from "react";
-import { 
-  NavigationMenu, 
-  NavigationMenuItem, 
-  NavigationMenuList 
+import {
+NavigationMenu,
+NavigationMenuItem,
+NavigationMenuList
 } from "@/components/ui/navigation-menu";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
+import {
+Tabs,
+TabsContent,
+TabsList,
+TabsTrigger
 } from "@/components/ui/tabs";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
+import {
+Card,
+CardContent,
+CardDescription,
+CardFooter,
+CardHeader,
+CardTitle
 } from "@/components/ui/card";
-import { 
-  Avatar, 
-  AvatarFallback, 
-  AvatarImage 
+import {
+Avatar,
+AvatarFallback,
+AvatarImage
 } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  BookOpen, 
-  Train, 
-  Users, 
-  Wrench, 
-  User, 
-  Search,
-  Mail
+import {
+BookOpen,
+Train,
+Users,
+Wrench,
+User,
+Search,
+Mail
 } from "lucide-react";
 
 export default function MailApp() {
-  const [activeEmail, setActiveEmail] = useState(0);
-  
-  const emails = [
-    {
-      id: 1,
-      sender: "Emily",
-      subject: "Company",
-      preview: "Hi, let's have a meeting tomorrow to discuss the project. I've been reviewing the project details and have some ideas I'd like to share.",
-      time: "1 min ago",
-      tags: ["Foundation", "Company"]
-    },
-    {
-      id: 2,
-      sender: "Weekend Plans",
-      subject: "Welcome",
-      preview: "Any plans for the weekend? I was thinking of going hiking in the nearby mountains.",
-      time: "2 days ago",
-      tags: ["Weekend", "Work"]
-    },
-    {
-      id: 3,
-      sender: "Emily Davis",
-      subject: "Re: Question about Budget",
-      preview: "I have a question about the budget for the upcoming project. It seems like there's a discrepancy in the allocation.",
-      time: "3 days ago",
-      tags: ["Budget", "About", "Work"]
-    },
-    {
-      id: 4,
-      sender: "David Lee",
-      subject: "New Project Idea",
-      preview: "I have an exciting new project idea to discuss with you. It involves expanding our services to target a niche market.",
-      time: "3 days ago",
-      tags: ["Label", "Label", "Label"]
-    }
-  ];
+const [activeEmail, setActiveEmail] = useState(0);
 
-  return (
-    <div className="flex h-screen bg-white">
-      {/* Left Sidebar */}
-      <div className="w-64 border-r p-4 flex flex-col">
-        <div className="flex items-center space-x-2 mb-6">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback>AO</AvatarFallback>
-          </Avatar>
-          <span className="font-medium">Anthony O'Connell</span>
-        </div>
-        
+const emails = [
+{
+id: 1,
+sender: "Emily",
+subject: "Company",
+preview: "Hi, let's have a meeting tomorrow to discuss the project. I've been reviewing the project details and have some ideas I'd like to share.",
+time: "1 min ago",
+tags: ["Foundation", "Company"]
+},
+{
+id: 2,
+sender: "Weekend Plans",
+subject: "Welcome",
+preview: "Any plans for the weekend? I was thinking of going hiking in the nearby mountains.",
+time: "2 days ago",
+tags: ["Weekend", "Work"]
+},
+{
+id: 3,
+sender: "Emily Davis",
+subject: "Re: Question about Budget",
+preview: "I have a question about the budget for the upcoming project. It seems like there's a discrepancy in the allocation.",
+time: "3 days ago",
+tags: ["Budget", "About", "Work"]
+},
+{
+id: 4,
+sender: "David Lee",
+subject: "New Project Idea",
+preview: "I have an exciting new project idea to discuss with you. It involves expanding our services to target a niche market.",
+time: "3 days ago",
+tags: ["Label", "Label", "Label"]
+}
+];
+
+return (
+<div className="flex h-screen bg-white">
+{/_ Left Sidebar _/}
+<div className="w-64 border-r p-4 flex flex-col">
+<div className="flex items-center space-x-2 mb-6">
+<Avatar className="h-8 w-8">
+<AvatarFallback>AO</AvatarFallback>
+</Avatar>
+<span className="font-medium">Anthony O'Connell</span>
+</div>
+
         <NavigationMenu orientation="vertical" className="w-full">
           <NavigationMenuList className="flex flex-col space-y-2 w-full">
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
@@ -196,7 +200,7 @@ export default function MailApp() {
               </div>
               <Badge variant="secondary" className="bg-gray-100">128</Badge>
             </NavigationMenuItem>
-            
+
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <Train className="h-5 w-5 mr-3" />
@@ -204,7 +208,7 @@ export default function MailApp() {
               </div>
               <Badge variant="secondary" className="bg-gray-100">9</Badge>
             </NavigationMenuItem>
-            
+
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <Users className="h-5 w-5 mr-3" />
@@ -212,7 +216,7 @@ export default function MailApp() {
               </div>
               <Badge variant="secondary" className="bg-gray-100">20</Badge>
             </NavigationMenuItem>
-            
+
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <Wrench className="h-5 w-5 mr-3" />
@@ -220,7 +224,7 @@ export default function MailApp() {
               </div>
               <Badge variant="secondary" className="bg-gray-100">10</Badge>
             </NavigationMenuItem>
-            
+
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
               <div className="flex items-center">
                 <User className="h-5 w-5 mr-3" />
@@ -231,7 +235,7 @@ export default function MailApp() {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      
+
       {/* Middle Panel - Email List */}
       <div className="w-1/3 border-r flex flex-col">
         <Tabs defaultValue="now" className="w-full">
@@ -242,25 +246,25 @@ export default function MailApp() {
               <TabsTrigger value="todo">ToDo</TabsTrigger>
               <TabsTrigger value="done">Done</TabsTrigger>
             </TabsList>
-            
+
             <div className="relative mb-4">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <Input 
-                placeholder="Search" 
-                className="pl-10 bg-gray-50 border-gray-200" 
+              <Input
+                placeholder="Search"
+                className="pl-10 bg-gray-50 border-gray-200"
               />
             </div>
-            
+
             <div className="flex space-x-2 mb-4">
               <Badge className="bg-gray-800 text-white hover:bg-gray-700">Meeting</Badge>
               <Badge variant="outline">Work</Badge>
             </div>
           </div>
-          
+
           <TabsContent value="now" className="m-0">
             <div className="flex flex-col">
               {emails.map((email, index) => (
-                <div 
+                <div
                   key={email.id}
                   className={`border-b px-4 py-3 cursor-pointer hover:bg-gray-50 ${activeEmail === index ? 'bg-blue-50' : ''}`}
                   onClick={() => setActiveEmail(index)}
@@ -284,7 +288,7 @@ export default function MailApp() {
           </TabsContent>
         </Tabs>
       </div>
-      
+
       {/* Right Panel - Email Content */}
       <div className="flex-1 flex flex-col">
         <div className="p-6 flex-1">
@@ -293,7 +297,7 @@ export default function MailApp() {
             <h2 className="font-medium">Company</h2>
             <p className="ml-auto text-sm text-gray-500">Gather insight and data for your company</p>
           </div>
-          
+
           <div className="space-y-6 mb-4">
             {/* Repeated email content */}
             {[0, 1, 2].map((_, i) => (
@@ -307,11 +311,11 @@ export default function MailApp() {
                 </CardContent>
               </Card>
             ))}
-            
+
             <p className="text-gray-700">Thanks, Emily</p>
           </div>
         </div>
-        
+
         <div className="border-t p-4 flex justify-between items-center">
           <div className="flex space-x-2">
             <Button variant="outline" size="sm">Save</Button>
@@ -321,7 +325,7 @@ export default function MailApp() {
           </div>
           <Button variant="outline" size="sm">Share</Button>
         </div>
-        
+
         <div className="border-t p-4">
           <div className="flex space-x-2">
             <Badge variant="outline" className="bg-gray-100">@Teacher One</Badge>
@@ -330,5 +334,6 @@ export default function MailApp() {
         </div>
       </div>
     </div>
-  );
+
+);
 }

@@ -18,6 +18,8 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
+    project: ["./tsconfig.app.json"],
+    tsconfigRootDir: __dirname,
     EXPERIMENTAL_useProjectService: true,
   },
   plugins: ["react-refresh"],

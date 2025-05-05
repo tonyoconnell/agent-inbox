@@ -6,6 +6,7 @@ tags:
   - agents
 order: 1
 ---
+
 Okay, here's the content for **Section 1: Introduction** based on the outline:
 
 ---
@@ -22,21 +23,21 @@ The fundamental concept behind Agent Inbox is to move beyond single-chatbot inte
 
 1.3. **Key Features**
 
-*   **Real-time Multi-Participant Conversations:** Supports simultaneous chat between one or more users and multiple AI agents within the same conversation.
-*   **Agent Management:** Users can create new AI agents, customize their name, description, personality, and assigned tools, view them in a dedicated list, and delete them. System agents (like the Triage agent) operate internally.
-*   **Mention System:** Allows users and agents to directly address (`@`) specific users or other agents, triggering relevant actions or responses.
-*   **AI Message Triage:** An internal "Triage" agent automatically analyzes incoming user messages without specific mentions and routes them to the most appropriate agent(s) based on context.
-*   **Agent Tooling:** Agents can be equipped with various tools to perform actions beyond simple text generation, including:
-    *   Web Searching (via Exa)
-    *   Task Scheduling
-    *   Sending Emails (via Resend)
-    *   Listing conversation participants
-    *   Listing available agents
-    *   Updating conversation titles
-    *   Adding other agents to the conversation
-*   **User Authentication:** Secure sign-in and sign-up options using GitHub OAuth or traditional Email/Password.
-*   **Modern & Responsive UI:** Built with shadcn/ui and Tailwind CSS for a clean, adaptable user interface across different screen sizes.
-*   **Persistent Conversations:** Chat history is stored and easily accessible through the conversation list.
+- **Real-time Multi-Participant Conversations:** Supports simultaneous chat between one or more users and multiple AI agents within the same conversation.
+- **Agent Management:** Users can create new AI agents, customize their name, description, personality, and assigned tools, view them in a dedicated list, and delete them. System agents (like the Triage agent) operate internally.
+- **Mention System:** Allows users and agents to directly address (`@`) specific users or other agents, triggering relevant actions or responses.
+- **AI Message Triage:** An internal "Triage" agent automatically analyzes incoming user messages without specific mentions and routes them to the most appropriate agent(s) based on context.
+- **Agent Tooling:** Agents can be equipped with various tools to perform actions beyond simple text generation, including:
+  - Web Searching (via Exa)
+  - Task Scheduling
+  - Sending Emails (via Resend)
+  - Listing conversation participants
+  - Listing available agents
+  - Updating conversation titles
+  - Adding other agents to the conversation
+- **User Authentication:** Secure sign-in and sign-up options using GitHub OAuth or traditional Email/Password.
+- **Modern & Responsive UI:** Built with shadcn/ui and Tailwind CSS for a clean, adaptable user interface across different screen sizes.
+- **Persistent Conversations:** Chat history is stored and easily accessible through the conversation list.
 
 1.4. **Live Application**
 
@@ -45,12 +46,12 @@ You can access and interact with the live, deployed version of Agent Inbox here:
 
 1.5. **Technology Stack**
 
-*   **Backend & Database:** Convex (Serverless Platform, Realtime Database, TypeScript SDK)
-*   **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, shadcn/ui
-*   **Authentication:** `@convex-dev/auth` library (GitHub & Password providers)
-*   **AI:** Vercel AI SDK (`ai`, `@ai-sdk/openai`), OpenAI API (GPT-4o)
-*   **Tooling APIs:** Exa API (Web Search), Resend API (Email)
-*   **Routing:** `type-route`
-*   **Utilities:** `convex-helpers`, `zod`, `date-fns`, `react-mentions`, `react-markdown`
+- **Backend & Database:** Convex (Serverless Platform, Realtime Database, TypeScript SDK)
+- **Frontend:** React 19, Vite, TypeScript, Tailwind CSS, shadcn/ui
+- **Authentication:** `@convex-dev/auth` library (GitHub & Password providers)
+- **AI:** Vercel AI SDK (`ai`, `@ai-sdk/openai`), OpenAI API (GPT-4o)
+- **Tooling APIs:** Exa API (Web Search), Resend API (Email)
+- **Routing:** `type-route`
+- **Utilities:** `convex-helpers`, `zod`, `date-fns`, `react-mentions`, `react-markdown`
 
 ---

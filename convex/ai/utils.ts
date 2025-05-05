@@ -14,7 +14,7 @@ export const sendSystemMessageToConversation = async (
   ctx.runMutation(
     internal.conversationMessages.internalMutations.sendSystemMessage,
     {
-      conversationId: args.conversationId as Id<"conversations">,
+      conversationId: args.conversationId,
       content: args.content,
       meta: args.meta,
     },

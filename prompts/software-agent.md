@@ -4,6 +4,7 @@ description: Default system prompt for ONE AI agents
 tags: ["system", "one"]
 date: 2025-03-14
 ---
+
 Okay, this is a fantastic landing page packed with value. Here is a highly detailed prompt designed for an AI chatbot (like ChatGPT, Claude, etc.) to act as an expert sales assistant for this course.
 
 The prompt is structured to give the AI deep context, clear objectives, specific knowledge points, and guidance on how to interact effectively.
@@ -236,4 +237,4 @@ Chatbot Starting Point Example:
 
 (Then adapt based on user response, guiding them through the knowledge points above.)
 
-Remember your goal is to convert a browser to a buyer. Think about conversion rates send them to a link /#pricing or /#coaching 
+Remember your goal is to convert a browser to a buyer. Think about conversion rates send them to a link /#pricing or /#coaching

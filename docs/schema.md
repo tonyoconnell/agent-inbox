@@ -6,22 +6,23 @@ tags:
   - agents
 order: 1
 ---
+
 # Schema
 
 This proposed schema uses Convex `defineTable` and `v` (validators) syntax, assuming a Convex backend, but the principles can be adapted to other database systems. It aims to capture user progress, Foundation data, generated assets, and link them conceptually to Ecom funnel performance (though actual funnel tracking often resides more heavily in Analytics/CRM systems).
 
 **Key Considerations:**
 
-*   **Granularity:** Balancing detail with usability. Too granular is hard to manage; too high-level lacks insight.
-*   **Relational Links:** Using Convex `Id` types extensively to link related data (User -> Foundation -> Prompt Execution -> Asset -> Funnel Stage Performance).
-*   **Ecom Data Source:** This schema assumes the Ecom funnel data (Leads, Sales, etc.) might be *summarized* or *referenced* here, but the primary source-of-truth for raw transaction/analytics data is likely the Ecom platform (Shopify, etc.) and Analytics tools (GA4). Deep integration would require webhooks or APIs.
-*   **Flexibility:** Using `v.any()` for AI outputs or complex objects allows flexibility but reduces type safety. Specific validators (`v.object`, `v.array`) are preferred where structure is known.
+- **Granularity:** Balancing detail with usability. Too granular is hard to manage; too high-level lacks insight.
+- **Relational Links:** Using Convex `Id` types extensively to link related data (User -> Foundation -> Prompt Execution -> Asset -> Funnel Stage Performance).
+- **Ecom Data Source:** This schema assumes the Ecom funnel data (Leads, Sales, etc.) might be _summarized_ or _referenced_ here, but the primary source-of-truth for raw transaction/analytics data is likely the Ecom platform (Shopify, etc.) and Analytics tools (GA4). Deep integration would require webhooks or APIs.
+- **Flexibility:** Using `v.any()` for AI outputs or complex objects allows flexibility but reduces type safety. Specific validators (`v.object`, `v.array`) are preferred where structure is known.
 
 ---
 
 **Proposed Convex Schema: Elevate Playbook & Ecom Funnel Integration**
 
-```typescript
+````typescript
 // convex/schema.ts
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
@@ -504,21 +505,21 @@ export default defineSchema({
     .index("by_customer", ["customerId"])
     .index("by_user", ["userId"]),
 });
-```
+````
 
 ## Summary Table
 
-| Table                    | Purpose                                 | Key Fields/Indexes                        |
-|--------------------------|-----------------------------------------|-------------------------------------------|
-| users                    | Authenticated users                     | Convex Auth                               |
-| agents                   | AI/user agents with config              | by_creator                                |
-| tools                    | Tools for agents                        | by_creator                                |
-| groups                   | User-created groups                     | by_owner                                  |
-| groupMembers             | Users/agents in groups                  | by_group, by_user, by_agent               |
-| prompts                  | Prompt templates                        | by_creator                                |
-| conversations            | Group chats (optionally linked to group)| by_user_and_time, by_group                |
-| conversationParticipants | Users/agents in conversations           | by_conversationId, by_userId, by_agentId  |
-| conversationMessages     | Messages in conversations               | by_conversationId                         |
+| Table                    | Purpose                                  | Key Fields/Indexes                       |
+| ------------------------ | ---------------------------------------- | ---------------------------------------- |
+| users                    | Authenticated users                      | Convex Auth                              |
+| agents                   | AI/user agents with config               | by_creator                               |
+| tools                    | Tools for agents                         | by_creator                               |
+| groups                   | User-created groups                      | by_owner                                 |
+| groupMembers             | Users/agents in groups                   | by_group, by_user, by_agent              |
+| prompts                  | Prompt templates                         | by_creator                               |
+| conversations            | Group chats (optionally linked to group) | by_user_and_time, by_group               |
+| conversationParticipants | Users/agents in conversations            | by_conversationId, by_userId, by_agentId |
+| conversationMessages     | Messages in conversations                | by_conversationId                        |
 
 ## Improvements and Extensibility
 
@@ -531,34 +532,38 @@ export default defineSchema({
 
 This schema is designed for modern, collaborative, and AI-augmented applications, and can be easily extended to support new features and integrations.
 
-/**
+/\*\*
 Improvements in this version:
+
 - Added agentTools join table for per-agent tool configuration and permissions.
 - Added attachments table for generic prompt attachments to agents or groups.
 - Added createdAt, updatedAt, createdBy, updatedBy fields to all major tables for auditability and collaborative tracking.
 - Added role field to groupMembers for fine-grained permissions and access control.
 - Added type, status, tags, and attachments fields to conversationMessages for filtering, tabs, labels, and file/image support.
 - Added status, category, and tags fields to courseModules and prompts for filtering and organization (e.g., ToDo/Done/Now/Top tabs).
-*/
+  \*/
 
-/**
+/\*\*
 Analytics-Focused Improvements:
+
 - Added supportTickets table for support/community engagement analytics.
 - Added userFeedback table for CSAT/NPS and self-reported results.
 - Added abTests table for A/B test tracking.
 - Added customers and customerJourneyEvents tables for end customer journey/CRM analytics, including segment tagging.
-*/
+  \*/
 
-/**
+/\*\*
 Agent Modeling Improvements:
+
 - Added personality field (optional) to agents for explicit personality modeling, separate from instructions.
 - Added delegatesTo field (optional) to agents for modeling agent delegation/team structure.
-*/
+  \*/
 
-/**
+/\*\*
 Marketing & Funnel Perfection Improvements:
+
 - Added full contact, company, consent, and communication preference fields to users and customers.
 - Added currentFunnelStage and lastActiveAt to users for funnel tracking and engagement.
 - Added channel, campaignId, and experimentId to userFunnelSnapshots for advanced e-commerce analytics and attribution.
 - Added userActivityLog table for unified, queryable user action history.
-*/
+  \*/

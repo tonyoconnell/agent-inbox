@@ -15,6 +15,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
 ## Available Rules
 
 ### 1. Astro Component Guidelines
+
 - **File**: `.cursor/rules/astro-component-guidelines.mdc`
 - **Description**: Guidelines for Astro components
 - **Applies to**: `src/**/*.astro`, `src/components/**/*.astro`
@@ -27,6 +28,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - File organization
 
 ### 2. React Component Guidelines
+
 - **File**: `.cursor/rules/react-component-guidelines.mdc`
 - **Description**: Guidelines for React components
 - **Applies to**: `src/components/**/*.tsx`, `src/components/**/*.jsx`
@@ -39,6 +41,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Testing
 
 ### 3. Shadcn UI Guidelines
+
 - **File**: `.cursor/rules/shadcn-ui-guidelines.mdc`
 - **Description**: Guidelines for Shadcn/UI and Tailwind CSS usage
 - **Applies to**: `src/components/ui/**/*.tsx`, `src/**/*.css`
@@ -50,6 +53,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Integration with Astro
 
 ### 4. Content Management Guidelines
+
 - **File**: `.cursor/rules/content-management-guidelines.mdc`
 - **Description**: Guidelines for content management and MDX
 - **Applies to**: `src/content/**/*`, `src/pages/**/*.md`, `src/pages/**/*.mdx`
@@ -61,6 +65,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - SEO optimization
 
 ### 5. Project Guidelines
+
 - **File**: `.cursor/rules/project-guidelines.mdc`
 - **Description**: General project guidelines
 - **Applies to**: `**/*`
@@ -72,6 +77,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Best practices
 
 ### 6. AI Integration Guidelines
+
 - **File**: `.cursor/rules/ai-integration-guidelines.mdc`
 - **Description**: Guidelines for AI integration and prompt engineering
 - **Applies to**: `src/schema/chat.ts`, `src/pages/api/chat.ts`, `src/content/prompts/**/*`
@@ -83,6 +89,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Performance optimization
 
 ### 7. Astro Client Directives
+
 - **File**: `.cursor/rules/astro-client-directives.mdc`
 - **Description**: Guidelines for using Astro client directives and interactive components
 - **Applies to**: `src/**/*.astro`, `src/components/**/*.tsx`, `src/components/**/*.jsx`
@@ -95,6 +102,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Common pitfalls to avoid
 
 ### 8. Content Collections
+
 - **File**: `.cursor/rules/content-collections.mdc`
 - **Description**: Guidelines for using Astro content collections and MDX
 - **Applies to**: `src/content/**/*.md`, `src/content/**/*.mdx`, `src/content/config.ts`, `src/pages/**/*.md`, `src/pages/**/*.mdx`
@@ -109,6 +117,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - AI-enhanced content
 
 ### 9. Chat System Guidelines
+
 - **File**: `.cursor/rules/chat-system-guidelines.mdc`
 - **Description**: Guidelines for configuring and implementing the ONE chat system
 - **Applies to**: `src/pages/**/*.astro`, `src/pages/**/*.md`, `src/pages/**/*.mdx`, `src/components/chat/**/*.tsx`, `src/schema/chat.ts`
@@ -125,6 +134,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Common pitfalls
 
 ### 10. Layout Components Guidelines
+
 - **File**: `.cursor/rules/layout-components-guidelines.mdc`
 - **Description**: Guidelines for implementing layout panel components in the ONE framework
 - **Applies to**: `src/layouts/Layout.astro`, `src/components/layout/*.astro`
@@ -141,6 +151,7 @@ All rule files are stored in the `.cursor/rules` directory in the MDC format (`.
   - Theming
 
 ### 11. Layout Components Todos
+
 - **File**: `.cursor/rules/layout-todos.mdc`
 - **Description**: Todo items for implementing layout panel components in the ONE framework
 - **Applies to**: `src/layouts/Layout.astro`, `src/components/layout/*.astro`
@@ -179,13 +190,16 @@ glob_patterns:
 # Rule Title
 
 ## Section 1
+
 Content for section 1
 
 ## Section 2
+
 Content for section 2
 ```
 
 The frontmatter includes:
+
 - `description`: A brief description of the rule
 - `glob_patterns`: An array of glob patterns that determine which files the rule applies to
 

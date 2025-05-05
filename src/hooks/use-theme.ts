@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-export type Theme = 'light' | 'dark' | 'high-contrast';
+export type Theme = "light" | "dark" | "high-contrast";
 
 // Define window interface to include our theme functions
 declare global {
@@ -12,14 +12,17 @@ declare global {
 }
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
     // Initialize theme state from global function or localStorage
-    const initialTheme = window.getThemePreference?.() || 
-      (localStorage.getItem('theme') as Theme) || 
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-    
+    const initialTheme =
+      window.getThemePreference?.() ||
+      (localStorage.getItem("theme") as Theme) ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+
     setThemeState(initialTheme);
 
     // Listen for theme changes from other sources
@@ -27,10 +30,13 @@ export function useTheme() {
       setThemeState(e.detail);
     };
 
-    window.addEventListener('theme-change', handleThemeChange as EventListener);
+    window.addEventListener("theme-change", handleThemeChange as EventListener);
 
     return () => {
-      window.removeEventListener('theme-change', handleThemeChange as EventListener);
+      window.removeEventListener(
+        "theme-change",
+        handleThemeChange as EventListener,
+      );
     };
   }, []);
 
@@ -40,14 +46,18 @@ export function useTheme() {
       window.setTheme(newTheme);
     } else {
       // Fallback implementation
-      document.documentElement.classList.remove('light', 'dark', 'high-contrast');
-      if (newTheme !== 'light') {
+      document.documentElement.classList.remove(
+        "light",
+        "dark",
+        "high-contrast",
+      );
+      if (newTheme !== "light") {
         document.documentElement.classList.add(newTheme);
       }
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
+      document.documentElement.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
     }
-    
+
     // Update local state
     setThemeState(newTheme);
   };
@@ -59,24 +69,24 @@ export function useTheme() {
     } else {
       // Fallback implementation
       switch (theme) {
-        case 'light':
-          setTheme('dark');
+        case "light":
+          setTheme("dark");
           break;
-        case 'dark':
-          setTheme('high-contrast');
+        case "dark":
+          setTheme("high-contrast");
           break;
-        case 'high-contrast':
-          setTheme('light');
+        case "high-contrast":
+          setTheme("light");
           break;
         default:
-          setTheme('light');
+          setTheme("light");
       }
     }
   };
 
-  return { 
-    theme, 
-    setTheme, 
-    cycleTheme 
+  return {
+    theme,
+    setTheme,
+    cycleTheme,
   };
 }

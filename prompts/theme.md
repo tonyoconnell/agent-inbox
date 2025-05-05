@@ -9,6 +9,7 @@ order: 1
 # Theme System Documentation
 
 The ONE theme system provides three themes:
+
 - ONE (base/default theme)
 - Light (light variation)
 - Dark (dark variation)
@@ -16,6 +17,7 @@ The ONE theme system provides three themes:
 ## Theme Configuration
 
 ### Base Theme (ONE)
+
 Themes are defined using CSS custom properties with HSL color values. The ONE theme serves as the base, with light and dark variations building on top of it.
 
 ## Animation System
@@ -23,6 +25,7 @@ Themes are defined using CSS custom properties with HSL color values. The ONE th
 The theme system includes a rich set of animations that can be used across the application:
 
 ### Base Animations
+
 - `accordion-down/up`: Smooth accordion transitions
 - `orbit`: Circular orbital motion
 - `pulse`: Gentle pulsing effect
@@ -59,6 +62,7 @@ The theme system includes a rich set of animations that can be used across the a
 ## Theme Integration
 
 ### Base Theme (ONE)
+
 ```css
 :root {
   /* Base ONE theme variables */
@@ -70,6 +74,7 @@ The theme system includes a rich set of animations that can be used across the a
 ```
 
 ### Theme Variations
+
 ```css
 /* Light theme variation */
 .light {
@@ -97,6 +102,7 @@ The theme system includes a rich set of animations that can be used across the a
 ## Examples
 
 ### Animated Card with Theme Support
+
 ```jsx
 <div className="bg-card text-card-foreground animate-fade-in">
   <div className="p-4">
@@ -109,6 +115,7 @@ The theme system includes a rich set of animations that can be used across the a
 ```
 
 ### Interactive Button
+
 ```jsx
 <button className="bg-primary text-primary-foreground hover:animate-pulse">
   Click Me
