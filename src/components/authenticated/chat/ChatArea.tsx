@@ -36,7 +36,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
         <ConversationHeader conversation={conversation} />
         <div className="relative flex-1 w-full">
           <div className="flex flex-col-reverse h-full w-full">
-            <div className="sticky bottom-0 left-0 right-0 z-10 bg-sidebar border-t border-gray-200" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+            <div className="sticky bottom-0 left-0 right-0 z-10 bg-sidebar border-t border-[#23232a]" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
               <ChatInput conversationId={conversationId} />
             </div>
             <div className="flex-1 overflow-y-auto px-2 pb-4 pt-2 min-h-0 w-full">
