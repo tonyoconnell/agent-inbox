@@ -8,10 +8,12 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { BookOpen, Users, Wrench, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
 
 export interface SidebarNavItem {
   key: string;
@@ -34,23 +36,13 @@ export function AppSidebar({
   onNavChange,
 }: AppSidebarProps) {
   return (
-    <Sidebar className="border-r border-border shadow-sm backdrop-blur-sm bg-sidebar/80 min-h-screen">
+    <Sidebar className="border-r border-border shadow-sm backdrop-blur-sm bg-sidebar/80 min-h-screen flex flex-col">
       <SidebarHeader>
-        <div className="flex items-center gap-3 px-2 py-6">
-          <Avatar className="w-10 h-10">
-            {user.image ? (
-              <AvatarImage src={user.image} alt={user.name} />
-            ) : (
-              <AvatarFallback>{user.name[0]}</AvatarFallback>
-            )}
-          </Avatar>
-          <div className="flex flex-col min-w-0">
-            <span className="font-semibold text-base truncate text-sidebar-foreground">{user.name}</span>
-            <span className="text-xs text-muted-foreground truncate">{user.email}</span>
-          </div>
+        <div className="flex flex-col items-center justify-center py-6">
+          <img src="/logo.svg" alt="Logo" className="h-10 w-auto mb-2" />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="flex-1">
         <SidebarGroup>
           <SidebarGroupLabel className="text-muted-foreground px-2 pb-2">Main</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -86,7 +78,9 @@ export function AppSidebar({
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      {/* Optionally add <SidebarFooter> here */}
+      <SidebarFooter>
+        <UserProfile />
+      </SidebarFooter>
     </Sidebar>
   );
 } 

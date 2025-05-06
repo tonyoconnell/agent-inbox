@@ -6,12 +6,11 @@ import { useApiErrorHandler } from "../../misc/errors";
 import { ConversationItem } from "./ConversationItem";
 import { useCurrentConversationId, routes } from "../../../routes";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
-interface ConversationListProps {}
-
-export const ConversationList: React.FC<ConversationListProps> = ({}) => {
+export const ConversationList: React.FC = () => {
   const conversations = useQuery(api.conversations.queries.listMine);
   const createConversation = useMutation(api.conversations.mutations.create);
   const onApiError = useApiErrorHandler();
@@ -40,13 +39,14 @@ export const ConversationList: React.FC<ConversationListProps> = ({}) => {
   return (
     <>
       <div className="p-4">
-        <button
-          onClick={handleCreateConversation}
-          className="w-full bg-[#2563eb] text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 font-semibold shadow-sm hover:bg-[#1d4ed8] transition-colors duration-150"
+        <Button
+          onClick={() => { void handleCreateConversation(); }}
+          className="w-full bg-accent/50 border border-accent/50 text-primary-foreground hover:bg-accent"
+          variant="ghost"
         >
           <Plus className="h-5 w-5" />
           New Conversation
-        </button>
+        </Button>
         <div className="relative mt-4">
           <Search className="absolute left-4 top-3 h-4 w-4 text-gray-400" />
           <Input

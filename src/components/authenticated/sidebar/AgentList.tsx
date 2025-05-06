@@ -27,13 +27,13 @@ export const AgentList = () => {
     <>
       <div className="p-4">
         <Button
-          className="w-full"
-          variant="default"
-          onClick={() =>
-            createAgent()
+          className="w-full bg-accent/50 border border-accent/50 text-primary-foreground hover:bg-accent"
+          variant="ghost"
+          onClick={() => {
+            void createAgent()
               .then((agentId) => routes.agent({ agentId }).push())
-              .catch(onApiError)
-          }
+              .catch(onApiError);
+          }}
         >
           <Plus className="h-5 w-5" />
           New Agent
