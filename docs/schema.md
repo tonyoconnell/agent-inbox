@@ -27,6 +27,11 @@ This schema is the foundation for a scalable, secure, and high-performance agent
 | attachments          | Attach prompts/assets to agents/groups  | ownerType, ownerId, promptId             |
 | knowledge            | Vectorized knowledge for search/RAG     | ownerType, ownerId, vector, content      |
 | tags                 | Tagging for search, filtering, teams    | name, color, createdBy                   |
+| reactions            | Social reactions to messages            | messageId, userId/agentId, type, createdAt|
+| comments             | Comments on messages                    | messageId, authorParticipantId, content, createdAt|
+| follows              | Social follows (user/agent)             | followerId, followeeId, kind, createdAt  |
+| events               | Scheduled meetings/events               | title, startTime, endTime, participants  |
+| reminders            | Reminders for users/agents              | userId/agentId, message, remindAt, relatedEntity |
 
 ---
 
@@ -203,6 +208,53 @@ export default defineSchema({
     createdBy: v.optional(v.id("users")),
     createdAt: v.number(),
   }),
+
+  // 13. Social: Reactions (likes, emojis, etc.)
+  reactions: defineTable({
+    messageId: v.id("conversationMessages"),
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    type: v.string(), // e.g., "like", "love", "laugh", "custom_emoji"
+    createdAt: v.number(),
+  }),
+
+  // 14. Social: Comments (threaded replies to messages)
+  comments: defineTable({
+    messageId: v.id("conversationMessages"),
+    authorParticipantId: v.id("conversationParticipants"),
+    content: v.string(),
+    createdAt: v.number(),
+  }),
+
+  // 15. Social: Follows (user/agent follows another user/agent)
+  follows: defineTable({
+    followerId: v.string(), // userId or agentId as string
+    followeeId: v.string(), // userId or agentId as string
+    kind: v.union(v.literal("user"), v.literal("agent")),
+    createdAt: v.number(),
+  }),
+
+  // 16. Scheduling: Events (meetings, calls, etc.)
+  events: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    startTime: v.number(),
+    endTime: v.number(),
+    createdBy: v.string(), // userId or agentId as string
+    participants: v.optional(v.array(v.string())), // userIds/agentIds as strings
+    tags: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+  }),
+
+  // 17. Scheduling: Reminders
+  reminders: defineTable({
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    message: v.string(),
+    remindAt: v.number(),
+    relatedEntity: v.optional(v.string()), // e.g., messageId, eventId, etc.
+    createdAt: v.number(),
+  }),
 });
 ```
 
@@ -311,3 +363,120 @@ export type ConversationMessage = {
   vector?: number[];
   meta?: any;
 };
+
+export const addParticipant = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    kind: v.union(v.literal("user"), v.literal("agent")),
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("conversationParticipants", {
+      kind: args.kind,
+      conversationId: args.conversationId,
+      userId: args.userId,
+      agentId: args.agentId,
+      status: "active",
+      isRemoved: false,
+      addedAt: Date.now(),
+    });
+  },
+});
+
+export const sendMessage = mutation({
+  args: {
+    conversationId: v.id("conversations"),
+    authorParticipantId: v.id("conversationParticipants"),
+    content: v.string(),
+    step: v.optional(stepValidator),
+    kind: v.optional(v.union(v.literal("participant"), v.literal("system"))),
+    type: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("conversationMessages", {
+      conversationId: args.conversationId,
+      authorParticipantId: args.authorParticipantId,
+      kind: args.kind ?? "participant",
+      type: args.type,
+      step: args.step,
+      status: "sent",
+      tags: args.tags,
+      content: args.content,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+import { query } from "./_generated/server";
+
+export const listMessages = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("conversationMessages")
+      .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
+      .order("asc")
+      .collect();
+  },
+});
+
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
+
+export const createAgent = mutation({
+  args: {
+    name: v.string(),
+    description: v.string(),
+    kind: v.union(v.literal("system_agent"), v.literal("user_agent")),
+    createdBy: v.optional(v.id("users")),
+    personality: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+    goal: v.optional(v.string()),
+    systemPrompt: v.optional(v.string()),
+    instructions: v.optional(v.string()),
+    delegatesTo: v.optional(v.array(v.id("agents"))),
+    tools: v.optional(v.array(v.id("tools"))),
+    tags: v.optional(v.array(v.string())),
+    model: v.optional(v.string()),
+    attachedPrompts: v.optional(v.array(v.id("prompts"))),
+  },
+  handler: async (ctx, args) => {
+    const agentId = await ctx.db.insert("agents", {
+      ...args,
+      createdAt: Date.now(),
+    });
+    return agentId;
+  },
+});
+
+export const addKnowledge = mutation({
+  args: {
+    ownerType: v.union(v.literal("agent"), v.literal("user")),
+    ownerId: v.string(),
+    content: v.string(),
+    vector: v.optional(v.array(v.number())),
+    tags: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const knowledgeId = await ctx.db.insert("knowledge", {
+      ...args,
+      createdAt: Date.now(),
+    });
+    return knowledgeId;
+  },
+});
+
+import { query } from "./_generated/server";
+
+export const searchKnowledgeByTag = query({
+  args: { tag: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("knowledge")
+      .filter((q) => q.contains(q.field("tags"), args.tag))
+      .collect();
+  },
+});
+
