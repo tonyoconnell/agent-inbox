@@ -11,8 +11,8 @@ import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { AgentDescription } from "./AgentDescription";
 import { Loader2, Shuffle, Pencil, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { AgentTools } from "./AgentTools";
 import { AgentToolName } from "../../../../shared/tools";
-import { Tools } from "./AgentTools";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const agent = useQuery(api.agents.queries.findMine, { agentId });
@@ -29,7 +29,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const [editedDescription, setEditedDescription] = React.useState("");
   const [editedPrompt, setEditedPrompt] = React.useState("");
   const [editedTags, setEditedTags] = React.useState<string[]>([]);
-  const [editedTools, setEditedTools] = React.useState<(string | Id<"tools">)[]>([]);
+  const [editedTools, setEditedTools] = React.useState<AgentToolName[]>([]);
   const [isShufflingAvatar, setIsShufflingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
 
@@ -39,11 +39,9 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
       setEditedDescription(agent.description);
       setEditedPrompt(agent.prompt ?? "");
       setEditedTags(agent.tags ?? []);
-      setEditedTools(agent.tools ?? []);
+      setEditedTools((agent.tools ?? []) as AgentToolName[]);
     }
   }, [agent]);
-
-  const filteredTools = (editedTools ?? []).filter((t): t is Id<"tools"> => typeof t !== "string");
 
   const handleSaveField = async (field: string) => {
     if (!agent) return;
@@ -53,13 +51,13 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
       description: agent.description,
       prompt: agent.prompt ?? "",
       tags: agent.tags ?? [],
-      tools: (agent.tools ?? []).filter((t): t is Id<"tools"> => typeof t !== "string"),
+      tools: (agent.tools ?? []) as AgentToolName[],
     };
     if (field === "name") update.name = editedName;
     if (field === "description") update.description = editedDescription;
     if (field === "prompt") update.prompt = editedPrompt;
     if (field === "tags") update.tags = editedTags;
-    if (field === "tools") update.tools = filteredTools;
+    if (field === "tools") update.tools = editedTools;
     await updateAgent(update).catch(onApiError);
     if (field === "name") setIsEditingName(false);
     if (field === "description") setIsEditingDescription(false);
@@ -87,7 +85,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
       setIsEditingTags(false);
     }
     if (field === "tools") {
-      setEditedTools(agent.tools ?? []);
+      setEditedTools((agent.tools ?? []) as AgentToolName[]);
       setIsEditingTools(false);
     }
   };
@@ -232,12 +230,11 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
               <h2 className="text-lg font-semibold">Tools</h2>
               <Button variant="ghost" size="icon" onClick={() => setIsEditingTools(true)}><Pencil className="h-4 w-4" /></Button>
             </div>
-            <Tools
+            <AgentTools
               agentId={agent._id}
               name={agent.name}
               description={agent.description}
-              tools={isEditingTools ? editedTools : agent.tools ?? []}
-              onChange={isEditingTools ? setEditedTools : undefined}
+              tools={isEditingTools ? editedTools : (agent.tools ?? []) as AgentToolName[]}
             />
             {isEditingTools && (
               <div className="flex gap-2 mt-2">

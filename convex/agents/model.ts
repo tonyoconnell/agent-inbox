@@ -28,14 +28,12 @@ export const createAgent = async (ctx: MutationCtx) => {
   const randomIndex = Math.floor(Math.random() * predefinedAgents.length);
   const selectedAgent = predefinedAgents[randomIndex];
 
-  // Map tool names to tool IDs
-  const toolIds = await getToolIdsByNames(ctx, selectedAgent.tools);
-
+  // Store tool names directly for user agents
   return await ctx.db.insert("agents", {
     name: selectedAgent.name,
     description: selectedAgent.description,
     prompt: undefined, // or map from personality if needed
-    tools: toolIds,
+    tools: selectedAgent.tools, // string[]
     createdBy: userId,
     createdAt: Date.now(),
     avatarUrl: createAgentAvatarUrl(selectedAgent.name),
@@ -53,13 +51,12 @@ export const createSystemAgent = async (
     // add other fields as needed from the main schema
   },
 ) => {
-  // Map tool names to tool IDs
-  const toolIds = await getToolIdsByNames(ctx, args.tools ?? []);
+  // If you want system agents to use tool IDs, keep the mapping. Otherwise, store tool names directly as well.
   return await ctx.db.insert("agents", {
     name: args.name,
     description: args.description,
     prompt: undefined, // or map from personality if needed
-    tools: toolIds,
+    tools: args.tools, // string[]
     createdBy: undefined,
     createdAt: Date.now(),
     avatarUrl: args.avatarUrl,
@@ -127,7 +124,7 @@ export const updateMine = async (
     description: string;
     prompt?: string;
     tags?: string[];
-    tools: Id<"tools">[];
+    tools?: string[];
   },
 ) => {
   return await ctx.db.patch(agentId, {

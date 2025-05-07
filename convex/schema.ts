@@ -59,7 +59,7 @@ export default defineSchema({
     prompt: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     delegatesTo: v.optional(v.array(v.id("agents"))),
-    tools: v.optional(v.array(v.union(v.id("tools"), v.string()))),
+    tools: v.optional(v.array(v.string())),
     tags: v.optional(v.array(v.string())),
     model: v.optional(v.string()),
     knowledge: v.optional(v.any()),
