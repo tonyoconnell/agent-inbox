@@ -94,7 +94,7 @@ The following steps remain important, but are now sequenced after the migration:
  Here's a detailed, actionable checklist for the incremental schema upgrade, based on the gap analysis. This will guide you step-by-step through the migration, ensuring nothing is missed and everything is done safely.
 🟢 Incremental Schema Upgrade Checklist
 1. Add New Tables (as optional, non-breaking)
-[ ] agentTools
+[ ] tools
 [ ] attachments
 [ ] knowledge
 [ ] tags
@@ -103,8 +103,8 @@ The following steps remain important, but are now sequenced after the migration:
 [ ] follows
 [ ] events
 [ ] reminders
-[ ] learningFlows
-[ ] assignments
+[ ] flows
+[ ] lessons
 [ ] progress
 2. Update Existing Tables
 [ ] agents: Add/rename fields (delegatesTo, tools as IDs, canGuideSteps, etc.; replace goal, systemPrompt, personality, instructions with a single prompt field)

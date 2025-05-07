@@ -19,8 +19,8 @@ The interface consists of:
 
 ### Left Sidebar
 
-- User profile at top ("Anthony O'Connell")
-- Navigation items with counters (Learn: 128, Train: 9, Agents: 20, etc.)
+- User profile at bottom ("Anthony O'Connell")
+- Navigation items with counters (Messages: 128, People: 9, Agents: 20, Tools.)
 - Each item has an icon and label
 
 ### Middle Panel
@@ -28,19 +28,18 @@ The interface consists of:
 - Filter tabs at top (Now, Top, ToDo, Done)
 - Search bar
 - Category tags/filters (Meeting, Work)
-- Email previews showing:
-  - Subject line
-  - Brief content preview
+- Message previes:
+  - Title
+  - Description
   - Time information (e.g., "1 min ago", "3 days ago")
-  - Tags/labels (Budget, About, Work, etc.)
+  - Tags/labels (Hook, Marketing, SEO, etc.)
 
 ### Right Panel
 
-- Email content display
-- Multiple instances of the same email (possibly representing a thread)
+- Message content display
 - Sender information
 - Action buttons at bottom (Save, Reply, Forward, Complete, Share)
-- Recipient tags (@Teacher One, @Anthony O'Connell)
+- Recipient tags (@Teacher One, @Anthony O'Connell @Research Agent)
 
 ## Building with shadcn/ui
 
@@ -63,16 +62,15 @@ Looking at this UI design, here's a detailed breakdown of how you could build it
    - Each item includes an icon from `lucide-react`, text label, and count badge
    - Active state styling with subtle hover effects
 
-2. **Email List**
+2. **Messages List**
 
    - Uses `Tabs` component for filter categories (Now, Top, ToDo, Done)
    - Custom search input with icon using the `Input` component
-   - Email preview cards with time stamps, tags, and preview text
+   - Message preview cards with time stamps, tags, and preview text
    - Active selection state
 
-3. **Email Content**
+3. **Message Content**
 
-   - Simple card-based layout for each message
    - Action buttons at bottom using `Button` components with outline variant
    - Recipient tags using `Badge` components
 

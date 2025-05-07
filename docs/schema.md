@@ -6,13 +6,40 @@ description: Succinct, optimized schema for agent/human collaboration, knowledge
 
 # ONE Schema: Core Data Model for AI-Human Collaboration
 
-remember agentTools is just called tools now
+> See also: [Ontology](./ontology.md) | [Agents](./agents.md) | [Workflow](./workflow.md)
 
 This schema is the foundation for a scalable, secure, and high-performance agent/human swarm. It enables:
 - Agents and humans to send messages, create knowledge, and infer new insights
 - Rich, extensible agent/team modeling
 - Fast, secure storage and retrieval (including vector search for knowledge/assets)
 - Analytics, CRM, and extensibility for future growth
+- Unified flows/lessons for both LMS and project-based learning
+- Full support for agent chat, workflow, and orchestration
+
+## Developer Reference
+- All tables/fields are documented in [ontology.md](./ontology.md)
+- Agent roles, permissions, and orchestration: [agents.md](./agents.md), [workflow.md](./workflow.md)
+- Extensibility: All major tables have a `meta` field; indexes on key fields for performance
+- Lessons table supports both LMS and project flows (see comments)
+- Flows support prerequisites for advanced logic
+- AgentThreads support threadType/context for analytics
+
+---
+
+# Table Definitions
+
+/**
+ * ONE Schema: Core Data Model for AI-Human Collaboration
+ *
+ * - Consistent use of createdBy, createdAt, updatedAt fields
+ * - Referential integrity: all *_id fields reference valid records
+ * - Indexes on frequently queried fields
+ * - Extensible meta fields for future-proofing
+ * - Unified lessons table for both LMS and flows
+ * - Agent threads/messages support threadType/context
+ * - Flows support prerequisites for steps
+ * - Subscriptions link to products
+ */
 
 ## Core Entities (Summary Table)
 
@@ -34,14 +61,7 @@ This schema is the foundation for a scalable, secure, and high-performance agent
 | follows              | Social follows (user/agent)             | followerId, followeeId, kind, createdAt  |
 | events               | Scheduled meetings/events               | title, startTime, endTime, participants  |
 | reminders            | Reminders for users/agents              | userId/agentId, message, remindAt, relatedEntity |
-| learningFlows        | Structured learning/project sequences   | title, description, steps (ordered array of promptIds) |
-| assignments          | Assigns users/agents to steps/flows     | learningFlowId, step, userId/agentId, role |
-| progress             | Tracks step/flow completion status      | learningFlowId, step, userId/agentId, status, completedAt |
-| products             | Shopify-compatible product information     | id, title, handle, description, descriptionHtml, vendor, productType, tags, status, publishedAt, createdAt, updatedAt, options, variants, images, featuredMedia, priceRange, compareAtPriceRange, totalInventory, tracksInventory, available, seo, onlineStoreUrl, collections, category, metafields |
-| broadcasts           | Scheduled social media posts                | platform, content, scheduledTime, status, result, createdBy, groupId |
-| inferenceUsage       | Tracks AI generation usage and cost         | userId, agentId, conversationId, messageId, tokensUsed, cost, currency, model, createdAt |
-| evals                | Tracks AI evaluation runs (convex.dev evals) | id, userId, agentId, model, input, expectedOutput, actualOutput, score, status, error, createdAt, updatedAt, meta |
-| courses              | Shopify-compatible product information     | id, title, handle, description, descriptionHtml, vendor, productType, tags, status, publishedAt, createdAt, updatedAt, options, variants, images, featuredMedia, priceRange, compareAtPriceRange, totalInventory, tracksInventory, available, seo, onlineStoreUrl, collections, category, metafields |
+| flows                | Structured learning/project sequences   | title, description, steps (ordered array of promptIds) |
 | lessons              | LMS course lessons                          | id, courseId, title, content, order, createdAt, updatedAt |
 | enrollments          | LMS course enrollments                      | id, courseId, userId, enrolledAt, progress, status |
 | tasks                | Task/todo manager                           | id, title, description, status, dueDate, assignedToUserId, assignedToAgentId, createdBy, createdAt, updatedAt, completedAt, priority, tags |
@@ -142,8 +162,11 @@ export default defineSchema({
     notes: v.optional(v.string()),
     photoUrl: v.optional(v.string()),
     createdAt: v.number(),
-    // ...other fields as needed
-  }),
+    updatedAt: v.optional(v.number()),
+    createdBy: v.optional(v.id("users")), // for imported/created by another user
+  })
+    .index("by_email", ["email"])
+    .index("by_createdAt", ["createdAt"]),
 
   // 3. Agents
   agents: defineTable({
@@ -158,13 +181,13 @@ export default defineSchema({
     model: v.optional(v.string()),
     knowledge: v.optional(v.any()),
     memories: v.optional(v.any()),
-    attachedPrompts: v.optional(v.array(v.id("prompts"))),
     createdBy: v.optional(v.id("users")),
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
     updatedBy: v.optional(v.id("users")),
-    canGuideSteps: v.optional(v.array(stepValidator)),
-  }),
+  })
+    .index("by_createdBy", ["createdBy"])
+    .index("by_createdAt", ["createdAt"]),
 
   // 4. Tools
   tools: defineTable({
@@ -177,17 +200,8 @@ export default defineSchema({
   // 5. Prompts (with step and learningFlowId)
   prompts: defineTable({
     title: v.string(),
-    template: v.string(),
-    step: stepValidator,
-    learningFlowId: v.optional(v.id("learningFlows")),
-    orderInFlow: v.optional(v.number()),
-    description: v.optional(v.string()),
-    requiredContext: v.optional(v.array(v.string())),
-    outputType: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
-    status: v.optional(v.string()),
-    createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
+    content: v.string(),
   }),
 
   // 6. Conversations
@@ -195,9 +209,12 @@ export default defineSchema({
     title: v.string(),
     createdBy: v.id("users"),
     createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
     lastMessageTime: v.optional(v.number()),
     tags: v.optional(v.array(v.string())),
-  }),
+  })
+    .index("by_createdBy", ["createdBy"])
+    .index("by_createdAt", ["createdAt"]),
 
   // 7. ConversationParticipants
   conversationParticipants: defineTable(
@@ -264,7 +281,11 @@ export default defineSchema({
     vector: v.optional(v.array(v.number())),
     tags: v.optional(v.array(v.string())),
     createdAt: v.number(),
-  }),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  })
+    .index("by_ownerId", ["ownerId"])
+    .index("by_createdAt", ["createdAt"]),
 
   // 12. Tags
   tags: defineTable({
@@ -321,38 +342,49 @@ export default defineSchema({
     createdAt: v.number(),
   }),
 
-  // 18. Learning & Projects: LearningFlows
-  learningFlows: defineTable({
+  // 18. Learning & Projects: Flows
+  flows: defineTable({
     title: v.string(),
     description: v.optional(v.string()),
     steps: v.array(v.object({
       promptId: v.optional(v.id("prompts")),
-      stepName: stepValidator,
+      name: v.string(), // e.g. "Foundation", "Hook", etc.
       instructions: v.optional(v.string()),
       order: v.number(),
+      prerequisites: v.optional(v.array(v.string())), // step names that must be completed first
     })),
     createdBy: v.optional(v.id("users")),
     createdAt: v.number(),
-  }),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  })
+    .index("by_createdBy", ["createdBy"])
+    .index("by_createdAt", ["createdAt"]),
 
-  // 19. Learning & Projects: Assignments
-  assignments: defineTable({
-    learningFlowId: v.id("learningFlows"),
-    step: stepValidator,
+  // 19. Learning & Projects: Lessons (for both LMS and flows)
+  lessons: defineTable({
+    flowId: v.optional(v.id("flows")), // for flow-based lessons
+    courseId: v.optional(v.id("courses")), // for LMS lessons
+    stepName: v.optional(v.string()), // for flow-based lessons
+    title: v.optional(v.string()),
+    content: v.optional(v.string()),
     userId: v.optional(v.id("users")),
     agentId: v.optional(v.id("agents")),
     role: v.optional(v.string()),
-    assignedAt: v.number(),
+    assignedAt: v.optional(v.number()),
     assignedBy: v.optional(v.id("users")),
+    createdAt: v.optional(v.number()),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
   })
-    .index("by_learningFlow_and_step", ["learningFlowId", "step"])
-    .index("by_user", ["userId"])
-    .index("by_agent", ["agentId"]),
+    .index("by_flowId", ["flowId"])
+    .index("by_courseId", ["courseId"])
+    .index("by_userId", ["userId"]),
 
-  // 20. Learning & Projects: Progress
-  progress: defineTable({
-    learningFlowId: v.id("learningFlows"),
-    step: stepValidator,
+  // 20. Learning & Projects: Flow Progress
+  flowProgress: defineTable({
+    flowId: v.id("flows"),
+    stepName: v.string(),
     userId: v.optional(v.id("users")),
     agentId: v.optional(v.id("agents")),
     status: v.union(
@@ -366,10 +398,11 @@ export default defineSchema({
     startedAt: v.optional(v.number()),
     completedAt: v.optional(v.number()),
     updatedAt: v.number(),
+    meta: v.optional(v.any()),
   })
-    .index("by_learningFlow_and_step", ["learningFlowId", "step"])
-    .index("by_user_and_flow", ["userId", "learningFlowId"])
-    .index("by_agent_and_flow", ["agentId", "learningFlowId"]),
+    .index("by_flowId", ["flowId"])
+    .index("by_userId", ["userId"])
+    .index("by_agentId", ["agentId"]),
 
   // 21. Products (Shopify-Compatible)
   products: defineTable({
@@ -542,6 +575,51 @@ export default defineSchema({
     priority: v.optional(v.string()), // e.g., 'low', 'medium', 'high'
     tags: v.optional(v.array(v.string())),
   }),
+
+  // Subscriptions (Polar/Convex)
+  subscriptions: defineTable({
+    userId: v.id("users"),
+    productKey: v.string(), // e.g., 'premiumMonthly', 'premiumYearly'
+    productId: v.optional(v.string()), // link to products table
+    status: v.string(), // e.g., 'active', 'canceled', 'past_due'
+    currentPeriodStart: v.optional(v.number()),
+    currentPeriodEnd: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_productKey", ["productKey"]),
+
+  // AI Agent Threads (for @convex-dev/agent)
+  agentThreads: defineTable({
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    title: v.optional(v.string()),
+    threadType: v.optional(v.string()), // e.g., 'support', 'project', 'learning'
+    context: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_agentId", ["agentId"]),
+
+  // AI Agent Messages (for @convex-dev/agent)
+  agentMessages: defineTable({
+    threadId: v.id("agentThreads"),
+    authorId: v.optional(v.id("users")), // or agentId
+    kind: v.union(v.literal("user"), v.literal("agent"), v.literal("system")),
+    content: v.string(),
+    createdAt: v.number(),
+    vector: v.optional(v.array(v.number())),
+    meta: v.optional(v.any()),
+    status: v.optional(v.string()),
+    toolCall: v.optional(v.any()),
+    result: v.optional(v.any()),
+  })
+    .index("by_threadId", ["threadId"])
+    .index("by_authorId", ["authorId"]),
 });
 ```
 
