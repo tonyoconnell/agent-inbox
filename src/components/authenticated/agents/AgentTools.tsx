@@ -36,6 +36,7 @@ export const Tools: React.FC<ToolsProps> = ({
 }) => {
   const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [isEditing, setIsEditing] = React.useState(false);
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
 
   // Fetch all tools from the backend
   const allTools = useQuery(api.tools.queries.listAll, {});
@@ -67,7 +68,8 @@ export const Tools: React.FC<ToolsProps> = ({
   const handleAddTool = (toolIdToAdd: Id<"tools">) => {
     if (filteredTools.includes(toolIdToAdd)) return;
     if (onChange) {
-      onChange([...tools, toolIdToAdd]);
+      onChange(prev => (prev.includes(toolIdToAdd) ? prev : [...prev, toolIdToAdd]));
+      setDropdownOpen(true);
     } else {
       void updateAgent({
         agentId,
@@ -126,9 +128,9 @@ export const Tools: React.FC<ToolsProps> = ({
           </Badge>
         ))}
         {(onChange ? true : isEditing) && availableTools.length > 0 && (
-          <DropdownMenu>
+          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-6">
+              <Button variant="outline" size="sm" className="h-6" onClick={() => setDropdownOpen(true)}>
                 <Plus className="h-3 w-3 mr-1" />
                 Add Tool
               </Button>

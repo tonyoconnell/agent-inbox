@@ -237,7 +237,13 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
               name={agent.name}
               description={agent.description}
               tools={isEditingTools ? editedTools : agent.tools ?? []}
-              onChange={isEditingTools ? setEditedTools : undefined}
+              onChange={isEditingTools ? (updater => {
+                if (typeof updater === 'function') {
+                  setEditedTools(prev => updater(prev));
+                } else {
+                  setEditedTools(updater);
+                }
+              }) : undefined}
             />
             {isEditingTools && (
               <div className="flex gap-2 mt-2">
