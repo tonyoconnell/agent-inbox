@@ -99,14 +99,14 @@ export const Tools: React.FC<ToolsProps> = ({
         )}
       </div>
       <div className="flex flex-wrap gap-2">
-        {filteredTools.map((toolId) => (
+        {tools.map((toolId) => (
           <Badge
-            key={toolId}
+            key={String(toolId)}
             variant="secondary"
             className="flex items-center gap-1"
           >
-            {toolIdToName[toolId as string] || toolId}
-            {onChange ? (
+            {toolIdToName[String(toolId)] || String(toolId)}
+            {onChange && typeof toolId !== "string" ? (
               <button
                 onClick={() => handleRemoveTool(toolId)}
                 className="ml-1 hover:text-destructive"
@@ -114,7 +114,7 @@ export const Tools: React.FC<ToolsProps> = ({
                 <X className="h-3 w-3" />
               </button>
             ) : (
-              isEditing && (
+              isEditing && typeof toolId !== "string" && (
                 <button
                   onClick={() => handleRemoveTool(toolId)}
                   className="ml-1 hover:text-destructive"

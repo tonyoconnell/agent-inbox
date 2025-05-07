@@ -20,7 +20,11 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const shuffleAvatar = useMutation(api.agents.mutations.shuffleAvatar);
   const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [isEditingDescription, setIsEditingDescription] = React.useState(false);
+  const [isEditingPrompt, setIsEditingPrompt] = React.useState(false);
+  const [isEditingTags, setIsEditingTags] = React.useState(false);
+  const [isEditingTools, setIsEditingTools] = React.useState(false);
   const [editedName, setEditedName] = React.useState("");
   const [editedDescription, setEditedDescription] = React.useState("");
   const [editedPrompt, setEditedPrompt] = React.useState("");
@@ -41,29 +45,51 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
 
   const filteredTools = (editedTools ?? []).filter((t): t is Id<"tools"> => typeof t !== "string");
 
-  const handleSave = async () => {
+  const handleSaveField = async (field: string) => {
     if (!agent) return;
-    await updateAgent({
+    const update: any = {
       agentId,
-      name: editedName,
-      description: editedDescription,
-      prompt: editedPrompt,
-      tags: editedTags,
-      tools: filteredTools,
-    })
-      .catch(onApiError)
-      .finally(() => setIsEditing(false));
+      name: agent.name,
+      description: agent.description,
+      prompt: agent.prompt ?? "",
+      tags: agent.tags ?? [],
+      tools: (agent.tools ?? []).filter((t): t is Id<"tools"> => typeof t !== "string"),
+    };
+    if (field === "name") update.name = editedName;
+    if (field === "description") update.description = editedDescription;
+    if (field === "prompt") update.prompt = editedPrompt;
+    if (field === "tags") update.tags = editedTags;
+    if (field === "tools") update.tools = filteredTools;
+    await updateAgent(update).catch(onApiError);
+    if (field === "name") setIsEditingName(false);
+    if (field === "description") setIsEditingDescription(false);
+    if (field === "prompt") setIsEditingPrompt(false);
+    if (field === "tags") setIsEditingTags(false);
+    if (field === "tools") setIsEditingTools(false);
   };
 
-  const handleCancel = () => {
-    if (agent) {
+  const handleCancelField = (field: string) => {
+    if (!agent) return;
+    if (field === "name") {
       setEditedName(agent.name);
-      setEditedDescription(agent.description);
-      setEditedPrompt(agent.prompt ?? "");
-      setEditedTags(agent.tags ?? []);
-      setEditedTools(agent.tools ?? []);
+      setIsEditingName(false);
     }
-    setIsEditing(false);
+    if (field === "description") {
+      setEditedDescription(agent.description);
+      setIsEditingDescription(false);
+    }
+    if (field === "prompt") {
+      setEditedPrompt(agent.prompt ?? "");
+      setIsEditingPrompt(false);
+    }
+    if (field === "tags") {
+      setEditedTags(agent.tags ?? []);
+      setIsEditingTags(false);
+    }
+    if (field === "tools") {
+      setEditedTools(agent.tools ?? []);
+      setIsEditingTools(false);
+    }
   };
 
   if (!agent)
@@ -113,20 +139,24 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             </Button>
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
-            {isEditing ? (
-              <Input
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                className="text-2xl font-bold text-center w-64"
-                autoFocus
-              />
+            {isEditingName ? (
+              <>
+                <Input
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="text-2xl font-bold text-center w-64"
+                  autoFocus
+                />
+                <Button variant="ghost" size="icon" onClick={() => { void handleSaveField("name"); }}><Check className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => handleCancelField("name")}>Cancel</Button>
+              </>
             ) : (
               <>
                 <h1 className="text-3xl font-bold">{agent.name}</h1>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => setIsEditingName(true)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -137,13 +167,19 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-lg font-semibold">Description</h2>
+            <Button variant="ghost" size="icon" onClick={() => setIsEditingDescription(true)}><Pencil className="h-4 w-4" /></Button>
           </div>
-          {isEditing ? (
-            <Input
-              value={editedDescription}
-              onChange={(e) => setEditedDescription(e.target.value)}
-              className="w-full"
-            />
+          {isEditingDescription ? (
+            <>
+              <Input
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                className="w-full"
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" onClick={() => { void handleSaveField("description"); }}><Check className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => handleCancelField("description")}>Cancel</Button>
+            </>
           ) : (
             <div className="mb-4 text-muted-foreground whitespace-pre-wrap">{agent.description || <span className="italic">No description set.</span>}</div>
           )}
@@ -151,13 +187,19 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-lg font-semibold">Prompt</h2>
+            <Button variant="ghost" size="icon" onClick={() => setIsEditingPrompt(true)}><Pencil className="h-4 w-4" /></Button>
           </div>
-          {isEditing ? (
-            <Input
-              value={editedPrompt}
-              onChange={(e) => setEditedPrompt(e.target.value)}
-              className="w-full"
-            />
+          {isEditingPrompt ? (
+            <>
+              <Input
+                value={editedPrompt}
+                onChange={(e) => setEditedPrompt(e.target.value)}
+                className="w-full"
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" onClick={() => { void handleSaveField("prompt"); }}><Check className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => handleCancelField("prompt")}>Cancel</Button>
+            </>
           ) : (
             <div className="mb-4 text-muted-foreground whitespace-pre-wrap">{agent.prompt || <span className="italic">No prompt set.</span>}</div>
           )}
@@ -165,13 +207,19 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-lg font-semibold">Tags</h2>
+            <Button variant="ghost" size="icon" onClick={() => setIsEditingTags(true)}><Pencil className="h-4 w-4" /></Button>
           </div>
-          {isEditing ? (
-            <Input
-              value={editedTags.join(", ")}
-              onChange={(e) => setEditedTags(e.target.value.split(",").map((tag) => tag.trim()).filter(Boolean))}
-              className="w-full"
-            />
+          {isEditingTags ? (
+            <>
+              <Input
+                value={editedTags.join(", ")}
+                onChange={(e) => setEditedTags(e.target.value.split(",").map((tag) => tag.trim()).filter(Boolean))}
+                className="w-full"
+                autoFocus
+              />
+              <Button variant="ghost" size="icon" onClick={() => { void handleSaveField("tags"); }}><Check className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={() => handleCancelField("tags")}>Cancel</Button>
+            </>
           ) : (
             <div className="mb-4 text-muted-foreground">
               {agent.tags && agent.tags.length > 0 ? agent.tags.join(", ") : <span className="italic">No tags set.</span>}
@@ -179,19 +227,26 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
           )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Tools
-            agentId={agent._id}
-            name={editedName}
-            description={editedDescription}
-            tools={isEditing ? editedTools : agent.tools ?? []}
-          />
-        </div>
-        {isEditing && (
-          <div className="flex gap-2 justify-end mt-4">
-            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-            <Button onClick={() => { void handleSave(); }}>Save</Button>
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <h2 className="text-lg font-semibold">Tools</h2>
+              <Button variant="ghost" size="icon" onClick={() => setIsEditingTools(true)}><Pencil className="h-4 w-4" /></Button>
+            </div>
+            <Tools
+              agentId={agent._id}
+              name={agent.name}
+              description={agent.description}
+              tools={isEditingTools ? editedTools : agent.tools ?? []}
+              onChange={isEditingTools ? setEditedTools : undefined}
+            />
+            {isEditingTools && (
+              <div className="flex gap-2 mt-2">
+                <Button variant="ghost" size="icon" onClick={() => { void handleSaveField("tools"); }}><Check className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => handleCancelField("tools")}>Cancel</Button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
         <div className="text-sm text-muted-foreground text-center">
           Last active: {new Date(("lastActiveTime" in agent ? (agent as any).lastActiveTime ?? agent._creationTime : agent._creationTime)).toLocaleString()}
         </div>
