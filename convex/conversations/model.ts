@@ -3,6 +3,7 @@ import {
   DatabaseWriter,
   MutationCtx,
   QueryCtx,
+  ActionCtx,
 } from "../_generated/server";
 import { Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
@@ -10,6 +11,7 @@ import * as ConversationParticipants from "../conversationParticipants/model";
 import * as Agents from "../agents/model";
 import { doesHaveTriageAgent } from "../conversationParticipants/model";
 import * as ConversationMessages from "../conversationMessages/model";
+import { agentReplyToMessage } from "../ai/agentReplyToMessage";
 
 export const ensureICanAccessConversation = async (
   ctx: QueryCtx | MutationCtx,
@@ -168,6 +170,7 @@ export const joinAgentToConversationIfNotAlreadyJoined = async (
     conversationId,
     agentId,
   }: { conversationId: Id<"conversations">; agentId: Id<"agents"> },
+  ctx?: ActionCtx
 ) => {
   const agent = await db.get(agentId);
   if (!agent) throw new Error(`Agent of id '${agentId}' could not be found`);
@@ -208,6 +211,27 @@ export const joinAgentToConversationIfNotAlreadyJoined = async (
     agentOrUser: agent,
     authorParticipantId: participantId,
   });
+
+  // --- Trigger a full AI response from the agent ---
+  // NOTE: This requires ActionCtx (ctx) to be passed in. If not available, refactor to call this from an action.
+  if (ctx) {
+    const syntheticMessage = {
+      _id: "synthetic" as any, // or generate a temp ID if needed
+      _creationTime: Date.now(),
+      conversationId,
+      authorParticipantId: participantId,
+      kind: "participant" as const,
+      content: `@[${agent.name}](agent:${agent._id})`, // Simulate a mention
+      createdAt: Date.now(),
+    };
+    await agentReplyToMessage(ctx, {
+      message: syntheticMessage,
+      agentId: agent._id,
+      conversation: conversation,
+      messageAuthor: { kind: "agent", agent },
+    });
+  }
+  // --- End AI trigger ---
 
   return ConversationParticipants.getParticipant(db, { participantId });
 };
