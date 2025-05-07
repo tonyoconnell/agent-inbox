@@ -49,7 +49,7 @@ export const AgentList = () => {
           >
             <AgentAvatar
               size="sm"
-              avatarUrl={agent.avatarUrl}
+              avatarUrl={agent.avatarUrl ?? ""}
               name={agent.name}
             />
             <div className="min-w-0 flex-1">

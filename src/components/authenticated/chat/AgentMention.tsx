@@ -35,7 +35,7 @@ export const AgentMention: React.FC<AgentMentionProps> = ({
         agent ? (
           <AgentAvatar
             size="xs"
-            avatarUrl={agent.avatarUrl}
+            avatarUrl={agent.avatarUrl ?? ""}
             name={agent.name ?? display}
             className="translate-y-[1px]"
           />

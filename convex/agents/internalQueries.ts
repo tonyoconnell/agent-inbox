@@ -1,8 +1,10 @@
 import { internalQuery } from "../_generated/server";
-import { systemAgentKindValidator } from "./schema";
-import * as Agents from "./model";
 import { v } from "convex/values";
+import * as Agents from "./model";
 import { listForUser } from "./model";
+
+// If needed, define locally or import from main schema
+const systemAgentKindValidator = v.union(v.literal("triage"));
 
 export const listAgentsForUser = internalQuery({
   args: {

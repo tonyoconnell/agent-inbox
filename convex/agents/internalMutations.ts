@@ -1,6 +1,18 @@
 import { internalMutation } from "../_generated/server";
-import { systemAgentValidator } from "./schema";
+import { v } from "convex/values";
 import * as Agents from "./model";
+
+// If needed, define locally or import from main schema
+const systemAgentValidator = v.object({
+  name: v.string(),
+  description: v.string(),
+  personality: v.string(),
+  avatarUrl: v.string(),
+  tools: v.array(v.id("tools")),
+  lastActiveTime: v.number(),
+  kind: v.literal("system_agent"),
+  systemAgentKind: v.union(v.literal("triage")),
+});
 
 export const createSystemAgent = internalMutation({
   args: systemAgentValidator,

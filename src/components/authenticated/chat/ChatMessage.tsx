@@ -14,5 +14,5 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
   if (message.kind == "participant")
     return <ParticipantMessage message={message} />;
 
-  exhaustiveCheck(message);
+  exhaustiveCheck(message as never);
 };

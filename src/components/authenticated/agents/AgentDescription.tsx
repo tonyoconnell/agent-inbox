@@ -15,7 +15,7 @@ interface AgentDescriptionProps {
   name: string;
   description: string;
   personality: string;
-  tools: string[];
+  tools: Id<"tools">[];
 }
 
 export const AgentDescription: React.FC<AgentDescriptionProps> = ({
@@ -49,7 +49,6 @@ export const AgentDescription: React.FC<AgentDescriptionProps> = ({
             agentId,
             name,
             description: newDescription,
-            personality,
             tools,
           });
         }}

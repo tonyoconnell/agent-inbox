@@ -2,7 +2,6 @@ import { DatabaseReader, MutationCtx, QueryCtx } from "../_generated/server";
 import { Doc, Id } from "../_generated/dataModel";
 import * as Users from "../users/model";
 import { predefinedAgents } from "../../shared/predefinedAgents";
-import { systemAgentKindValidator, systemAgentValidator } from "./schema";
 
 export const find = async (
   db: DatabaseReader,
@@ -46,7 +45,13 @@ export const createAgent = async (ctx: MutationCtx) => {
 
 export const createSystemAgent = async (
   ctx: MutationCtx,
-  args: typeof systemAgentValidator.type,
+  args: {
+    name: string;
+    description: string;
+    avatarUrl: string;
+    tools?: string[];
+    // add other fields as needed from the main schema
+  },
 ) => {
   // Map tool names to tool IDs
   const toolIds = await getToolIdsByNames(ctx, args.tools ?? []);
