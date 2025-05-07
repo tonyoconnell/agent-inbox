@@ -13,9 +13,8 @@ export const getNonRemovedParticipants = async (
 ) => {
   const participants = await db
     .query("conversationParticipants")
-    .withIndex("by_conversationId_isRemoved", (q) =>
-      q.eq("conversationId", conversationId).eq("isRemoved", false),
-    )
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
+    .filter((q) => q.eq(q.field("isRemoved"), false))
     .collect();
 
   return participants;
@@ -72,12 +71,9 @@ export const addAgentOrReactivate = async (
 ) => {
   const existing = await db
     .query("conversationParticipants")
-    .withIndex("by_conversationId_kind_agentId", (q) =>
-      q
-        .eq("conversationId", conversationId)
-        .eq("kind", "agent")
-        .eq("agentId", agentId),
-    )
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
+    .filter((q) => q.eq(q.field("kind"), "agent"))
+    .filter((q) => q.eq(q.field("agentId"), agentId))
     .first();
 
   if (existing) {
@@ -114,6 +110,7 @@ export const addAgentAndSendJoinMessage = async (
   await ConversationMessages.createParticipantJoinedConversationMessage(db, {
     conversationId,
     agentOrUser: agent,
+    authorParticipantId: participantId,
   });
   return participantId;
 };
@@ -127,12 +124,9 @@ export const addUser = async (
 ) => {
   const existing = await db
     .query("conversationParticipants")
-    .withIndex("by_conversationId_kind_userId", (q) =>
-      q
-        .eq("conversationId", conversationId)
-        .eq("kind", "user")
-        .eq("userId", userId),
-    )
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
+    .filter((q) => q.eq(q.field("kind"), "user"))
+    .filter((q) => q.eq(q.field("userId"), userId))
     .first();
 
   if (existing) return existing._id;
@@ -169,24 +163,18 @@ export const findParticipantByConversationIdAndIdentifier = async (
   if (identifier.kind === "agent") {
     return await db
       .query("conversationParticipants")
-      .withIndex("by_conversationId_kind_agentId", (q) =>
-        q
-          .eq("conversationId", conversationId)
-          .eq("kind", "agent")
-          .eq("agentId", identifier.agentId),
-      )
+      .filter((q) => q.eq(q.field("conversationId"), conversationId))
+      .filter((q) => q.eq(q.field("kind"), "agent"))
+      .filter((q) => q.eq(q.field("agentId"), identifier.agentId))
       .first();
   }
 
   if (identifier.kind === "user") {
     return await db
       .query("conversationParticipants")
-      .withIndex("by_conversationId_kind_userId", (q) =>
-        q
-          .eq("conversationId", conversationId)
-          .eq("kind", "user")
-          .eq("userId", identifier.userId),
-      )
+      .filter((q) => q.eq(q.field("conversationId"), conversationId))
+      .filter((q) => q.eq(q.field("kind"), "user"))
+      .filter((q) => q.eq(q.field("userId"), identifier.userId))
       .first();
   }
 
@@ -368,9 +356,7 @@ export const deleteAllParticipantsForConversation = async (
 ) => {
   const participants = await db
     .query("conversationParticipants")
-    .withIndex("by_conversationId", (q) =>
-      q.eq("conversationId", conversationId),
-    )
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
     .collect();
 
   await Promise.all(

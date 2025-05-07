@@ -38,6 +38,7 @@ export const createTools = ({
           toolName: "listConversationParticipants",
           agentName: agent.name,
         },
+        authorParticipantId: agentParticipant._id,
       });
       const participants = await ctx.runQuery(
         internal.conversationParticipants.internalQueries
@@ -56,7 +57,6 @@ export const createTools = ({
               "_id",
               "name",
               "description",
-              "personality",
               "tools",
             ]),
           };
@@ -82,6 +82,7 @@ export const createTools = ({
         content: `${agent.name} is listing the users agents ${conversation._id}`,
         conversationId: conversation._id,
         meta: { toolName: "listAgents", userId, agentName: agent.name },
+        authorParticipantId: agentParticipant._id,
       });
 
       return await ctx.runQuery(
@@ -122,6 +123,7 @@ export const createTools = ({
         content: `${agent.name} is searching the web for "${query}"`,
         conversationId: conversation._id,
         meta: { toolName: "webSearch", query, agentName: agent.name },
+        authorParticipantId: agentParticipant._id,
       });
       const result = await exa.answer(query, { text: true });
       console.log(`webSearch result:`, result);
@@ -146,6 +148,7 @@ export const createTools = ({
           newTitle: title,
           agentName: agent.name,
         },
+        authorParticipantId: agentParticipant._id,
       });
 
       return {
@@ -170,6 +173,7 @@ export const createTools = ({
           content,
           agentName: agent.name,
         },
+        authorParticipantId: agentParticipant._id,
       });
 
       const scheduledMessageId = await ctx.scheduler.runAfter(
@@ -205,6 +209,7 @@ export const createTools = ({
           from,
           agentName: agent.name,
         },
+        authorParticipantId: agentParticipant._id,
       });
 
       try {
@@ -243,6 +248,7 @@ export const createTools = ({
             agentId,
             agentName: agent.name,
           },
+          authorParticipantId: agentParticipant._id,
         });
 
         const participant = await ctx.runMutation(

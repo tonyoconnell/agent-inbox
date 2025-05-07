@@ -44,6 +44,8 @@ import type * as conversations_mutations from "../conversations/mutations.js";
 import type * as conversations_queries from "../conversations/queries.js";
 import type * as http from "../http.js";
 import type * as users_model from "../users/model.js";
+import type * as users_mutations from "../users/mutations.js";
+import type * as users_onUserCreate from "../users/onUserCreate.js";
 import type * as users_queries from "../users/queries.js";
 
 /**
@@ -86,6 +88,8 @@ declare const fullApi: ApiFromModules<{
   "conversations/queries": typeof conversations_queries;
   http: typeof http;
   "users/model": typeof users_model;
+  "users/mutations": typeof users_mutations;
+  "users/onUserCreate": typeof users_onUserCreate;
   "users/queries": typeof users_queries;
 }>;
 export declare const api: FilterApi<

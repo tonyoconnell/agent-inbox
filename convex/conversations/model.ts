@@ -32,6 +32,7 @@ export const createConversation = async (
   const conversationId = await ctx.db.insert("conversations", {
     title,
     createdBy: userId,
+    createdAt: Date.now(),
     lastMessageTime: Date.now(),
   });
 
@@ -46,7 +47,7 @@ export const listMine = async (ctx: QueryCtx) => {
 
   return await ctx.db
     .query("conversations")
-    .withIndex("by_user_and_time", (q) => q.eq("createdBy", userId))
+    .withIndex("by_createdBy", (q) => q.eq("createdBy", userId))
     .order("desc")
     .collect();
 };
@@ -122,15 +123,13 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
   db: DatabaseWriter,
   { conversationId }: { conversationId: Id<"conversations"> },
 ) => {
-  const agent = await Agents.getSystemAgentByKind(db, {
-    systemAgentKind: "triage",
-  });
+  // Use getTriageAgent to find the triage agent
+  const agent = await Agents.getTriageAgent(db);
   const conversation = await db.get(conversationId);
   if (!conversation)
     throw new Error(`Conversation not found ${conversationId}`);
 
   // If we have the triage agent in the conversation then we can return that
-  const triageAgent = await Agents.getTriageAgent(db);
   const triageAgentParticipant =
     await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
       db,
@@ -138,7 +137,7 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
         conversationId,
         identifier: {
           kind: "agent",
-          agentId: triageAgent._id,
+          agentId: agent._id,
         },
       },
     );
@@ -156,7 +155,8 @@ export const joinTriageAgentToConversationIfNotAlreadyJoined = async (
   // We also create a message to notify the user that the triage agent has joined the conversation
   await ConversationMessages.createParticipantJoinedConversationMessage(db, {
     conversationId,
-    agentOrUser: triageAgent,
+    agentOrUser: agent,
+    authorParticipantId: participantId,
   });
 
   return ConversationParticipants.getParticipant(db, { participantId });
@@ -206,6 +206,7 @@ export const joinAgentToConversationIfNotAlreadyJoined = async (
   await ConversationMessages.createParticipantJoinedConversationMessage(db, {
     conversationId,
     agentOrUser: agent,
+    authorParticipantId: participantId,
   });
 
   return ConversationParticipants.getParticipant(db, { participantId });

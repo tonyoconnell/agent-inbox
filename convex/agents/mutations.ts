@@ -12,7 +12,6 @@ export const updateMine = mutation({
     agentId: v.id("agents"),
     name: v.string(),
     description: v.string(),
-    personality: v.string(),
     tools: v.array(v.string()),
   },
   handler: async (ctx, args) => {

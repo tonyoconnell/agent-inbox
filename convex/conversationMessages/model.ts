@@ -23,6 +23,7 @@ export const addMessageToConversationFromUserOrAgent = async (
   const messageId = await ctx.db.insert("conversationMessages", {
     ...args,
     kind: "participant",
+    createdAt: Date.now(),
   });
 
   // Update conversation's last message time
@@ -48,6 +49,7 @@ export const addMessageToConversationFromSystem = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
+    authorParticipantId: Id<"conversationParticipants">;
     meta?: any;
   },
 ) => {
@@ -56,6 +58,8 @@ export const addMessageToConversationFromSystem = async (
     kind: "system",
     conversationId: args.conversationId,
     content: args.content,
+    authorParticipantId: args.authorParticipantId,
+    createdAt: Date.now(),
     ...(args.meta !== undefined && { meta: args.meta }),
   });
 };
@@ -111,25 +115,13 @@ export const listMessages = async (
     limit?: number;
   },
 ) => {
-  if (kind) {
-    return await db
-      .query("conversationMessages")
-      .withIndex("by_conversationId", (q) =>
-        q.eq("conversationId", conversationId),
-      )
-      .order("desc")
-      .take(limit)
-      .then((messages) => messages.reverse());
-  }
-
-  return await db
+  let query = db
     .query("conversationMessages")
-    .withIndex("by_conversationId", (q) =>
-      q.eq("conversationId", conversationId),
-    )
-    .order("desc")
-    .take(limit)
-    .then((messages) => messages.reverse());
+    .filter((q) => q.eq(q.field("conversationId"), conversationId));
+  if (kind) {
+    query = query.filter((q) => q.eq(q.field("kind"), kind));
+  }
+  return await query.order("desc").take(limit).then((messages) => messages.reverse());
 };
 
 // export const listMessagesAndJoinAuthorDetails = async (
@@ -199,6 +191,7 @@ export const createParticipantJoinedConversationMessage = async (
   args: {
     conversationId: Id<"conversations">;
     agentOrUser: Doc<"agents"> | Doc<"users">;
+    authorParticipantId: Id<"conversationParticipants">;
   },
 ) => {
   const name = args.agentOrUser.name ?? "Unknown";
@@ -206,6 +199,7 @@ export const createParticipantJoinedConversationMessage = async (
   await addMessageToConversationFromSystem(db, {
     conversationId: args.conversationId,
     content: `👋 ${name} has joined the conversation.`,
+    authorParticipantId: args.authorParticipantId,
   });
 };
 
@@ -214,6 +208,7 @@ export const createParticipantLeftConversationMessage = async (
   args: {
     conversationId: Id<"conversations">;
     participant: ParticipantUserOrAgent;
+    authorParticipantId: Id<"conversationParticipants">;
   },
 ) => {
   const name =
@@ -224,6 +219,7 @@ export const createParticipantLeftConversationMessage = async (
   await addMessageToConversationFromSystem(db, {
     conversationId: args.conversationId,
     content: `🚪 ${name} has left the conversation.`,
+    authorParticipantId: args.authorParticipantId,
   });
 };
 
@@ -233,9 +229,7 @@ export const deleteAllMessagesForConversation = async (
 ) => {
   const messages = await db
     .query("conversationMessages")
-    .withIndex("by_conversationId", (q) =>
-      q.eq("conversationId", conversationId),
-    )
+    .filter((q) => q.eq(q.field("conversationId"), conversationId))
     .collect();
 
   await Promise.all(messages.map((message) => db.delete(message._id)));

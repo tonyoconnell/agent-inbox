@@ -8,15 +8,17 @@ export const sendSystemMessageToConversation = async (
   args: {
     conversationId: Id<"conversations">;
     content: string;
+    authorParticipantId: Id<"conversationParticipants">;
     meta?: any;
   },
 ) =>
   ctx.runMutation(
     internal.conversationMessages.internalMutations.sendSystemMessage,
     {
-      conversationId: args.conversationId,
+      conversationId: args.conversationId as Id<"conversations">,
       content: args.content,
       meta: args.meta,
+      authorParticipantId: args.authorParticipantId,
     },
   );
 
@@ -48,23 +50,27 @@ export const getAgentAndEnsureItIsJoinedToConversation = async (
   return { agent, participant };
 };
 
-export const getTriageAgent = async (ctx: ActionCtx) => {
-  const agent = await ctx.runQuery(
-    internal.agents.internalQueries.findSystemAgentByKind,
-    { systemAgentKind: "triage" },
-  );
+export const getTriageAgent = async (ctx: ActionCtx, userId?: Id<"users">) => {
+  if (!userId) throw new Error("userId is required to list agents for user");
+  const agents = await ctx.runQuery(internal.agents.internalQueries.listAgentsForUser, {
+    userId,
+  });
+  const agent = Array.isArray(agents)
+    ? agents.find((a) => a.kind === "system_agent" && a.name === "Director")
+    : undefined;
   if (agent) return agent;
+  // If not found, create and return the agent
   return await ctx.runMutation(
     internal.agents.internalMutations.createSystemAgent,
     {
-      systemAgentKind: "triage",
       name: "Director",
       description: `Triage messages to the correct agent`,
-      personality: `Helpful, concise`,
+      personality: "Helpful, concise",
       avatarUrl: Agents.createAgentAvatarUrl(`system-triage`),
       tools: [],
       lastActiveTime: Date.now(),
       kind: "system_agent",
+      systemAgentKind: "triage",
     },
   );
 };
@@ -72,8 +78,9 @@ export const getTriageAgent = async (ctx: ActionCtx) => {
 export const getTriageAgentAndEnsureItIsJoinedToConversation = async (
   ctx: ActionCtx,
   conversationId: Id<"conversations">,
+  userId?: Id<"users">,
 ) => {
-  const agent = await getTriageAgent(ctx);
+  const agent = await getTriageAgent(ctx, userId);
 
   const participant = await ctx.runMutation(
     internal.conversations.internalMutations
@@ -166,6 +173,7 @@ export const handleAgentError = async (
             }
           : String(args.error),
     },
+    authorParticipantId: undefined as any, // TODO: Provide a valid participantId if possible
   });
 };
 
@@ -199,6 +207,7 @@ export const processAgentAIResult = async (
           agentName: args.agent.name,
           agentId: args.agent._id,
         },
+        authorParticipantId: args.participant._id,
       });
     }
   }

@@ -19,7 +19,7 @@ import {
   AgentToolName,
 } from "../../../../shared/tools";
 
-interface AgentToolsProps {
+interface ToolsProps {
   agentId: Id<"agents">;
   name: string;
   description: string;
@@ -27,7 +27,7 @@ interface AgentToolsProps {
   tools: AgentToolName[];
 }
 
-export const AgentTools: React.FC<AgentToolsProps> = ({
+export const Tools: React.FC<ToolsProps> = ({
   agentId,
   name,
   description,
@@ -94,7 +94,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
             {tool}
             {isEditing && (
               <button
-                onClick={() => handleRemoveTool(tool)}
+                onClick={() => { void handleRemoveTool(tool); }}
                 className="ml-1 hover:text-destructive"
               >
                 <X className="h-3 w-3" />
@@ -112,7 +112,7 @@ export const AgentTools: React.FC<AgentToolsProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {availableTools.map(([key, tool]) => (
-                <DropdownMenuItem key={key} onClick={() => handleAddTool(key)}>
+                <DropdownMenuItem key={key} onClick={() => { void handleAddTool(key); }}>
                   <div>
                     <div className="font-medium">{tool.name}</div>
                     <div className="text-xs text-muted-foreground">

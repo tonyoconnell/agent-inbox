@@ -22,19 +22,23 @@ export const triageMessage = async (
     conversation: Doc<"conversations">;
   },
 ) => {
+  const userId = args.messageAuthor.kind === "user" ? args.messageAuthor.user._id : undefined;
   const { agent, participant } =
     await getTriageAgentAndEnsureItIsJoinedToConversation(
       ctx,
       args.conversation._id,
+      userId,
     );
+
+  if (!agent) throw new Error("Triage agent not found");
 
   if (participant.kind !== "agent")
     throw new Error(
-      `Participant of id '${participant._id}' is not an agent, but is of kind '${participant.kind}'`,
+      `Participant of id '${(participant as any)._id}' is not an agent, but is of kind '${(participant as any).kind}'`,
     );
 
   await runAgentAIGeneration(ctx, {
-    agent,
+    agent: agent,
     participant,
     conversation: args.conversation,
     generateAIResponse: async () => {
@@ -42,7 +46,7 @@ export const triageMessage = async (
         model: openai("gpt-4o"),
         tools: createToolsForAgent({
           ctx,
-          agent,
+          agent: agent,
           agentParticipant: participant,
           conversation: args.conversation,
         }),
@@ -51,7 +55,7 @@ export const triageMessage = async (
           systemMessage: constructTriageInstructions({
             conversation: args.conversation,
             messageAuthor: args.messageAuthor,
-            agent,
+            agent: agent,
           }),
           conversation: args.conversation,
           message: args.message,
@@ -61,7 +65,7 @@ export const triageMessage = async (
 
       await processAgentAIResult(ctx, {
         result,
-        agent,
+        agent: agent,
         conversation: args.conversation,
         participant,
         sendMessage: async (text) => {

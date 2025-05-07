@@ -55,6 +55,7 @@ export const removeParticipant = mutation({
       {
         conversationId,
         participant,
+        authorParticipantId: participantId,
       },
     );
 

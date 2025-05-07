@@ -4,20 +4,12 @@ import * as Agents from "./model";
 import { v } from "convex/values";
 import { listForUser } from "./model";
 
-export const findSystemAgentByKind = internalQuery({
-  args: {
-    systemAgentKind: systemAgentKindValidator,
-  },
-  handler: async (ctx, args) => {
-    return await Agents.findSystemAgentByKind(ctx.db, args);
-  },
-});
-
 export const listAgentsForUser = internalQuery({
   args: {
-    userId: v.id("users"),
+    userId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
+    if (!args.userId) return [];
     return await Agents.listForUser(ctx.db, { userId: args.userId });
   },
 });

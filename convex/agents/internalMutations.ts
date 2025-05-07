@@ -5,13 +5,19 @@ import * as Agents from "./model";
 export const createSystemAgent = internalMutation({
   args: systemAgentValidator,
   handler: async (ctx, args) => {
-    const existringAgent = await Agents.findSystemAgentByKind(ctx.db, {
-      systemAgentKind: args.systemAgentKind,
-    });
-    if (existringAgent) return existringAgent;
+    // Find by name and kind (system_agent)
+    const existingAgent = await ctx.db
+      .query("agents")
+      .filter((q) => q.eq(q.field("kind"), "system_agent"))
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .first();
+    if (existingAgent) return existingAgent;
     await Agents.createSystemAgent(ctx, args);
-    return Agents.getSystemAgentByKind(ctx.db, {
-      systemAgentKind: args.systemAgentKind,
-    });
+    // Return the newly created agent
+    return await ctx.db
+      .query("agents")
+      .filter((q) => q.eq(q.field("kind"), "system_agent"))
+      .filter((q) => q.eq(q.field("name"), args.name))
+      .first();
   },
 });

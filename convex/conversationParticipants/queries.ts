@@ -75,9 +75,8 @@ export const listThinkingParticipants = query({
     await ensureICanAccessConversation(ctx, { conversationId });
     const participants = await ctx.db
       .query("conversationParticipants")
-      .withIndex("by_conversationId_status", (q) =>
-        q.eq("conversationId", conversationId).eq("status", "thinking"),
-      )
+      .filter((q) => q.eq(q.field("conversationId"), conversationId))
+      .filter((q) => q.eq(q.field("status"), "thinking"))
       .collect();
 
     const details = await Promise.all(

@@ -14,6 +14,7 @@ import { AgentTools } from "./AgentTools";
 import { Loader2, Shuffle, Pencil, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AgentToolName } from "../../../../shared/tools";
+import { Tools } from "./AgentTools";
 
 export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const agent = useQuery(api.agents.queries.findMine, { agentId });
@@ -148,7 +149,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             personality={agent.personality}
             tools={agent.tools}
           />
-          <AgentTools
+          <Tools
             agentId={agent._id}
             name={agent.name}
             description={agent.description}
