@@ -43,8 +43,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
       agentId,
       name: editedName,
       description: agent.description,
-      personality: agent.personality,
-      tools: agent.tools,
+      tools: agent.tools ?? [],
     })
       .catch(onApiError)
       .finally(() => setIsEditingName(false));
@@ -53,7 +52,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handleNameSubmit();
+      void handleNameSubmit();
     } else if (e.key === "Escape") {
       setIsEditingName(false);
       setEditedName(agent?.name ?? "");
@@ -81,7 +80,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
         <div className="text-center">
           <div className="relative inline-block">
             <AgentAvatar
-              avatarUrl={agent.avatarUrl}
+              avatarUrl={agent.avatarUrl ?? ""}
               name={agent.name}
               size="lg"
             />
@@ -90,9 +89,9 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
               size="icon"
               className="absolute bottom-6 -right-2"
               disabled={isShufflingAvatar}
-              onClick={async () => {
+              onClick={() => {
                 setIsShufflingAvatar(true);
-                await shuffleAvatar({
+                void shuffleAvatar({
                   agentId,
                 })
                   .catch(onApiError)
@@ -116,7 +115,7 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
                   className="text-2xl font-bold text-center w-64"
                   autoFocus
                 />
-                <Button variant="ghost" size="icon" onClick={handleNameSubmit}>
+                <Button variant="ghost" size="icon" onClick={() => { void handleNameSubmit(); }}>
                   <Check className="h-4 w-4" />
                 </Button>
               </div>
@@ -138,27 +137,27 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
           agentId={agent._id}
           name={agent.name}
           description={agent.description}
-          personality={agent.personality}
-          tools={agent.tools}
+          personality={"personality" in agent ? (agent as any).personality ?? "" : ""}
+          tools={agent.tools ?? []}
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AgentPersonality
             agentId={agent._id}
             name={agent.name}
             description={agent.description}
-            personality={agent.personality}
-            tools={agent.tools}
+            personality={"personality" in agent ? (agent as any).personality ?? "" : ""}
+            tools={agent.tools ?? []}
           />
           <Tools
             agentId={agent._id}
             name={agent.name}
             description={agent.description}
-            personality={agent.personality}
-            tools={agent.tools as AgentToolName[]}
+            personality={"personality" in agent ? (agent as any).personality ?? "" : ""}
+            tools={agent.tools ?? []}
           />
         </div>
         <div className="text-sm text-muted-foreground text-center">
-          Last active: {new Date(agent.lastActiveTime).toLocaleString()}
+          Last active: {new Date(("lastActiveTime" in agent ? (agent as any).lastActiveTime ?? agent._creationTime : agent._creationTime)).toLocaleString()}
         </div>
         <div className="flex justify-center">
           <Button
@@ -176,11 +175,11 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
           description={`Are you sure you want to delete ${agent.name}? This action cannot be undone.`}
           confirmText="Delete"
           cancelText="Cancel"
-          onConfirm={() =>
-            deleteAgent({ agentId: agent._id })
+          onConfirm={() => {
+            void deleteAgent({ agentId: agent._id })
               .then(() => routes.home().push())
-              .catch(onApiError)
-          }
+              .catch(onApiError);
+          }}
           variant="destructive"
         />
       </div>

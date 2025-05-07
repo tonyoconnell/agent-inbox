@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,7 @@ interface ToolsProps {
   name: string;
   description: string;
   personality: string;
-  tools: AgentToolName[];
+  tools: Id<"tools">[];
 }
 
 export const Tools: React.FC<ToolsProps> = ({
@@ -37,39 +37,41 @@ export const Tools: React.FC<ToolsProps> = ({
   const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [isEditing, setIsEditing] = React.useState(false);
 
-  const handleRemoveTool = async (toolToRemove: AgentToolName) => {
+  // Fetch all tools from the backend
+  const allTools = useQuery(api.tools.queries.listAll, {});
+
+  // Map tool IDs to tool info for display
+  const toolIdToName: Record<string, string> = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    allTools?.forEach((tool: { _id: Id<"tools">; name: string }) => {
+      map[tool._id] = tool.name;
+    });
+    return map;
+  }, [allTools]);
+
+  const handleRemoveTool = async (toolIdToRemove: Id<"tools">) => {
     await updateAgent({
       agentId,
       name,
       description,
-      personality,
-      tools: tools.filter((tool) => tool !== toolToRemove),
+      tools: tools.filter((toolId) => toolId !== toolIdToRemove),
     });
   };
 
-  const handleAddTool = async (toolToAdd: UserChoosableToolName) => {
-    if (tools.includes(toolToAdd)) return;
+  const handleAddTool = async (toolIdToAdd: Id<"tools">) => {
+    if (tools.includes(toolIdToAdd)) return;
     await updateAgent({
       agentId,
       name,
       description,
-      personality,
-      tools: [...tools, toolToAdd],
+      tools: [...tools, toolIdToAdd],
     });
   };
 
-  // Get available tools that aren't already added
-  const availableTools: Array<
-    [UserChoosableToolName, (typeof toolDefinitions)[UserChoosableToolName]]
-  > = [];
-
-  // Only include tools from userChoosableToolDefinitions
-  Object.keys(userChoosableToolDefinitions).forEach((key) => {
-    const toolKey = key as UserChoosableToolName;
-    if (!tools.includes(toolKey)) {
-      availableTools.push([toolKey, toolDefinitions[toolKey]]);
-    }
-  });
+  // Only show tools that are not already assigned
+  const availableTools = allTools
+    ? allTools.filter((tool: { _id: Id<"tools"> }) => !tools.includes(tool._id))
+    : [];
 
   return (
     <Card className="p-6">
@@ -85,16 +87,16 @@ export const Tools: React.FC<ToolsProps> = ({
         </Button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {tools.map((tool) => (
+        {tools.map((toolId) => (
           <Badge
-            key={tool}
+            key={toolId}
             variant="secondary"
             className="flex items-center gap-1"
           >
-            {tool}
+            {toolIdToName[toolId as string] || toolId}
             {isEditing && (
               <button
-                onClick={() => { void handleRemoveTool(tool); }}
+                onClick={() => { void handleRemoveTool(toolId); }}
                 className="ml-1 hover:text-destructive"
               >
                 <X className="h-3 w-3" />
@@ -111,8 +113,8 @@ export const Tools: React.FC<ToolsProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {availableTools.map(([key, tool]) => (
-                <DropdownMenuItem key={key} onClick={() => { void handleAddTool(key); }}>
+              {availableTools.map((tool: { _id: Id<"tools">; name: string; description: string }) => (
+                <DropdownMenuItem key={tool._id} onClick={() => { void handleAddTool(tool._id); }}>
                   <div>
                     <div className="font-medium">{tool.name}</div>
                     <div className="text-xs text-muted-foreground">

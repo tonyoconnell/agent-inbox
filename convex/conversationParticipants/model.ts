@@ -192,7 +192,7 @@ export const getParticipantByConversationIdAndIdentifier = async (
     db,
     args,
   );
-  if (!participant) throw new Error(`Participant not found ${args.identifier}`);
+  if (!participant) throw new Error(`Participant not found ${JSON.stringify(args.identifier)}`);
   return participant;
 };
 

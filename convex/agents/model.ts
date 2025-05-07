@@ -118,15 +118,13 @@ export const updateMine = async (
     agentId: Id<"agents">;
     name: string;
     description: string;
-    tools: string[];
+    tools: Id<"tools">[];
   },
 ) => {
-  // Map tool names to tool IDs
-  const toolIds = await getToolIdsByNames(ctx, tools);
   return await ctx.db.patch(agentId, {
     name,
     description,
-    tools: toolIds,
+    tools,
   });
 };
 

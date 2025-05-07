@@ -43,6 +43,8 @@ import type * as conversations_model from "../conversations/model.js";
 import type * as conversations_mutations from "../conversations/mutations.js";
 import type * as conversations_queries from "../conversations/queries.js";
 import type * as http from "../http.js";
+import type * as tools_queries from "../tools/queries.js";
+import type * as tools_seed from "../tools/seed.js";
 import type * as users_model from "../users/model.js";
 import type * as users_mutations from "../users/mutations.js";
 import type * as users_onUserCreate from "../users/onUserCreate.js";
@@ -87,6 +89,8 @@ declare const fullApi: ApiFromModules<{
   "conversations/mutations": typeof conversations_mutations;
   "conversations/queries": typeof conversations_queries;
   http: typeof http;
+  "tools/queries": typeof tools_queries;
+  "tools/seed": typeof tools_seed;
   "users/model": typeof users_model;
   "users/mutations": typeof users_mutations;
   "users/onUserCreate": typeof users_onUserCreate;

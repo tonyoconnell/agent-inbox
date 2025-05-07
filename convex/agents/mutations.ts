@@ -12,7 +12,7 @@ export const updateMine = mutation({
     agentId: v.id("agents"),
     name: v.string(),
     description: v.string(),
-    tools: v.array(v.string()),
+    tools: v.array(v.id("tools")),
   },
   handler: async (ctx, args) => {
     const agent = await Agents.getMine(ctx, { agentId: args.agentId });
