@@ -10,7 +10,6 @@ import { Confirm } from "@/components/ui/confirm";
 import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { AgentDescription } from "./AgentDescription";
 import { AgentPersonality } from "./AgentPersonality";
-import { AgentTools } from "./AgentTools";
 import { Loader2, Shuffle, Pencil, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AgentToolName } from "../../../../shared/tools";
