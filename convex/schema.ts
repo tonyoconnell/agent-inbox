@@ -1,6 +1,6 @@
 import { defineSchema, defineTable } from "convex/server";
-import { v } from "convex/values";
 import { authTables } from "@convex-dev/auth/server";
+import { v } from "convex/values";
 
 // 1. Steps Enum/Validator
 export const steps = [
@@ -32,11 +32,9 @@ const stepValidator = v.union(
 export default defineSchema({
   ...authTables,
 
-  // 2. Users (People, with full contact info)
-  users: defineTable({
-    name: v.optional(v.string()),
-    email: v.optional(v.string()),
-    image: v.optional(v.string()),
+  // Table for extra user profile info, linked to users table
+  userProfiles: defineTable({
+    userId: v.id("users"), // Link to the auth users table
     phoneNumbers: v.optional(v.array(v.string())),
     emails: v.optional(v.array(v.string())),
     addresses: v.optional(v.array(v.object({
@@ -49,14 +47,9 @@ export default defineSchema({
     organization: v.optional(v.string()),
     jobTitle: v.optional(v.string()),
     birthday: v.optional(v.string()), // ISO date string
-    notes: v.optional(v.string()),
-    photoUrl: v.optional(v.string()),
-    createdAt: v.optional(v.number()),
-    updatedAt: v.optional(v.number()),
-    createdBy: v.optional(v.id("users")), // for imported/created by another user
-  })
-    .index("by_email", ["email"])
-    .index("by_createdAt", ["createdAt"]),
+    createdAt: v.optional(v.float64()),
+    updatedAt: v.optional(v.float64()),
+  }),
 
   // 3. Agents
   agents: defineTable({

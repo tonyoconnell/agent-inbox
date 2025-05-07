@@ -13,7 +13,7 @@ export default internalMutation({
   handler: async (ctx, { user }) => {
     await ctx.db.insert("users", {
       ...user,
-      createdAt: Date.now(),
+      // createdAt removed, not supported by authTables
     });
   },
 }); 

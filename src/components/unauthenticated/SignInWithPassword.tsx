@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { Button } from "../ui/button";
+import { toast } from "sonner";
 
 export function SignInWithPassword({
   onModeChange,
@@ -9,6 +10,7 @@ export function SignInWithPassword({
 }) {
   const { signIn } = useAuthActions();
   const [step, setStep] = useState<"signUp" | "signIn">("signIn");
+  const [loading, setLoading] = useState(false);
 
   const toggleStep = (newStep: "signUp" | "signIn") => {
     setStep(newStep);
@@ -20,10 +22,27 @@ export function SignInWithPassword({
       <div className="text-center"></div>
       <form
         className="flex flex-col gap-4"
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-          await signIn("password", formData);
+          void (async () => {
+            setLoading(true);
+            const formData = new FormData(e.currentTarget);
+            try {
+              await signIn("password", formData);
+            } catch (err: any) {
+              // Try to show a helpful error message
+              let message = err?.message || err?.toString() || "Unknown error";
+              if (message.includes("_id")) {
+                message =
+                  step === "signUp"
+                    ? "Account creation failed. This email may already be in use."
+                    : "Sign in failed. Please check your email and password.";
+              }
+              toast.error(message);
+            } finally {
+              setLoading(false);
+            }
+          })();
         }}
       >
         <input
@@ -42,14 +61,21 @@ export function SignInWithPassword({
         />
         <input name="flow" type="hidden" value={step} />
         <div className="flex flex-col gap-2">
-          <Button type="submit" className="w-full">
-            {step === "signIn" ? "Sign in" : "Sign up"}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading
+              ? step === "signIn"
+                ? "Signing in..."
+                : "Creating account..."
+              : step === "signIn"
+              ? "Sign in"
+              : "Sign up"}
           </Button>
           <Button
             type="button"
             variant="ghost"
             className="text-sm"
             onClick={() => toggleStep(step === "signIn" ? "signUp" : "signIn")}
+            disabled={loading}
           >
             {step === "signIn"
               ? "Don't have an account? Sign up"
