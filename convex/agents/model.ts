@@ -118,17 +118,23 @@ export const updateMine = async (
     agentId,
     name,
     description,
+    prompt,
+    tags,
     tools,
   }: {
     agentId: Id<"agents">;
     name: string;
     description: string;
+    prompt?: string;
+    tags?: string[];
     tools: Id<"tools">[];
   },
 ) => {
   return await ctx.db.patch(agentId, {
     name,
     description,
+    prompt,
+    tags,
     tools,
   });
 };

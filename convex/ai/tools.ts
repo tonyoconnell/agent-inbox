@@ -299,7 +299,10 @@ export const createToolsForAgent = async ({
   conversation: Doc<"conversations">;
 }) => {
   const allTools = createTools({ ctx, agent, conversation, agentParticipant });
-  const agentToolNames = await getToolNamesByIds(ctx, agent.tools ?? []);
+  const toolIds = (agent.tools ?? []).filter(
+    (t): t is Id<"tools"> => typeof t !== "string"
+  );
+  const agentToolNames = await getToolNamesByIds(ctx, toolIds);
   return pick(allTools, [
     ...(Object.keys(alwaysIncludedTools) as AgentToolName[]),
     ...agentToolNames,

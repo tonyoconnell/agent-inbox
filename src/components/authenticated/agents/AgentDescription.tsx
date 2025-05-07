@@ -14,7 +14,6 @@ interface AgentDescriptionProps {
   agentId: Id<"agents">;
   name: string;
   description: string;
-  personality: string;
   tools: Id<"tools">[];
 }
 
@@ -22,7 +21,6 @@ export const AgentDescription: React.FC<AgentDescriptionProps> = ({
   agentId,
   name,
   description,
-  personality,
   tools,
 }) => {
   const updateAgent = useMutation(api.agents.mutations.updateMine);

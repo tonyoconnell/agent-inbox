@@ -23,16 +23,16 @@ interface ToolsProps {
   agentId: Id<"agents">;
   name: string;
   description: string;
-  personality: string;
-  tools: Id<"tools">[];
+  tools: (string | Id<"tools">)[];
+  onChange?: (tools: (string | Id<"tools">)[]) => void;
 }
 
 export const Tools: React.FC<ToolsProps> = ({
   agentId,
   name,
   description,
-  personality,
   tools,
+  onChange,
 }) => {
   const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -49,62 +49,83 @@ export const Tools: React.FC<ToolsProps> = ({
     return map;
   }, [allTools]);
 
-  const handleRemoveTool = async (toolIdToRemove: Id<"tools">) => {
-    await updateAgent({
-      agentId,
-      name,
-      description,
-      tools: tools.filter((toolId) => toolId !== toolIdToRemove),
-    });
+  const filteredTools = (tools ?? []).filter((t): t is Id<"tools"> => typeof t !== "string");
+
+  const handleRemoveTool = (toolIdToRemove: Id<"tools">) => {
+    if (onChange) {
+      onChange(tools.filter((toolId) => toolId !== toolIdToRemove));
+    } else {
+      void updateAgent({
+        agentId,
+        name,
+        description,
+        tools: filteredTools.filter((toolId) => toolId !== toolIdToRemove),
+      });
+    }
   };
 
-  const handleAddTool = async (toolIdToAdd: Id<"tools">) => {
-    if (tools.includes(toolIdToAdd)) return;
-    await updateAgent({
-      agentId,
-      name,
-      description,
-      tools: [...tools, toolIdToAdd],
-    });
+  const handleAddTool = (toolIdToAdd: Id<"tools">) => {
+    if (filteredTools.includes(toolIdToAdd)) return;
+    if (onChange) {
+      onChange([...tools, toolIdToAdd]);
+    } else {
+      void updateAgent({
+        agentId,
+        name,
+        description,
+        tools: [...filteredTools, toolIdToAdd],
+      });
+    }
   };
 
   // Only show tools that are not already assigned
   const availableTools = allTools
-    ? allTools.filter((tool: { _id: Id<"tools"> }) => !tools.includes(tool._id))
+    ? allTools.filter((tool: { _id: Id<"tools"> }) => !filteredTools.includes(tool._id))
     : [];
 
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Tools</h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => setIsEditing(!isEditing)}
-        >
-          <Pencil className="h-4 w-4" />
-        </Button>
+        {onChange ? null : (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={() => setIsEditing(!isEditing)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+        )}
       </div>
       <div className="flex flex-wrap gap-2">
-        {tools.map((toolId) => (
+        {filteredTools.map((toolId) => (
           <Badge
             key={toolId}
             variant="secondary"
             className="flex items-center gap-1"
           >
             {toolIdToName[toolId as string] || toolId}
-            {isEditing && (
+            {onChange ? (
               <button
-                onClick={() => { void handleRemoveTool(toolId); }}
+                onClick={() => handleRemoveTool(toolId)}
                 className="ml-1 hover:text-destructive"
               >
                 <X className="h-3 w-3" />
               </button>
+            ) : (
+              isEditing && (
+                <button
+                  onClick={() => handleRemoveTool(toolId)}
+                  className="ml-1 hover:text-destructive"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )
             )}
           </Badge>
         ))}
-        {isEditing && availableTools.length > 0 && (
+        {(onChange ? true : isEditing) && availableTools.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="h-6">
@@ -114,7 +135,7 @@ export const Tools: React.FC<ToolsProps> = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               {availableTools.map((tool: { _id: Id<"tools">; name: string; description: string }) => (
-                <DropdownMenuItem key={tool._id} onClick={() => { void handleAddTool(tool._id); }}>
+                <DropdownMenuItem key={tool._id} onClick={() => handleAddTool(tool._id)}>
                   <div>
                     <div className="font-medium">{tool.name}</div>
                     <div className="text-xs text-muted-foreground">

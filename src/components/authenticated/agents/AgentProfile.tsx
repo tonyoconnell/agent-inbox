@@ -9,7 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Confirm } from "@/components/ui/confirm";
 import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { AgentDescription } from "./AgentDescription";
-import { AgentPersonality } from "./AgentPersonality";
 import { Loader2, Shuffle, Pencil, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AgentToolName } from "../../../../shared/tools";
@@ -21,41 +20,50 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
   const shuffleAvatar = useMutation(api.agents.mutations.shuffleAvatar);
   const updateAgent = useMutation(api.agents.mutations.updateMine);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  const [isEditingName, setIsEditingName] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
   const [editedName, setEditedName] = React.useState("");
+  const [editedDescription, setEditedDescription] = React.useState("");
+  const [editedPrompt, setEditedPrompt] = React.useState("");
+  const [editedTags, setEditedTags] = React.useState<string[]>([]);
+  const [editedTools, setEditedTools] = React.useState<(string | Id<"tools">)[]>([]);
   const [isShufflingAvatar, setIsShufflingAvatar] = React.useState(false);
   const onApiError = useApiErrorHandler();
 
   React.useEffect(() => {
-    if (agent?.name) setEditedName(agent.name);
-  }, [agent?.name]);
-
-  const handleNameSubmit = async () => {
-    if (!editedName.trim() || editedName === agent?.name) {
-      setIsEditingName(false);
-      return;
+    if (agent) {
+      setEditedName(agent.name);
+      setEditedDescription(agent.description);
+      setEditedPrompt(agent.prompt ?? "");
+      setEditedTags(agent.tags ?? []);
+      setEditedTools(agent.tools ?? []);
     }
+  }, [agent]);
 
+  const filteredTools = (editedTools ?? []).filter((t): t is Id<"tools"> => typeof t !== "string");
+
+  const handleSave = async () => {
     if (!agent) return;
-
     await updateAgent({
       agentId,
       name: editedName,
-      description: agent.description,
-      tools: agent.tools ?? [],
+      description: editedDescription,
+      prompt: editedPrompt,
+      tags: editedTags,
+      tools: filteredTools,
     })
       .catch(onApiError)
-      .finally(() => setIsEditingName(false));
+      .finally(() => setIsEditing(false));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      void handleNameSubmit();
-    } else if (e.key === "Escape") {
-      setIsEditingName(false);
-      setEditedName(agent?.name ?? "");
+  const handleCancel = () => {
+    if (agent) {
+      setEditedName(agent.name);
+      setEditedDescription(agent.description);
+      setEditedPrompt(agent.prompt ?? "");
+      setEditedTags(agent.tags ?? []);
+      setEditedTools(agent.tools ?? []);
     }
+    setIsEditing(false);
   };
 
   if (!agent)
@@ -105,26 +113,20 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             </Button>
           </div>
           <div className="flex items-center justify-center gap-2 mb-2">
-            {isEditingName ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="text-2xl font-bold text-center w-64"
-                  autoFocus
-                />
-                <Button variant="ghost" size="icon" onClick={() => { void handleNameSubmit(); }}>
-                  <Check className="h-4 w-4" />
-                </Button>
-              </div>
+            {isEditing ? (
+              <Input
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="text-2xl font-bold text-center w-64"
+                autoFocus
+              />
             ) : (
               <>
                 <h1 className="text-3xl font-bold">{agent.name}</h1>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsEditingName(true)}
+                  onClick={() => setIsEditing(true)}
                 >
                   <Pencil className="h-4 w-4" />
                 </Button>
@@ -132,29 +134,64 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             )}
           </div>
         </div>
-        <AgentDescription
-          agentId={agent._id}
-          name={agent.name}
-          description={agent.description}
-          personality={"personality" in agent ? (agent as any).personality ?? "" : ""}
-          tools={agent.tools ?? []}
-        />
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <h2 className="text-lg font-semibold">Description</h2>
+          </div>
+          {isEditing ? (
+            <Input
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
+              className="w-full"
+            />
+          ) : (
+            <div className="mb-4 text-muted-foreground whitespace-pre-wrap">{agent.description || <span className="italic">No description set.</span>}</div>
+          )}
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <h2 className="text-lg font-semibold">Prompt</h2>
+          </div>
+          {isEditing ? (
+            <Input
+              value={editedPrompt}
+              onChange={(e) => setEditedPrompt(e.target.value)}
+              className="w-full"
+            />
+          ) : (
+            <div className="mb-4 text-muted-foreground whitespace-pre-wrap">{agent.prompt || <span className="italic">No prompt set.</span>}</div>
+          )}
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <h2 className="text-lg font-semibold">Tags</h2>
+          </div>
+          {isEditing ? (
+            <Input
+              value={editedTags.join(", ")}
+              onChange={(e) => setEditedTags(e.target.value.split(",").map((tag) => tag.trim()).filter(Boolean))}
+              className="w-full"
+            />
+          ) : (
+            <div className="mb-4 text-muted-foreground">
+              {agent.tags && agent.tags.length > 0 ? agent.tags.join(", ") : <span className="italic">No tags set.</span>}
+            </div>
+          )}
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AgentPersonality
-            agentId={agent._id}
-            name={agent.name}
-            description={agent.description}
-            personality={"personality" in agent ? (agent as any).personality ?? "" : ""}
-            tools={agent.tools ?? []}
-          />
           <Tools
             agentId={agent._id}
-            name={agent.name}
-            description={agent.description}
-            personality={"personality" in agent ? (agent as any).personality ?? "" : ""}
-            tools={agent.tools ?? []}
+            name={editedName}
+            description={editedDescription}
+            tools={isEditing ? editedTools : agent.tools ?? []}
           />
         </div>
+        {isEditing && (
+          <div className="flex gap-2 justify-end mt-4">
+            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+            <Button onClick={() => { void handleSave(); }}>Save</Button>
+          </div>
+        )}
         <div className="text-sm text-muted-foreground text-center">
           Last active: {new Date(("lastActiveTime" in agent ? (agent as any).lastActiveTime ?? agent._creationTime : agent._creationTime)).toLocaleString()}
         </div>
@@ -166,7 +203,6 @@ export const AgentProfile = ({ agentId }: { agentId: Id<"agents"> }) => {
             Delete Agent
           </Button>
         </div>
-
         <Confirm
           open={showDeleteConfirm}
           onOpenChange={setShowDeleteConfirm}
