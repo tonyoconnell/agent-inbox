@@ -12,7 +12,7 @@ Suggestions: When typing @, a popup suggests users and agents in the conversatio
 If a message contains mentions, it is routed to the mentioned participants (users or agents).
 If there are no mentions, the "Triage Agent" decides who should handle the message.
 4. Agent Ownership
-Agents have a createdBy field (see agentsSchemaValidator), tying them to a user.
+Agents have a createdBy field (see agentsSchemaValidator), tying them to a user. Agents now have a single 'prompt' field for their master prompt and operational instructions, instead of separate fields for goal, systemPrompt, personality, and instructions.
 By default, only the creator can update or delete their agent.
 Agents can be added to conversations by any user (with permission), and then mentioned by anyone in that conversation.
 Social Network & Permissions Proposal
@@ -46,3 +46,4 @@ Alice creates AgentB (private).
 Only Alice can add/mention AgentB in her conversations (unless she explicitly shares it).
 Bob mentions Alice in a message:
 @[Alice](user:ALICE_ID) — Alice is notified or highlighted in the conversation.
+allow anybody mention anybody else in a conversation. allow users with tools to remove and block. 

@@ -6,6 +6,8 @@ description: Succinct, optimized schema for agent/human collaboration, knowledge
 
 # ONE Schema: Core Data Model for AI-Human Collaboration
 
+remember agentTools is just called tools now
+
 This schema is the foundation for a scalable, secure, and high-performance agent/human swarm. It enables:
 - Agents and humans to send messages, create knowledge, and infer new insights
 - Rich, extensible agent/team modeling
@@ -16,10 +18,10 @@ This schema is the foundation for a scalable, secure, and high-performance agent
 
 | Table                | Purpose                                 | Key Fields/Indexes                       |
 |----------------------|-----------------------------------------|------------------------------------------|
-| users                | Human users                             | email, name, createdAt                   |
-| agents               | AI/user agents, config, team structure  | name, kind, personality, tools, tags     |
+| users                | Human users with full contact info          | name, email, image, phoneNumbers, addresses, organization, jobTitle, birthday, notes, photoUrl, createdAt |
+| agents               | AI/user agents, config, team structure  | name, kind, prompt, tools, tags     |
 | tools                | Capabilities for agents                 | name, config, createdBy                  |
-| prompts              | Reusable templates for agents/tasks     | title, template, step, tags, status      |
+| prompts              | Reusable templates for agents/tasks     | title, template, step, tags, status, learningFlowId |
 | conversations        | Group chats (users + agents)            | title, groupId, lastMessageTime          |
 | conversationParticipants | Users/agents in conversations        | kind, userId/agentId, status             |
 | conversationMessages | Messages in conversations               | content, author, type, step, tags, vector|
@@ -32,6 +34,53 @@ This schema is the foundation for a scalable, secure, and high-performance agent
 | follows              | Social follows (user/agent)             | followerId, followeeId, kind, createdAt  |
 | events               | Scheduled meetings/events               | title, startTime, endTime, participants  |
 | reminders            | Reminders for users/agents              | userId/agentId, message, remindAt, relatedEntity |
+| learningFlows        | Structured learning/project sequences   | title, description, steps (ordered array of promptIds) |
+| assignments          | Assigns users/agents to steps/flows     | learningFlowId, step, userId/agentId, role |
+| progress             | Tracks step/flow completion status      | learningFlowId, step, userId/agentId, status, completedAt |
+| products             | Shopify-compatible product information     | id, title, handle, description, descriptionHtml, vendor, productType, tags, status, publishedAt, createdAt, updatedAt, options, variants, images, featuredMedia, priceRange, compareAtPriceRange, totalInventory, tracksInventory, available, seo, onlineStoreUrl, collections, category, metafields |
+| broadcasts           | Scheduled social media posts                | platform, content, scheduledTime, status, result, createdBy, groupId |
+| inferenceUsage       | Tracks AI generation usage and cost         | userId, agentId, conversationId, messageId, tokensUsed, cost, currency, model, createdAt |
+| evals                | Tracks AI evaluation runs (convex.dev evals) | id, userId, agentId, model, input, expectedOutput, actualOutput, score, status, error, createdAt, updatedAt, meta |
+| courses              | Shopify-compatible product information     | id, title, handle, description, descriptionHtml, vendor, productType, tags, status, publishedAt, createdAt, updatedAt, options, variants, images, featuredMedia, priceRange, compareAtPriceRange, totalInventory, tracksInventory, available, seo, onlineStoreUrl, collections, category, metafields |
+| lessons              | LMS course lessons                          | id, courseId, title, content, order, createdAt, updatedAt |
+| enrollments          | LMS course enrollments                      | id, courseId, userId, enrolledAt, progress, status |
+| tasks                | Task/todo manager                           | id, title, description, status, dueDate, assignedToUserId, assignedToAgentId, createdBy, createdAt, updatedAt, completedAt, priority, tags |
+
+---
+
+# Social Media Scheduling
+
+To support scheduling and tracking of social media posts, the schema includes a `broadcasts` table. This table allows users, agents, or groups to schedule posts to various platforms (e.g., Twitter, Facebook, LinkedIn), track their status (scheduled, posted, failed), and store results or errors from the posting process. Each post is linked to its creator and optionally to a group for access control.
+
+---
+
+# Shopify-Compatible Product Schema
+
+The `products` table is now aligned with Shopify's product schema, supporting all major fields required for e-commerce, SEO, and integration. This includes support for variants, options, images, inventory, SEO, and metafields, as well as compatibility with Shopify's naming conventions and data structure.
+
+---
+
+# AI Inference Usage & Cost Tracking (Stripe-Style Billing)
+
+The schema now supports detailed tracking of AI generation (inference) costs and usage, inspired by Stripe's usage-based billing model ([Stripe Docs](https://docs.stripe.com/billing/subscriptions/usage-based/implementation-guide)). Each AI generation event is recorded with token usage, cost, and metadata, enabling accurate billing, analytics, and optimization. Message records also include direct cost and token usage fields for granular reporting.
+
+---
+
+# AI Evaluation Tracking (convex.dev evals)
+
+The schema now includes an `evals` table for tracking automated or manual evaluations of AI generations, inspired by [convex.dev evals](https://docs.convex.dev/ai/evals). Each evaluation run records the input, expected and actual outputs, score, status, and metadata, enabling robust quality monitoring and model improvement workflows.
+
+---
+
+# Simple LMS & Task/Todo Manager
+
+The schema now includes a minimal Learning Management System (LMS) for managing courses, lessons, and enrollments, as well as a flexible task/todo manager for users and agents. These additions enable basic e-learning and productivity workflows alongside the core agent and collaboration features.
+
+---
+
+# Full Contact Info & Google People Integration
+
+The `users` table now supports full contact information, including multiple phone numbers, emails, addresses, organization, job title, birthday, notes, and photo URL. This enables seamless integration with Google People and address book imports.
 
 ---
 
@@ -73,11 +122,25 @@ const stepValidator = v.union(
 export default defineSchema({
   ...authTables,
 
-  // 2. Users (People)
+  // 2. Users (People, with full contact info)
   users: defineTable({
     name: v.string(),
     email: v.string(),
     image: v.optional(v.string()),
+    phoneNumbers: v.optional(v.array(v.string())),
+    emails: v.optional(v.array(v.string())),
+    addresses: v.optional(v.array(v.object({
+      street: v.optional(v.string()),
+      city: v.optional(v.string()),
+      region: v.optional(v.string()),
+      postalCode: v.optional(v.string()),
+      country: v.optional(v.string()),
+    }))),
+    organization: v.optional(v.string()),
+    jobTitle: v.optional(v.string()),
+    birthday: v.optional(v.string()), // ISO date string
+    notes: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
     createdAt: v.number(),
     // ...other fields as needed
   }),
@@ -87,11 +150,8 @@ export default defineSchema({
     name: v.string(),
     description: v.string(),
     kind: v.union(v.literal("system_agent"), v.literal("user_agent")),
-    personality: v.optional(v.string()),
+    prompt: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
-    goal: v.optional(v.string()),
-    systemPrompt: v.optional(v.string()),
-    instructions: v.optional(v.string()),
     delegatesTo: v.optional(v.array(v.id("agents"))),
     tools: v.optional(v.array(v.id("tools"))),
     tags: v.optional(v.array(v.string())),
@@ -103,6 +163,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.optional(v.number()),
     updatedBy: v.optional(v.id("users")),
+    canGuideSteps: v.optional(v.array(stepValidator)),
   }),
 
   // 4. Tools
@@ -113,11 +174,13 @@ export default defineSchema({
     createdBy: v.optional(v.id("users")),
   }),
 
-  // 5. Prompts (with step)
+  // 5. Prompts (with step and learningFlowId)
   prompts: defineTable({
     title: v.string(),
     template: v.string(),
     step: stepValidator,
+    learningFlowId: v.optional(v.id("learningFlows")),
+    orderInFlow: v.optional(v.number()),
     description: v.optional(v.string()),
     requiredContext: v.optional(v.array(v.string())),
     outputType: v.optional(v.string()),
@@ -158,7 +221,7 @@ export default defineSchema({
     )
   ),
 
-  // 8. ConversationMessages (with step)
+  // 8. ConversationMessages (with step, cost, and tokensUsed)
   conversationMessages: defineTable({
     conversationId: v.id("conversations"),
     authorParticipantId: v.id("conversationParticipants"),
@@ -170,8 +233,10 @@ export default defineSchema({
     content: v.string(),
     attachments: v.optional(v.array(v.any())),
     createdAt: v.number(),
-    vector: v.optional(v.array(v.number())), // for vector search
+    vector: v.optional(v.array(v.number())),
     meta: v.optional(v.any()),
+    cost: v.optional(v.number()), // Cost of this message's AI generation (if any)
+    tokensUsed: v.optional(v.number()), // Token count for this message (if any)
   }),
 
   // 9. AgentTools (join table)
@@ -255,6 +320,228 @@ export default defineSchema({
     relatedEntity: v.optional(v.string()), // e.g., messageId, eventId, etc.
     createdAt: v.number(),
   }),
+
+  // 18. Learning & Projects: LearningFlows
+  learningFlows: defineTable({
+    title: v.string(),
+    description: v.optional(v.string()),
+    steps: v.array(v.object({
+      promptId: v.optional(v.id("prompts")),
+      stepName: stepValidator,
+      instructions: v.optional(v.string()),
+      order: v.number(),
+    })),
+    createdBy: v.optional(v.id("users")),
+    createdAt: v.number(),
+  }),
+
+  // 19. Learning & Projects: Assignments
+  assignments: defineTable({
+    learningFlowId: v.id("learningFlows"),
+    step: stepValidator,
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    role: v.optional(v.string()),
+    assignedAt: v.number(),
+    assignedBy: v.optional(v.id("users")),
+  })
+    .index("by_learningFlow_and_step", ["learningFlowId", "step"])
+    .index("by_user", ["userId"])
+    .index("by_agent", ["agentId"]),
+
+  // 20. Learning & Projects: Progress
+  progress: defineTable({
+    learningFlowId: v.id("learningFlows"),
+    step: stepValidator,
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    status: v.union(
+      v.literal("Not Started"),
+      v.literal("In Progress"),
+      v.literal("Completed"),
+      v.literal("Blocked"),
+      v.literal("Skipped")
+    ),
+    notes: v.optional(v.string()),
+    startedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    updatedAt: v.number(),
+  })
+    .index("by_learningFlow_and_step", ["learningFlowId", "step"])
+    .index("by_user_and_flow", ["userId", "learningFlowId"])
+    .index("by_agent_and_flow", ["agentId", "learningFlowId"]),
+
+  // 21. Products (Shopify-Compatible)
+  products: defineTable({
+    id: v.optional(v.string()), // Shopify product ID (if syncing)
+    title: v.string(),
+    handle: v.string(),
+    description: v.optional(v.string()),
+    descriptionHtml: v.optional(v.string()),
+    vendor: v.optional(v.string()),
+    productType: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    status: v.optional(v.string()), // e.g., 'active', 'draft', 'archived'
+    publishedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    options: v.optional(v.array(v.object({
+      id: v.optional(v.string()),
+      name: v.string(),
+      values: v.array(v.string()),
+    }))),
+    variants: v.optional(v.array(v.object({
+      id: v.optional(v.string()),
+      title: v.optional(v.string()),
+      sku: v.optional(v.string()),
+      price: v.optional(v.number()),
+      compareAtPrice: v.optional(v.number()),
+      inventoryQuantity: v.optional(v.number()),
+      available: v.optional(v.boolean()),
+      selectedOptions: v.optional(v.array(v.object({
+        name: v.string(),
+        value: v.string(),
+      }))),
+      imageId: v.optional(v.string()),
+      weight: v.optional(v.number()),
+      weightUnit: v.optional(v.string()),
+      barcode: v.optional(v.string()),
+      taxable: v.optional(v.boolean()),
+      requiresShipping: v.optional(v.boolean()),
+      createdAt: v.optional(v.number()),
+      updatedAt: v.optional(v.number()),
+    }))),
+    images: v.optional(v.array(v.object({
+      id: v.optional(v.string()),
+      src: v.string(),
+      alt: v.optional(v.string()),
+      position: v.optional(v.number()),
+      createdAt: v.optional(v.number()),
+      updatedAt: v.optional(v.number()),
+    }))),
+    featuredMedia: v.optional(v.any()), // Can be image/video object
+    priceRange: v.optional(v.object({
+      min: v.number(),
+      max: v.number(),
+      currencyCode: v.optional(v.string()),
+    })),
+    compareAtPriceRange: v.optional(v.object({
+      min: v.number(),
+      max: v.number(),
+      currencyCode: v.optional(v.string()),
+    })),
+    totalInventory: v.optional(v.number()),
+    tracksInventory: v.optional(v.boolean()),
+    available: v.optional(v.boolean()),
+    seo: v.optional(v.object({
+      title: v.optional(v.string()),
+      description: v.optional(v.string()),
+    })),
+    onlineStoreUrl: v.optional(v.string()),
+    collections: v.optional(v.array(v.string())),
+    category: v.optional(v.string()),
+    metafields: v.optional(v.array(v.object({
+      namespace: v.string(),
+      key: v.string(),
+      value: v.any(),
+      type: v.optional(v.string()),
+    }))),
+  }),
+
+  // 22. Social Media Scheduling: Broadcasts
+  broadcasts: defineTable({
+    platform: v.string(), // e.g., 'twitter', 'facebook', 'linkedin'
+    content: v.string(),
+    scheduledTime: v.number(), // timestamp
+    status: v.union(
+      v.literal('scheduled'),
+      v.literal('posted'),
+      v.literal('failed'),
+      v.literal('cancelled')
+    ),
+    result: v.optional(v.string()), // e.g., post ID, error message
+    createdBy: v.id('users'),
+    agentId: v.optional(v.id('agents')),
+    groupId: v.optional(v.id('groups')),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()), // for platform-specific metadata
+  }),
+
+  // 23. AI Inference Usage Tracking
+  inferenceUsage: defineTable({
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    conversationId: v.optional(v.id("conversations")),
+    messageId: v.optional(v.id("conversationMessages")),
+    tokensUsed: v.number(),
+    cost: v.number(),
+    currency: v.optional(v.string()), // e.g., 'USD'
+    model: v.optional(v.string()), // e.g., 'gpt-4', 'gemini-1.5'
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+  }),
+
+  // 24. AI Evaluation Tracking (convex.dev evals)
+  evals: defineTable({
+    id: v.optional(v.string()),
+    userId: v.optional(v.id("users")),
+    agentId: v.optional(v.id("agents")),
+    model: v.optional(v.string()),
+    input: v.any(),
+    expectedOutput: v.optional(v.any()),
+    actualOutput: v.optional(v.any()),
+    score: v.optional(v.number()),
+    status: v.optional(v.string()), // e.g., 'pending', 'completed', 'failed'
+    error: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  }),
+
+  // 25. Simple LMS
+  courses: defineTable({
+    id: v.optional(v.string()),
+    title: v.string(),
+    description: v.optional(v.string()),
+    createdBy: v.optional(v.id("users")),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  }),
+  lessons: defineTable({
+    id: v.optional(v.string()),
+    courseId: v.id("courses"),
+    title: v.string(),
+    content: v.optional(v.string()),
+    order: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+  }),
+  enrollments: defineTable({
+    id: v.optional(v.string()),
+    courseId: v.id("courses"),
+    userId: v.id("users"),
+    enrolledAt: v.number(),
+    progress: v.optional(v.number()), // percent or step
+    status: v.optional(v.string()), // e.g., 'active', 'completed', 'dropped'
+  }),
+
+  // 26. Task/Todo Manager
+  tasks: defineTable({
+    id: v.optional(v.string()),
+    title: v.string(),
+    description: v.optional(v.string()),
+    status: v.optional(v.string()), // e.g., 'todo', 'in_progress', 'done', 'archived'
+    dueDate: v.optional(v.number()),
+    assignedToUserId: v.optional(v.id("users")),
+    assignedToAgentId: v.optional(v.id("agents")),
+    createdBy: v.optional(v.id("users")),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
+    priority: v.optional(v.string()), // e.g., 'low', 'medium', 'high'
+    tags: v.optional(v.array(v.string())),
+  }),
 });
 ```
 
@@ -266,12 +553,9 @@ export default defineSchema({
   "_id": "agentId_123",
   "name": "Director",
   "description": "Lead orchestrator agent.",
-  "personality": "Strategic, clear, motivating.",
   "kind": "system_agent",
   "avatarUrl": "/avatars/director.png",
-  "goal": "Guide users through the Elevate Framework.",
-  "systemPrompt": "You are the Director...",
-  "instructions": "Delegate tasks, synthesize info.",
+  "prompt": "You are the Director...",
   "delegatesTo": ["agentId_Sage", "agentId_Writer"],
   "tools": ["toolId_webSearch"],
   "tags": ["leadership", "strategy"],
@@ -299,8 +583,9 @@ export default defineSchema({
 - [ ] All core tables and fields present and named clearly (step, template, etc.)
 - [ ] Vector search enabled for knowledge/messages
 - [ ] Relationships between agents, users, tools, prompts, and conversations are explicit
+- [ ] Social, Scheduling, LearningFlows, Assignments, and Progress tables are fully defined
 - [ ] All fields justified, minimal, and optimized for speed and security
-- [ ] Schema supports analytics, CRM, and future extensibility
+- [ ] Schema supports analytics, CRM, and future extensibility, enabling Turing-complete operations
 
 ---
 
@@ -321,11 +606,8 @@ export type Agent = {
   name: string;
   description: string;
   kind: "system_agent" | "user_agent";
-  personality?: string;
   avatarUrl?: string;
-  goal?: string;
-  systemPrompt?: string;
-  instructions?: string;
+  prompt: string;
   delegatesTo?: string[];
   tools?: string[];
   tags?: string[];
@@ -431,11 +713,8 @@ export const createAgent = mutation({
     description: v.string(),
     kind: v.union(v.literal("system_agent"), v.literal("user_agent")),
     createdBy: v.optional(v.id("users")),
-    personality: v.optional(v.string()),
+    prompt: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
-    goal: v.optional(v.string()),
-    systemPrompt: v.optional(v.string()),
-    instructions: v.optional(v.string()),
     delegatesTo: v.optional(v.array(v.id("agents"))),
     tools: v.optional(v.array(v.id("tools"))),
     tags: v.optional(v.array(v.string())),

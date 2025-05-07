@@ -7,11 +7,11 @@ tags:
 order: 1
 ---
 
-**ONE Agent System - Software Documentation (Draft v0.1)**
+**ONE Agent System **
 
 **1. Introduction & System Overview**
 
-- **Purpose:** This document outlines the architecture, functionality, and workflow of the ONE Agent System. This system leverages a team of specialized AI agents, guided by the **Elevate Ecommerce Framework** and utilizing the **ONE AI Prompt Playbook**, to assist users (e.g., Ecom Owners, Marketers, Students) in navigating the customer journey and executing marketing/growth strategies.
+- **Purpose:** This document outlines the architecture, functionality, and workflow of the ONE Agent System. This system leverages a team of specialized AI agents, guided by the **Elevate Framework** to assist users (e.g., Ecom Owners, Marketers, Students) in navigating the customer journey and executing marketing/growth strategies.
 - **Core Concept:** Instead of a single general AI, the system employs a collaborative team of distinct AI agents, each with a specific role and expertise. These agents interact with the user and potentially each other, orchestrated by a lead agent (**Director**), to provide guidance and generate assets aligned with the Elevate Framework.
 - **Technology Stack:** Built using [Specify key frontend tech - e.g., Astro, React, TailwindCSS], connected to a [Specify key backend - e.g., Convex] backend for state management and AI orchestration, and leveraging AI models via [Specify primary API provider(s) - e.g., OpenAI, Anthropic, Google Gemini via appropriate APIs/SDKs].
 - **Deployment:** Successfully tested in local development environments and deployed via Vercel.
@@ -42,17 +42,15 @@ order: 1
 
 The ONE Agent System is now fully powered by a robust, extensible schema that supports all the requirements for agent roles, configuration, orchestration, and future growth. The agent data model includes:
 
-- `name`, `description`, `goal`: Core identity and purpose
-- `systemPrompt`, `instructions`: Master prompt and operational instructions
-- `personality`: Explicitly models the agent's interaction style, separate from instructions
-- `delegatesTo`: Array of agent IDs this agent can delegate to (enables team structure and orchestration)
+- `name`, 
+- `description`, 
+- `prompt`, Master prompt and operational instructions
 - `tools`: Array of tool IDs the agent can use
-- `agentTools`: Join table for per-agent tool configuration and permissions
 - `knowledge`, `memories`: Structured data for context, history, and RAG
-- `attachedPrompts`: Array of prompt IDs for templates or reusable instructions
 - `model`: LLM model to use (e.g., "gpt-4")
 - `kind`: "system_agent" or "user_agent" (for user-customizable agents)
 - `createdBy`, `createdAt`, `updatedAt`, `updatedBy`: Audit fields for traceability
+- `delegatesTo`: Array of agent IDs this agent can delegate to (enables team structure and orchestration)
 
 **Prompt Attachments:** The `attachments` table allows prompts to be attached to agents (or groups) for flexible workflow design.
 
@@ -64,15 +62,10 @@ The ONE Agent System is now fully powered by a robust, extensible schema that su
 {
   "name": "Writer",
   "description": "Generates marketing copy and creative assets.",
-  "goal": "Produce high-quality draft content for each Elevate step.",
-  "systemPrompt": "You are a creative marketing copywriter...",
-  "instructions": "Always use the brand voice provided in context.",
-  "personality": "Witty, concise, and persuasive.",
-  "delegatesTo": ["agentId_Sage", "agentId_Marketer"],
+  "prompt": ["promptId_H1", "promptId_S2"],
   "tools": ["toolId_webSearch", "toolId_summarizer"],
   "knowledge": { "foundationId": "..." },
   "memories": [{ "summary": "User prefers short headlines." }],
-  "attachedPrompts": ["promptId_H1", "promptId_S2"],
   "model": "gpt-4",
   "kind": "system_agent",
   "createdBy": "userId_admin",
