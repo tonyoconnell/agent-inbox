@@ -275,7 +275,19 @@ export const createTools = ({
   }),
 });
 
-export const createToolsForAgent = ({
+// Helper to map tool IDs to names
+async function getToolNamesByIds(ctx: ActionCtx, toolIds: Id<"tools">[] = []): Promise<AgentToolName[]> {
+  const names: AgentToolName[] = [];
+  for (const id of toolIds) {
+    const tool = await ctx.runQuery(internal.tools.queries.getToolById, { toolId: id });
+    if (tool && tool.name in toolDefinitions) {
+      names.push(tool.name as AgentToolName);
+    }
+  }
+  return names;
+}
+
+export const createToolsForAgent = async ({
   ctx,
   agent,
   conversation,
@@ -287,8 +299,9 @@ export const createToolsForAgent = ({
   conversation: Doc<"conversations">;
 }) => {
   const allTools = createTools({ ctx, agent, conversation, agentParticipant });
+  const agentToolNames = await getToolNamesByIds(ctx, agent.tools ?? []);
   return pick(allTools, [
     ...(Object.keys(alwaysIncludedTools) as AgentToolName[]),
-    ...(agent.tools as AgentToolName[]),
+    ...agentToolNames,
   ]);
 };
