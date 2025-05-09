@@ -18,7 +18,8 @@ interface ChatInputProps {
 
 export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
   const [message, setMessage] = React.useState("");
-  const agents = useQuery(api.agents.queries.listAll) ?? [];
+  const agents = useQuery(api.agents.queries.listMine) ?? [];
+  const users = useQuery(api.users.queries.listAll) ?? [];
   const sendMessage = useMutation(api.conversationMessages.mutations.sendFromMe);
   const onApiError = useApiErrorHandler();
   const mentionsRef = React.useRef<HTMLDivElement>(null);
@@ -55,6 +56,12 @@ export const ChatInput: React.FC<ChatInputProps> = ({ conversationId }) => {
       display: agent.name ?? "",
       type: "agent" as const,
       avatarUrl: agent.avatarUrl,
+    })),
+    ...users.map((user) => ({
+      id: `user:${user._id}`,
+      display: user.name ?? "",
+      type: "user" as const,
+      avatarUrl: user.image,
     })),
   ];
 

@@ -31,3 +31,11 @@ export const getUserById = query({
     return await ctx.db.get(args.userId);
   },
 });
+
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query("users").collect();
+    return users.map((user) => pick(user, ["_id", "name", "image"]));
+  },
+});
