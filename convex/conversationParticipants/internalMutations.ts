@@ -21,6 +21,12 @@ export const addAgentIfNotAlreadyJoined = internalMutation({
     agentId: v.id("agents"),
   },
   handler: async (ctx, args) => {
+    // Validation: ensure agentId exists in agents table
+    const agent = await ctx.db.get(args.agentId);
+    if (!agent) {
+      throw new Error(`addAgentIfNotAlreadyJoined: agentId ${args.agentId} does not exist in agents table.`);
+    }
+
     const participant =
       await ConversationParticipants.findParticipantByConversationIdAndIdentifier(
         ctx.db,

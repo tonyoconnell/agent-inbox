@@ -75,5 +75,9 @@ ${JSON.stringify(conversation, null, 2)}
 export const constructTriageInstructions = (args: InstructionsArgs) =>
   `${triageInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
 
-export const constructAgentReplyInstructions = (args: InstructionsArgs) =>
-  `${agentReplyInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
+export const constructAgentReplyInstructions = (args: InstructionsArgs) => {
+  const { agent } = args;
+  // If agent.prompt exists, prepend it as the main system message
+  const promptSection = agent.prompt ? `${agent.prompt}\n\n` : "";
+  return `${promptSection}${agentReplyInstructions}\n\n${constructAdditionalInstructionContext(args)}`;
+};

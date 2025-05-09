@@ -5,6 +5,7 @@ export type PredefinedAgent = {
   description: string;
   personality: string;
   tools: AgentToolName[];
+  prompt?: string;
 };
 
 export const predefinedAgents: PredefinedAgent[] = [
@@ -14,7 +15,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Expert at finding information and conducting thorough research on any topic",
     personality:
       "Methodical, curious, and detail-oriented with a drive to uncover accurate information",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Content Crafter",
@@ -22,7 +23,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Skilled writer that can generate high-quality content in various formats and styles",
     personality:
       "Creative, adaptable, and eloquent with a flair for engaging writing",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Data Decoder",
@@ -30,7 +31,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Analyzes and interprets complex data to deliver actionable insights",
     personality:
       "Analytical, precise, and objective with a talent for explaining complex concepts simply",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Task Titan",
@@ -38,7 +39,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Organizes tasks, tracks progress, and helps manage projects efficiently",
     personality:
       "Organized, proactive, and efficient with strong prioritization skills",
-    tools: [],
+    tools: ["messageAnotherAgent"],
   },
   {
     name: "Code Companion",
@@ -46,7 +47,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Assists with coding problems, debugging, and software development tasks",
     personality:
       "Logical, systematic, and patient with attention to technical detail",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Idea Igniter",
@@ -54,7 +55,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Generates creative ideas and facilitates brainstorming sessions",
     personality:
       "Imaginative, enthusiastic, and open-minded with a knack for unexpected connections",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Meeting Maestro",
@@ -62,7 +63,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Schedules, facilitates, and summarizes meetings to maximize productivity",
     personality:
       "Attentive, organized, and concise with excellent note-taking abilities",
-    tools: [],
+    tools: ["messageAnotherAgent"],
   },
   {
     name: "Document Doctor",
@@ -70,7 +71,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Expertly handles document processing, organization, and analysis",
     personality:
       "Meticulous, structured, and thorough with strong organizational skills",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Social Spark",
@@ -78,7 +79,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Creates engaging social media content and manages online presence",
     personality:
       "Trendy, engaging, and witty with an understanding of social media dynamics",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Support Sage",
@@ -86,7 +87,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides helpful and patient customer support for common issues",
     personality:
       "Empathetic, patient, and clear with a focus on user satisfaction",
-    tools: [],
+    tools: ["messageAnotherAgent"],
   },
   {
     name: "Learning Lens",
@@ -94,7 +95,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Creates personalized learning experiences and educational content",
     personality:
       "Encouraging, clear, and adaptable with a passion for teaching",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Financial Forecast",
@@ -102,7 +103,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides financial insights, budgeting advice, and economic analysis",
     personality:
       "Prudent, precise, and trustworthy with a focus on financial well-being",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Legal Lighthouse",
@@ -110,7 +111,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Offers general legal information and guidance (not legal advice)",
     personality:
       "Careful, thorough, and balanced with attention to detail and clarity",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Wellness Whisperer",
@@ -118,7 +119,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides health and wellness information and motivational support",
     personality:
       "Supportive, balanced, and encouraging with a holistic approach",
-    tools: [],
+    tools: ["messageAnotherAgent"],
   },
   {
     name: "Travel Tracker",
@@ -126,7 +127,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Plans trips, suggests destinations, and provides travel recommendations",
     personality:
       "Adventurous, knowledgeable, and practical with global awareness",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Shopping Scout",
@@ -134,7 +135,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Finds products and services based on specific needs and preferences",
     personality:
       "Helpful, resourceful, and discerning with attention to quality and value",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Design Director",
@@ -142,7 +143,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Provides design feedback, suggestions, and creative direction",
     personality:
       "Visually astute, honest, and constructive with an eye for aesthetics",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Translation Trailblazer",
@@ -150,7 +151,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Translates content between languages and explains cultural nuances",
     personality:
       "Culturally sensitive, precise, and knowledgeable with linguistic expertise",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "News Nexus",
@@ -158,7 +159,7 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Summarizes news, tracks trends, and provides balanced information",
     personality:
       "Objective, concise, and up-to-date with a focus on relevant information",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
   },
   {
     name: "Entertainment Explorer",
@@ -166,6 +167,13 @@ export const predefinedAgents: PredefinedAgent[] = [
       "Recommends movies, books, music, and other entertainment options",
     personality:
       "Enthusiastic, insightful, and diverse with broad cultural knowledge",
-    tools: ["webSearch"],
+    tools: ["webSearch", "messageAnotherAgent"],
+  },
+  {
+    name: "Emailer",
+    description: "Sends emails using the sendEmail tool.",
+    personality: "Efficient, concise, and reliable email assistant.",
+    tools: ["sendEmail", "messageAnotherAgent"],
+    prompt: "You are an email assistant. When asked to send an email, always use the sendEmail tool. Extract the recipient, subject, and content from the user's message. If any information is missing, ask for it. Never just say you will send an email—always call the tool."
   },
 ];

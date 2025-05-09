@@ -2,6 +2,7 @@ import { internal } from "../_generated/api";
 import { Doc, Id } from "../_generated/dataModel";
 import { ActionCtx } from "../_generated/server";
 import * as Agents from "../agents/model";
+import { Resend } from "resend";
 
 export const sendSystemMessageToConversation = async (
   ctx: ActionCtx,
@@ -15,7 +16,7 @@ export const sendSystemMessageToConversation = async (
   ctx.runMutation(
     internal.conversationMessages.internalMutations.sendSystemMessage,
     {
-      conversationId: args.conversationId as Id<"conversations">,
+      conversationId: args.conversationId,
       content: args.content,
       meta: args.meta,
       authorParticipantId: args.authorParticipantId,
@@ -192,6 +193,50 @@ export const processAgentAIResult = async (
 ) => {
   console.log(`Agent result:`, args.result);
   console.log(`Tool Calls:`, args.result.toolCalls);
+
+  // Fallback: If agent is Emailer, no sendEmail tool call, and message looks like a send email request
+  const isEmailer = args.agent.name.toLowerCase().includes("email");
+  const hasSendEmailCall = args.result.toolCalls.some((t) => t.toolName === "sendEmail");
+  const sendEmailRegex = /send (an? )?email to ([^\s]+@[^\s]+)\b/i;
+  const match = sendEmailRegex.exec(args.result.text);
+
+  if (
+    isEmailer &&
+    !hasSendEmailCall &&
+    match
+  ) {
+    const to = match[2];
+    const subject = "Test Email";
+    const content = "This is a test email sent by the Emailer agent fallback.";
+    await sendSystemMessageToConversation(ctx, {
+      conversationId: args.conversation._id,
+      content: `Fallback: Emailer did not call sendEmail tool, sending test email to ${to}.`,
+      meta: {
+        toolName: "sendEmail-fallback",
+        to,
+        subject,
+        content,
+        agentName: args.agent.name,
+        agentId: args.agent._id,
+      },
+      authorParticipantId: args.participant._id,
+    });
+    // Actually call the sendEmail tool implementation
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    try {
+      const response = await resend.emails.send({
+        to,
+        subject,
+        html: content,
+        from: "tony@one.ie",
+      });
+      if (response.error) throw new Error(`Failed to send email: ${response.error.message}`);
+      await args.sendMessage(`Fallback: Sent test email to ${to}.`);
+    } catch (error: any) {
+      await args.sendMessage(`Fallback: Failed to send email to ${to}: ${error?.message ?? "Unknown error"}`);
+    }
+    return;
+  }
 
   if (args.result.text !== "") {
     await args.sendMessage(args.result.text);
