@@ -10,7 +10,7 @@ import { useQuery } from "convex-helpers/react/cache";
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
 export const ConversationList = () => {
-  const conversations = useQuery(api.conversations.queries.listMine);
+  const conversations = useQuery(api.conversations.queries.listForUser);
   const createConversation = useMutation(api.conversations.mutations.create);
   const onApiError = useApiErrorHandler();
   const currentConversationId = useCurrentConversationId();
@@ -21,13 +21,13 @@ export const ConversationList = () => {
         <Button
           className="w-full"
           variant="default"
-          onClick={() =>
-            createConversation({ title: DEFAULT_THREAD_TITLE })
+          onClick={() => {
+            void createConversation({ title: DEFAULT_THREAD_TITLE })
               .then((conversationId) =>
                 routes.conversation({ conversationId }).push(),
               )
-              .catch(onApiError)
-          }
+              .catch(onApiError);
+          }}
         >
           <Plus className="h-5 w-5" />
           New Conversation

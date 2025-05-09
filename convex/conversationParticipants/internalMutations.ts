@@ -52,3 +52,30 @@ export const addAgentIfNotAlreadyJoined = internalMutation({
     });
   },
 });
+
+export const addUserIfNotAlreadyJoined = internalMutation({
+  args: {
+    conversationId: v.id("conversations"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // Check if the user is already a participant
+    const existing = await ctx.db
+      .query("conversationParticipants")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .collect();
+    if (existing.some((p) => p.conversationId === args.conversationId && p.kind === "user" && !p.isRemoved)) {
+      return null;
+    }
+    // Add the user as a participant
+    await ctx.db.insert("conversationParticipants", {
+      conversationId: args.conversationId,
+      userId: args.userId,
+      kind: "user",
+      addedAt: Date.now(),
+      status: "inactive",
+      isRemoved: false,
+    });
+    return null;
+  },
+});

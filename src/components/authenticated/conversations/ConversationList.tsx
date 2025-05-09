@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 const DEFAULT_THREAD_TITLE = "New Conversation";
 
 export const ConversationList: React.FC = () => {
-  const conversations = useQuery(api.conversations.queries.listMine);
+  const conversations = useQuery(api.conversations.queries.listForUser);
   const createConversation = useMutation(api.conversations.mutations.create);
   const onApiError = useApiErrorHandler();
   const currentConversationId = useCurrentConversationId();

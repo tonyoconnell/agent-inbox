@@ -21,7 +21,12 @@ export const ensureICanAccessConversation = async (
   const conversation = await ctx.db.get(conversationId);
 
   if (!conversation) throw new Error("Conversation not found");
-  if (conversation.createdBy !== userId) throw new Error("Access denied");
+  // Allow access if the user is a participant
+  const isParticipant = await ConversationParticipants.findParticipantByConversationIdAndIdentifier(ctx.db, {
+    conversationId,
+    identifier: { kind: "user", userId },
+  });
+  if (!isParticipant) throw new Error("Access denied");
 
   return conversation;
 };
@@ -234,4 +239,21 @@ export const joinAgentToConversationIfNotAlreadyJoined = async (
   // --- End AI trigger ---
 
   return ConversationParticipants.getParticipant(db, { participantId });
+};
+
+export const listForUser = async (ctx: QueryCtx) => {
+  const userId = await Users.getMyId(ctx);
+  // Find all conversationParticipants for this user
+  const participants = await ctx.db
+    .query("conversationParticipants")
+    .withIndex("by_userId", (q) => q.eq("userId", userId))
+    .collect();
+  const conversationIds = participants.map((p) => p.conversationId);
+  if (conversationIds.length === 0) return [];
+  // Fetch all conversations for these ids
+  const conversations = await Promise.all(
+    conversationIds.map((id) => ctx.db.get(id))
+  );
+  // Filter out any nulls (in case of deleted conversations)
+  return conversations.filter((c): c is NonNullable<typeof c> => c !== null);
 };

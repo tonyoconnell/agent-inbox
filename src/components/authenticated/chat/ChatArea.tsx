@@ -15,7 +15,7 @@ interface ChatAreaProps {
 
 export const ChatArea: React.FC<ChatAreaProps> = ({ conversationId }) => {
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  const conversation = useQuery(api.conversations.queries.findMine, {
+  const conversation = useQuery(api.conversations.queries.getForParticipant, {
     conversationId,
   });
   const messages = useQuery(api.conversationMessages.queries.listForMe, {

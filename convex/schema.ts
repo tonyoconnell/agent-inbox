@@ -120,7 +120,8 @@ export default defineSchema({
         addedAt: v.number(),
       })
     )
-  ),
+  )
+    .index("by_userId", ["userId"]),
 
   // 8. ConversationMessages (with step, cost, and tokensUsed)
   conversationMessages: defineTable({

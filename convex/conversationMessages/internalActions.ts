@@ -59,5 +59,15 @@ export const processMessage = internalAction({
         });
       }
     }
+
+    // Add mentioned users as participants if not already present
+    for (const reference of references) {
+      if (reference.kind === "user") {
+        await ctx.runMutation(internal.conversationParticipants.internalMutations.addUserIfNotAlreadyJoined, {
+          conversationId: args.conversation._id,
+          userId: reference.userId,
+        });
+      }
+    }
   },
 });
