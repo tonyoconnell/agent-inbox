@@ -206,6 +206,7 @@ export const createTools = ({
     description: toolDefinitions.sendEmail.description,
     parameters: toolDefinitions.sendEmail.parameters,
     execute: async ({ to, subject, content, from }) => {
+      console.log(`[sendEmail] Attempting to send email to: ${to}, subject: ${subject}`);
       await sendSystemMessageToConversation(ctx, {
         content: `${agent.name} is sending an email to "${to}" with the subject "${subject}"`,
         conversationId: conversation._id,
@@ -228,6 +229,8 @@ export const createTools = ({
           from: "tony@one.ie",
         });
 
+        console.log(`[sendEmail] Resend response:`, response);
+
         if (response.error)
           throw new Error(`Failed to send email: ${response.error.message}`);
 
@@ -235,7 +238,7 @@ export const createTools = ({
           result: "email_sent",
         };
       } catch (error: any) {
-        console.error("Failed to send email:", error);
+        console.error("[sendEmail] Failed to send email:", error);
         throw new Error(
           `Failed to send email: ${error?.message ?? "Unknown error"}`,
         );
@@ -301,8 +304,8 @@ async function getToolNamesByIds(ctx: ActionCtx, toolIds: Id<"tools">[] = []): P
 export const createToolsForAgent = async ({
   ctx,
   agent,
-  conversation,
   agentParticipant,
+  conversation,
 }: {
   ctx: ActionCtx;
   agent: Doc<"agents">;
@@ -314,8 +317,12 @@ export const createToolsForAgent = async ({
     (t): t is Id<"tools"> => typeof t !== "string"
   );
   const agentToolNames = await getToolNamesByIds(ctx, toolIds);
+  const stringToolNames = (agent.tools ?? []).filter(
+    (t): t is AgentToolName => typeof t === "string"
+  );
   return pick(allTools, [
     ...(Object.keys(alwaysIncludedTools) as AgentToolName[]),
     ...agentToolNames,
+    ...stringToolNames,
   ]);
 };
