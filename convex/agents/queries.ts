@@ -38,3 +38,17 @@ export const findMention = query({
     }
   },
 });
+
+export const listAll = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("agents").collect();
+  },
+});
+
+export const findAny = query({
+  args: { agentId: v.id("agents") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.agentId);
+  },
+});

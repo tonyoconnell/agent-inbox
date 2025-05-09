@@ -18,6 +18,7 @@ import type * as agents_internalQueries from "../agents/internalQueries.js";
 import type * as agents_model from "../agents/model.js";
 import type * as agents_mutations from "../agents/mutations.js";
 import type * as agents_queries from "../agents/queries.js";
+import type * as agents_seed from "../agents/seed.js";
 import type * as ai_agentReplyToMessage from "../ai/agentReplyToMessage.js";
 import type * as ai_history from "../ai/history.js";
 import type * as ai_instructions from "../ai/instructions.js";
@@ -64,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   "agents/model": typeof agents_model;
   "agents/mutations": typeof agents_mutations;
   "agents/queries": typeof agents_queries;
+  "agents/seed": typeof agents_seed;
   "ai/agentReplyToMessage": typeof ai_agentReplyToMessage;
   "ai/history": typeof ai_history;
   "ai/instructions": typeof ai_instructions;

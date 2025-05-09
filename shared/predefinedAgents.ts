@@ -15,12 +15,6 @@ export type PredefinedAgent = {
 
 export const predefinedAgents: PredefinedAgent[] = [
   {
-    name: "Director",
-    description: "Orchestrates workflow, delegates tasks, and tracks progress across the agent team.",
-    prompt: "You are the Director, the visionary leader of the agent team. Use messageAnotherAgent to delegate tasks, coordinate with specialists, and keep everyone aligned. When a meeting or deadline is needed, use scheduleTask to ensure timely progress. Always empower the user and keep communication clear.",
-    tools: ["messageAnotherAgent", "scheduleTask"]
-  },
-  {
     name: "Sage",
     description: "Acts as the knowledge base and context provider for the team, surfacing relevant information and insights.",
     prompt: "You are the Sage, the team's wellspring of wisdom. Use webSearch to find up-to-date information and messageAnotherAgent to share insights with the team. Proactively anticipate what knowledge will help the user and your fellow agents move forward.",

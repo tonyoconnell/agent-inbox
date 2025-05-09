@@ -12,6 +12,7 @@ import {
   AgentToolName,
   alwaysIncludedTools,
 } from "../../shared/tools";
+import { v } from "convex/values";
 
 const exa = new Exa(process.env.EXA_API_KEY);
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -31,8 +32,11 @@ export const createTools = ({
     description: toolDefinitions.listConversationParticipants.description,
     parameters: toolDefinitions.listConversationParticipants.parameters,
     execute: async ({ conversationId }) => {
+      // Fetch the conversation title using the correct API path
+      const conv = await ctx.runQuery(api.conversations.queries.getConversationById, { conversationId: conversationId as Id<'conversations'> });
+      const convTitle = conv?.title ?? "Unknown Conversation";
       await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is listing participants in the conversation ${conversation._id}`,
+        content: `${agent.name} is listing participants in the conversation ${convTitle}`,
         conversationId: conversation._id,
         meta: {
           toolName: "listConversationParticipants",
@@ -78,8 +82,12 @@ export const createTools = ({
     execute: async ({ userId }) => {
       console.log(`using tool: listAgents`, { userId });
 
+      // Use getUserById for user name
+      const user = await ctx.runQuery(api.users.queries.getUserById, { userId: userId as Id<'users'> });
+      const userName = user?.name ?? "Unknown User";
+
       await sendSystemMessageToConversation(ctx, {
-        content: `${agent.name} is listing the users agents ${conversation._id}`,
+        content: `${agent.name} is listing the agents for user ${userName}`,
         conversationId: conversation._id,
         meta: { toolName: "listAgents", userId, agentName: agent.name },
         authorParticipantId: agentParticipant._id,
@@ -239,9 +247,12 @@ export const createTools = ({
     description: toolDefinitions.addParticipantToConversation.description,
     parameters: toolDefinitions.addParticipantToConversation.parameters,
     execute: async ({ agentId }) => {
+      // Fetch the agent's name
+      const targetAgent = await ctx.runQuery(internal.agents.internalQueries.find, { agentId: agentId as Id<'agents'> });
+      const targetAgentName = targetAgent?.name ?? "Unknown Agent";
       try {
         await sendSystemMessageToConversation(ctx, {
-          content: `${agent.name} is adding an agent with ID ${agentId} to the conversation`,
+          content: `${agent.name} is adding agent ${targetAgentName} to the conversation`,
           conversationId: conversation._id,
           meta: {
             toolName: "addParticipantToConversation",

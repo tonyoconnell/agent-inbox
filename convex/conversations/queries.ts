@@ -20,3 +20,10 @@ export const findMine = query({
   },
   handler: async (ctx, args) => Conversations.findMine(ctx, args),
 });
+
+export const getConversationById = query({
+  args: { conversationId: v.id("conversations") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.conversationId);
+  },
+});

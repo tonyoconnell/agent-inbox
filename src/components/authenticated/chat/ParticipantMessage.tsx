@@ -43,7 +43,7 @@ export const ParticipantMessage: React.FC<Props> = ({ message }) => {
   );
 
   // Get all agents to find the matching one for this participant
-  const agents = useQuery(api.agents.queries.listMine);
+  const agents = useQuery(api.agents.queries.listAll);
   const matchingAgent =
     participant?.kind === "agent" &&
     agents?.find((agent) => agent.name === participant.name);

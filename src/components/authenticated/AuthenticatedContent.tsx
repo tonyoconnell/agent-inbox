@@ -63,7 +63,7 @@ export const AuthenticatedContent: React.FC = () => {
   const [middleTab, setMiddleTab] = React.useState("now");
   const me = useQuery(api.users.queries.getMe);
   const conversations = useQuery(api.conversations.queries.listMine) ?? [];
-  const agents = useQuery(api.agents.queries.listMine) ?? [];
+  const agents = useQuery(api.agents.queries.listAll) ?? [];
   // Tools are static in shared/tools
   const toolsCount = Object.keys(toolDefinitions).length;
   // People: set to 1 (current user) for now
