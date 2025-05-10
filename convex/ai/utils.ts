@@ -158,6 +158,12 @@ export const handleAgentError = async (
   const errorMessage =
     args.error instanceof Error ? args.error.message : "Unknown error";
 
+  // Get the triage agent's participant ID
+  const { participant } = await getTriageAgentAndEnsureItIsJoinedToConversation(
+    ctx,
+    args.conversationId
+  );
+
   // Send error message to conversation
   await sendSystemMessageToConversation(ctx, {
     conversationId: args.conversationId,
@@ -174,7 +180,7 @@ export const handleAgentError = async (
             }
           : String(args.error),
     },
-    authorParticipantId: undefined as any, // TODO: Provide a valid participantId if possible
+    authorParticipantId: participant._id,
   });
 };
 
