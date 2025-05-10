@@ -30,6 +30,9 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { routes } from "@/routes";
 import { useApiErrorHandler } from "../misc/errors";
+import { UsersPage } from "./users/UsersPage";
+import ToolList from "./sidebar/ToolList";
+import PeopleList from "./sidebar/PeopleList";
 
 const MIDDLE_TABS = [
   { value: "now", label: "Now" },
@@ -53,21 +56,27 @@ const CATEGORY_TAGS = [
   },
 ];
 
-export const AuthenticatedContent: React.FC = () => {
+export function AuthenticatedContent() {
   const route = useRoute();
   const currentConversationId = useCurrentConversationId();
   const currentAgentId = useCurrentAgentId();
-  const [activeNav, setActiveNav] = React.useState<"conversations" | "agents">(
-    "conversations",
-  );
+  const [activeNav, setActiveNav] = React.useState<"conversations" | "agents" | "tools" | "people">("conversations");
   const [middleTab, setMiddleTab] = React.useState("now");
   const me = useQuery(api.users.queries.getMe);
   const conversations = useQuery(api.conversations.queries.listMine) ?? [];
   const agents = useQuery(api.agents.queries.listAll) ?? [];
-  // Tools are static in shared/tools
   const toolsCount = Object.keys(toolDefinitions).length;
-  // People: set to 1 (current user) for now
-  const peopleCount = 1;
+  const peopleCount = 0; // You can update this to the actual count if needed
+  const createConversation = useMutation(api.conversations.mutations.create);
+  const onApiError = useApiErrorHandler();
+
+  // Auto-switch sidebar nav if navigating directly
+  React.useEffect(() => {
+    if (route.name === "conversation") setActiveNav("conversations");
+    if (route.name === "agent") setActiveNav("agents");
+    if (route.name === "tools") setActiveNav("tools");
+    if (route.name === "people") setActiveNav("people");
+  }, [route.name]);
 
   const SIDEBAR_NAV = [
     {
@@ -80,15 +89,6 @@ export const AuthenticatedContent: React.FC = () => {
     { key: "tools", label: "Tools", icon: Wrench, count: toolsCount },
     { key: "people", label: "People", icon: User, count: peopleCount },
   ];
-
-  const createConversation = useMutation(api.conversations.mutations.create);
-  const onApiError = useApiErrorHandler();
-
-  // Auto-switch sidebar nav if navigating directly
-  React.useEffect(() => {
-    if (route.name === "conversation") setActiveNav("conversations");
-    if (route.name === "agent") setActiveNav("agents");
-  }, [route.name]);
 
   return (
     <SidebarProvider>
@@ -126,7 +126,13 @@ export const AuthenticatedContent: React.FC = () => {
           }}
           navItems={SIDEBAR_NAV}
           activeNav={activeNav}
-          onNavChange={(key) => setActiveNav(key as "conversations" | "agents")}
+          onNavChange={(key) => {
+            setActiveNav(key as "conversations" | "agents" | "tools" | "people");
+            if (key === "tools") routes.tools().push();
+            if (key === "conversations") routes.home().push();
+            if (key === "agents") routes.home().push(); // or navigate to the agent list route if available
+            if (key === "people") routes.profile().push(); // or create a /people route if desired
+          }}
         />
         {/* Middle Panel */}
         <main
@@ -135,7 +141,15 @@ export const AuthenticatedContent: React.FC = () => {
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-6 pb-2">
             <span className="text-lg font-semibold">
-              {activeNav === "conversations" ? "Conversations" : "Agents"}
+              {activeNav === "conversations"
+                ? "Conversations"
+                : activeNav === "agents"
+                ? "Agents"
+                : activeNav === "tools"
+                ? "Tools"
+                : activeNav === "people"
+                ? "People"
+                : ""}
             </span>
             {/* Filter buttons (example) */}
             <div className="flex gap-2">
@@ -155,10 +169,12 @@ export const AuthenticatedContent: React.FC = () => {
               </Button>
             </div>
           </div>
-          {/* List of conversations/agents as cards */}
+          {/* List of conversations/agents/tools/people as cards */}
           <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-thin scrollbar-thumb-[#18181b] scrollbar-track-[#101014]">
             {activeNav === "conversations" ? <MainConversationList /> : null}
             {activeNav === "agents" ? <MainAgentList /> : null}
+            {activeNav === "tools" ? <ToolList /> : null}
+            {activeNav === "people" ? <PeopleList /> : null}
           </div>
         </main>
         {/* Right Panel */}
@@ -191,4 +207,4 @@ export const AuthenticatedContent: React.FC = () => {
       </div>
     </SidebarProvider>
   );
-};
+}

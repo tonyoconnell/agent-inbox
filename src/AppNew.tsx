@@ -2,8 +2,9 @@ import * as React from "react";
 import { Authenticated, Unauthenticated } from "convex/react";
 import { UnauthenticatedContent } from "./components/unauthenticated/UnauthenticatedContent";
 import { toast, Toaster } from "sonner";
-import { RouteProvider } from "./routes";
+import { RouteProvider, routes } from "./routes";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache";
+import { UsersPage } from "./components/authenticated/users/UsersPage";
 // Import shadcn/ui components and icons
 import {
   NavigationMenu,
@@ -117,10 +118,13 @@ function MailApp() {
               </Badge>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex justify-between w-full px-3 py-2 hover:bg-gray-100 rounded-md">
-              <div className="flex items-center">
+              <button
+                onClick={() => routes.users().push()}
+                className="flex items-center w-full"
+              >
                 <User className="h-5 w-5 mr-3" />
                 <span>People</span>
-              </div>
+              </button>
               <Badge variant="secondary" className="bg-gray-100">
                 128
               </Badge>

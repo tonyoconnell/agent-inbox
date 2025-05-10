@@ -15,6 +15,7 @@ export const { RouteProvider, useRoute, routes } = createRouter({
     (p) => `/agent/${p.agentId}`,
   ),
   profile: defineRoute("/profile"),
+  tools: defineRoute("/tools"),
 });
 
 export type ConversationParams = {
@@ -33,4 +34,9 @@ export function useCurrentAgentId() {
   const route = useRoute();
   if (route.name === "agent") return route.params.agentId;
   return undefined;
+}
+
+export function useToolsRoute() {
+  const route = useRoute();
+  return route.name === "tools";
 }
