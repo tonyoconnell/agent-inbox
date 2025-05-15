@@ -1,839 +1,496 @@
 ---
-title: ONE Schema
+title: ONE Network Unified Schema (Novu + ONE)
 order: 1
-description: Succinct, optimized schema for agent/human collaboration, knowledge, and analytics
+description: Complete, production-grade schema for multi-tenant, multi-channel, agent-augmented notifications and collaboration
 ---
 
-# ONE Schema: Core Data Model for AI-Human Collaboration
+# ONE Network Unified Schema (Novu + ONE)
 
-> See also: [Ontology](./ontology.md) | [Agents](./agents.md) | [Workflow](./workflow.md)
+> This schema is a comprehensive, production-grade foundation for the ONE Network, merging all core Novu notification platform entities with ONE-specific extensions (agents, tools, onboarding, knowledge, permissions, etc.).
 
-This schema is the foundation for a scalable, secure, and high-performance agent/human swarm. It enables:
-- Agents and humans to send messages, create knowledge, and infer new insights
-- Rich, extensible agent/team modeling
-- Fast, secure storage and retrieval (including vector search for knowledge/assets)
-- Analytics, CRM, and extensibility for future growth
-- Unified flows/lessons for both LMS and project-based learning
-- Full support for agent chat, workflow, and orchestration
+## Schema Overview
 
-## Developer Reference
-- All tables/fields are documented in [ontology.md](./ontology.md)
-- Agent roles, permissions, and orchestration: [agents.md](./agents.md), [workflow.md](./workflow.md)
-- Extensibility: All major tables have a `meta` field; indexes on key fields for performance
-- Lessons table supports both LMS and project flows (see comments)
-- Flows support prerequisites for advanced logic
-- AgentThreads support threadType/context for analytics
-
----
-
-# Table Definitions
-
-/**
- * ONE Schema: Core Data Model for AI-Human Collaboration
- *
- * - Consistent use of createdBy, createdAt, updatedAt fields
- * - Referential integrity: all *_id fields reference valid records
- * - Indexes on frequently queried fields
- * - Extensible meta fields for future-proofing
- * - Unified lessons table for both LMS and flows
- * - Agent threads/messages support threadType/context
- * - Flows support prerequisites for steps
- * - Subscriptions link to products
- */
-
-## Core Entities (Summary Table)
-
-| Table                | Purpose                                 | Key Fields/Indexes                       |
-|----------------------|-----------------------------------------|------------------------------------------|
-| users                | Human users with full contact info          | name, email, image, phoneNumbers, addresses, organization, jobTitle, birthday, notes, photoUrl, createdAt |
-| agents               | AI/user agents, config, team structure  | name, kind, prompt, tools, tags     |
-| tools                | Capabilities for agents                 | name, config, createdBy                  |
-| prompts              | Reusable templates for agents/tasks     | title, template, step, tags, status, learningFlowId |
-| conversations        | Group chats (users + agents)            | title, groupId, lastMessageTime          |
-| conversationParticipants | Users/agents in conversations        | kind, userId/agentId, status             |
-| conversationMessages | Messages in conversations               | content, author, type, step, tags, vector|
-| agentTools           | Agent-tool join/config table            | agentId, toolId, config                  |
-| attachments          | Attach prompts/assets to agents/groups  | ownerType, ownerId, promptId             |
-| knowledge            | Vectorized knowledge for search/RAG     | ownerType, ownerId, vector, content      |
-| tags                 | Tagging for search, filtering, teams    | name, color, createdBy                   |
-| reactions            | Social reactions to messages            | messageId, userId/agentId, type, createdAt|
-| comments             | Comments on messages                    | messageId, authorParticipantId, content, createdAt|
-| follows              | Social follows (user/agent)             | followerId, followeeId, kind, createdAt  |
-| events               | Scheduled meetings/events               | title, startTime, endTime, participants  |
-| reminders            | Reminders for users/agents              | userId/agentId, message, remindAt, relatedEntity |
-| flows                | Structured learning/project sequences   | title, description, steps (ordered array of promptIds) |
-| lessons              | LMS course lessons                          | id, courseId, title, content, order, createdAt, updatedAt |
-| enrollments          | LMS course enrollments                      | id, courseId, userId, enrolledAt, progress, status |
-| tasks                | Task/todo manager                           | id, title, description, status, dueDate, assignedToUserId, assignedToAgentId, createdBy, createdAt, updatedAt, completedAt, priority, tags |
+- **Multi-tenancy:** Every table has `organisationId`, and most have `environmentId` for dev/prod separation.
+- **Environments:** Support for multiple environments per organisation.
+- **Integrations:** Robust third-party provider support (email, SMS, chat, push, storage, etc.).
+- **Channels:** Multi-channel messaging (chat, email, SMS, push, in-app, etc.).
+- **Templates/Workflows:** Reusable, multi-step notification and automation flows.
+- **Subscribers:** All users (humans, agents, systems).
+- **Agents:** AI agents as first-class subscribers, with tools, knowledge, and actions.
+- **Groups/Teams:** For sharing, permissions, and collaboration.
+- **Permissions:** Explicit, flexible, private-by-default, with public/share controls.
+- **Preferences:** Per-subscriber, per-channel notification settings.
+- **Triggers:** API/webhook endpoints to start workflows.
+- **Jobs/Execution:** Track workflow/job status, logs, errors, delivery.
+- **API Keys:** Secure, scoped access for integrations and users.
+- **Branding/Theming:** Org-level customization.
+- **Audit Logs:** Security, compliance, debugging.
+- **Limits/Quotas:** Usage tracking and enforcement.
+- **Meta/Extensibility:** All tables support `meta` fields for future-proofing.
 
 ---
 
-# Social Media Scheduling
+## Table Definitions
 
-To support scheduling and tracking of social media posts, the schema includes a `broadcasts` table. This table allows users, agents, or groups to schedule posts to various platforms (e.g., Twitter, Facebook, LinkedIn), track their status (scheduled, posted, failed), and store results or errors from the posting process. Each post is linked to its creator and optionally to a group for access control.
+### organisation
+- **Purpose:** Multi-tenant root entity.
+- **Fields:** `_id`, `name`, `meta`
 
----
+### environment
+- **Purpose:** Dev/prod/test separation per org.
+- **Fields:** `_id`, `organisationId`, `name`, `apiKey`, `createdAt`, `meta`
 
-# Shopify-Compatible Product Schema
+### subscriber
+- **Purpose:** All users (humans, agents, systems).
+- **Fields:** `_id`, `organisationId`, `environmentId`, `kind`, `email`, `phone`, `isHuman`, `agentId?`, `fullContactInfo`, `meta`
 
-The `products` table is now aligned with Shopify's product schema, supporting all major fields required for e-commerce, SEO, and integration. This includes support for variants, options, images, inventory, SEO, and metafields, as well as compatibility with Shopify's naming conventions and data structure.
+### agent
+- **Purpose:** AI agents (system, user, personal).
+- **Fields:** `_id`, `organisationId`, `environmentId`, `ownerId`, `kind`, `name`, `description`, `tools`, `knowledge`, `model`, `avatarUrl`, `createdAt`, `updatedAt`, `meta`
 
----
+### group
+- **Purpose:** Teams, sharing, permissions.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `name`, `members`, `meta`
 
-# AI Inference Usage & Cost Tracking (Stripe-Style Billing)
+### tool
+- **Purpose:** Capabilities for agents (may use integrations).
+- **Fields:** `_id`, `name`, `description`, `integrationId?`, `action`, `config`, `meta`
 
-The schema now supports detailed tracking of AI generation (inference) costs and usage, inspired by Stripe's usage-based billing model ([Stripe Docs](https://docs.stripe.com/billing/subscriptions/usage-based/implementation-guide)). Each AI generation event is recorded with token usage, cost, and metadata, enabling accurate billing, analytics, and optimization. Message records also include direct cost and token usage fields for granular reporting.
+### integration
+- **Purpose:** Third-party provider config (email, SMS, chat, storage, etc.).
+- **Fields:** `_id`, `organisationId`, `environmentId`, `provider`, `channelType`, `credentials`, `settings`, `status`, `createdAt`, `updatedAt`, `meta`
 
----
+### channel
+- **Purpose:** Communication (chat, email, SMS, push, etc.).
+- **Fields:** `_id`, `organisationId`, `environmentId`, `type`, `title`, `integrationId?`, `createdBy`, `createdAt`, `updatedAt`, `tags`, `meta`
 
-# AI Evaluation Tracking (convex.dev evals)
+### notificationTemplate
+- **Purpose:** Reusable, multi-channel message templates.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `name`, `channels`, `content`, `variables`, `createdAt`, `updatedAt`, `meta`
 
-The schema now includes an `evals` table for tracking automated or manual evaluations of AI generations, inspired by [convex.dev evals](https://docs.convex.dev/ai/evals). Each evaluation run records the input, expected and actual outputs, score, status, and metadata, enabling robust quality monitoring and model improvement workflows.
+### workflow
+- **Purpose:** Multi-step notification/automation flows.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `name`, `steps`, `createdBy`, `createdAt`, `updatedAt`, `meta`
 
----
+### message
+- **Purpose:** Individual notification events/messages.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `channelId`, `authorId`, `content`, `templateId?`, `workflowId?`, `createdAt`, `attachments`, `meta`
 
-# Simple LMS & Task/Todo Manager
+### topic
+- **Purpose:** Targeting/segmentation for notifications.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `name`, `description`, `createdAt`, `meta`
 
-The schema now includes a minimal Learning Management System (LMS) for managing courses, lessons, and enrollments, as well as a flexible task/todo manager for users and agents. These additions enable basic e-learning and productivity workflows alongside the core agent and collaboration features.
+### preference
+- **Purpose:** Per-subscriber, per-channel notification settings.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `subscriberId`, `channelType`, `enabled`, `meta`
 
----
+### trigger
+- **Purpose:** API/webhook endpoints to start workflows.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `workflowId`, `type`, `endpoint`, `meta`
 
-# Full Contact Info & Google People Integration
+### job
+- **Purpose:** Workflow/job step execution, status, logs.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `workflowId`, `status`, `startedAt`, `finishedAt`, `logs`, `meta`
 
-The `users` table now supports full contact information, including multiple phone numbers, emails, addresses, organization, job title, birthday, notes, and photo URL. This enables seamless integration with Google People and address book imports.
+### executionDetail
+- **Purpose:** Delivery status, errors, logs for jobs.
+- **Fields:** `_id`, `jobId`, `status`, `error`, `log`, `createdAt`, `meta`
+
+### apiKey
+- **Purpose:** Secure, scoped access for integrations and users.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `key`, `createdBy`, `createdAt`, `meta`
+
+### branding
+- **Purpose:** Org-level theming and customization.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `theme`, `logoUrl`, `meta`
+
+### auditLog
+- **Purpose:** Security, compliance, debugging.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `action`, `actorId`, `targetId?`, `details`, `createdAt`, `meta`
+
+### limit
+- **Purpose:** Usage tracking and enforcement.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `type`, `value`, `period`, `meta`
+
+### knowledge
+- **Purpose:** RAG, search, agent/user knowledge.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `ownerType`, `ownerId`, `content`, `vector`, `tags`, `meta`
+
+### onboardingFlow
+- **Purpose:** Tracks onboarding state, personal agent creation, Director handoff.
+- **Fields:** `_id`, `organisationId`, `environmentId`, `subscriberId`, `status`, `personalAgentId?`, `kycStatus?`, `meta`
+
+### event, reminder, task, product, broadcast, analytics, tag, comment, reaction, follow, etc.
+- **Purpose:** All other ONE/Novu tables (see previous schema for full details).
+- **Fields:** Standard fields + `organisationId` + `environmentId` + `meta`
 
 ---
 
 # Full Convex Schema (TypeScript)
 
 ```typescript
-// convex/schema.ts
+// convex/schema.ts - Complete Novu + ONE Unified Schema
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server";
-
-// 1. Steps Enum/Validator
-export const steps = [
-  "Foundation",
-  "Hook",
-  "Gift",
-  "Identify",
-  "Engage",
-  "Sell",
-  "Nurture",
-  "Upsell",
-  "Educate",
-  "Share"
-] as const;
-export type Step = typeof steps[number];
-const stepValidator = v.union(
-  v.literal("Foundation"),
-  v.literal("Hook"),
-  v.literal("Gift"),
-  v.literal("Identify"),
-  v.literal("Engage"),
-  v.literal("Sell"),
-  v.literal("Nurture"),
-  v.literal("Upsell"),
-  v.literal("Educate"),
-  v.literal("Share")
-);
 
 export default defineSchema({
-  ...authTables,
-
-  // 2. Users (People, with full contact info)
-  users: defineTable({
+  organisation: defineTable({
     name: v.string(),
-    email: v.string(),
-    image: v.optional(v.string()),
-    phoneNumbers: v.optional(v.array(v.string())),
-    emails: v.optional(v.array(v.string())),
-    addresses: v.optional(v.array(v.object({
-      street: v.optional(v.string()),
-      city: v.optional(v.string()),
-      region: v.optional(v.string()),
-      postalCode: v.optional(v.string()),
-      country: v.optional(v.string()),
-    }))),
-    organization: v.optional(v.string()),
-    jobTitle: v.optional(v.string()),
-    birthday: v.optional(v.string()), // ISO date string
-    notes: v.optional(v.string()),
-    photoUrl: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    createdBy: v.optional(v.id("users")), // for imported/created by another user
-  })
-    .index("by_email", ["email"])
-    .index("by_createdAt", ["createdAt"]),
-
-  // 3. Agents
-  agents: defineTable({
-    name: v.string(),
-    description: v.string(),
-    kind: v.union(v.literal("system_agent"), v.literal("user_agent")),
-    prompt: v.optional(v.string()),
-    avatarUrl: v.optional(v.string()),
-    delegatesTo: v.optional(v.array(v.id("agents"))),
-    tools: v.optional(v.array(v.id("tools"))),
-    tags: v.optional(v.array(v.string())),
-    model: v.optional(v.string()),
-    knowledge: v.optional(v.any()),
-    memories: v.optional(v.any()),
-    createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    updatedBy: v.optional(v.id("users")),
-  })
-    .index("by_createdBy", ["createdBy"])
-    .index("by_createdAt", ["createdAt"]),
-
-  // 4. Tools
-  tools: defineTable({
-    name: v.string(),
-    description: v.string(),
-    config: v.optional(v.any()),
-    createdBy: v.optional(v.id("users")),
-  }),
-
-  // 5. Prompts (with step and learningFlowId)
-  prompts: defineTable({
-    title: v.string(),
-    tags: v.optional(v.array(v.string())),
-    content: v.string(),
-  }),
-
-  // 6. Conversations
-  conversations: defineTable({
-    title: v.string(),
-    createdBy: v.id("users"),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    lastMessageTime: v.optional(v.number()),
-    tags: v.optional(v.array(v.string())),
-  })
-    .index("by_createdBy", ["createdBy"])
-    .index("by_createdAt", ["createdAt"]),
-
-  // 7. ConversationParticipants
-  conversationParticipants: defineTable(
-    v.union(
-      v.object({
-        kind: v.literal("user"),
-        conversationId: v.id("conversations"),
-        userId: v.id("users"),
-        status: v.string(),
-        isRemoved: v.boolean(),
-        addedAt: v.number(),
-      }),
-      v.object({
-        kind: v.literal("agent"),
-        conversationId: v.id("conversations"),
-        agentId: v.id("agents"),
-        status: v.string(),
-        isRemoved: v.boolean(),
-        addedAt: v.number(),
-      })
-    )
-  ),
-
-  // 8. ConversationMessages (with step, cost, and tokensUsed)
-  conversationMessages: defineTable({
-    conversationId: v.id("conversations"),
-    authorParticipantId: v.id("conversationParticipants"),
-    kind: v.union(v.literal("participant"), v.literal("system")),
-    type: v.optional(v.string()),
-    step: v.optional(stepValidator),
-    status: v.optional(v.string()),
-    tags: v.optional(v.array(v.string())),
-    content: v.string(),
-    attachments: v.optional(v.array(v.any())),
-    createdAt: v.number(),
-    vector: v.optional(v.array(v.number())),
     meta: v.optional(v.any()),
-    cost: v.optional(v.number()), // Cost of this message's AI generation (if any)
-    tokensUsed: v.optional(v.number()), // Token count for this message (if any)
   }),
-
-  // 9. AgentTools (join table)
-  agentTools: defineTable({
-    agentId: v.id("agents"),
-    toolId: v.id("tools"),
+  environment: defineTable({
+    organisationId: v.id("organisation"),
+    name: v.string(),
+    apiKey: v.string(),
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+  }),
+  subscriber: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    kind: v.union(v.literal("human"), v.literal("agent"), v.literal("system")),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    isHuman: v.boolean(),
+    agentId: v.optional(v.id("agent")),
+    fullContactInfo: v.optional(v.any()),
+    meta: v.optional(v.any()),
+  }),
+  agent: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    ownerId: v.optional(v.id("subscriber")),
+    kind: v.union(v.literal("system"), v.literal("user"), v.literal("personal")),
+    name: v.string(),
+    description: v.optional(v.string()),
+    tools: v.optional(v.array(v.id("tool"))),
+    knowledge: v.optional(v.array(v.id("knowledge"))),
+    model: v.optional(v.string()),
+    avatarUrl: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  }),
+  group: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    name: v.string(),
+    members: v.array(v.id("subscriber")),
+    meta: v.optional(v.any()),
+  }),
+  tool: defineTable({
+    name: v.string(),
+    description: v.optional(v.string()),
+    integrationId: v.optional(v.id("integration")),
+    action: v.string(),
     config: v.optional(v.any()),
-    createdAt: v.number(),
+    meta: v.optional(v.any()),
   }),
-
-  // 10. Attachments
-  attachments: defineTable({
-    ownerType: v.union(v.literal("agent"), v.literal("group")),
-    ownerId: v.string(),
-    promptId: v.id("prompts"),
+  integration: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    provider: v.string(),
+    channelType: v.string(),
+    credentials: v.any(),
+    settings: v.optional(v.any()),
+    status: v.optional(v.string()),
     createdAt: v.number(),
-    createdBy: v.optional(v.id("users")),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
   }),
-
-  // 11. Knowledge (Vector Store)
+  channel: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    type: v.string(),
+    title: v.optional(v.string()),
+    integrationId: v.optional(v.id("integration")),
+    createdBy: v.id("subscriber"),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+    meta: v.optional(v.any()),
+  }),
+  notificationTemplate: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    name: v.string(),
+    channels: v.array(v.string()),
+    content: v.any(),
+    variables: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  }),
+  workflow: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    name: v.string(),
+    steps: v.optional(v.array(v.any())),
+    createdBy: v.id("subscriber"),
+    createdAt: v.number(),
+    updatedAt: v.optional(v.number()),
+    meta: v.optional(v.any()),
+  }),
+  message: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    channelId: v.id("channel"),
+    authorId: v.id("subscriber"),
+    content: v.string(),
+    templateId: v.optional(v.id("notificationTemplate")),
+    workflowId: v.optional(v.id("workflow")),
+    createdAt: v.number(),
+    attachments: v.optional(v.array(v.any())),
+    meta: v.optional(v.any()),
+  }),
+  topic: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    name: v.string(),
+    description: v.optional(v.string()),
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+  }),
+  preference: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    subscriberId: v.id("subscriber"),
+    channelType: v.string(),
+    enabled: v.boolean(),
+    meta: v.optional(v.any()),
+  }),
+  trigger: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    workflowId: v.id("workflow"),
+    type: v.string(),
+    endpoint: v.string(),
+    meta: v.optional(v.any()),
+  }),
+  job: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    workflowId: v.id("workflow"),
+    status: v.string(),
+    startedAt: v.number(),
+    finishedAt: v.optional(v.number()),
+    logs: v.optional(v.array(v.string())),
+    meta: v.optional(v.any()),
+  }),
+  executionDetail: defineTable({
+    jobId: v.id("job"),
+    status: v.string(),
+    error: v.optional(v.string()),
+    log: v.optional(v.string()),
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+  }),
+  apiKey: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    key: v.string(),
+    createdBy: v.id("subscriber"),
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+  }),
+  branding: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    theme: v.any(),
+    logoUrl: v.optional(v.string()),
+    meta: v.optional(v.any()),
+  }),
+  auditLog: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    action: v.string(),
+    actorId: v.id("subscriber"),
+    targetId: v.optional(v.string()),
+    details: v.optional(v.any()),
+    createdAt: v.number(),
+    meta: v.optional(v.any()),
+  }),
+  limit: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    type: v.string(),
+    value: v.number(),
+    period: v.string(),
+    meta: v.optional(v.any()),
+  }),
   knowledge: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
     ownerType: v.union(v.literal("agent"), v.literal("user")),
     ownerId: v.string(),
     content: v.string(),
     vector: v.optional(v.array(v.number())),
     tags: v.optional(v.array(v.string())),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    meta: v.optional(v.any()),
-  })
-    .index("by_ownerId", ["ownerId"])
-    .index("by_createdAt", ["createdAt"]),
-
-  // 12. Tags
-  tags: defineTable({
-    name: v.string(),
-    color: v.optional(v.string()),
-    createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
-  }),
-
-  // 13. Social: Reactions (likes, emojis, etc.)
-  reactions: defineTable({
-    messageId: v.id("conversationMessages"),
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    type: v.string(), // e.g., "like", "love", "laugh", "custom_emoji"
-    createdAt: v.number(),
-  }),
-
-  // 14. Social: Comments (threaded replies to messages)
-  comments: defineTable({
-    messageId: v.id("conversationMessages"),
-    authorParticipantId: v.id("conversationParticipants"),
-    content: v.string(),
-    createdAt: v.number(),
-  }),
-
-  // 15. Social: Follows (user/agent follows another user/agent)
-  follows: defineTable({
-    followerId: v.string(), // userId or agentId as string
-    followeeId: v.string(), // userId or agentId as string
-    kind: v.union(v.literal("user"), v.literal("agent")),
-    createdAt: v.number(),
-  }),
-
-  // 16. Scheduling: Events (meetings, calls, etc.)
-  events: defineTable({
-    title: v.string(),
-    description: v.optional(v.string()),
-    startTime: v.number(),
-    endTime: v.number(),
-    createdBy: v.string(), // userId or agentId as string
-    participants: v.optional(v.array(v.string())), // userIds/agentIds as strings
-    tags: v.optional(v.array(v.string())),
-    createdAt: v.number(),
-  }),
-
-  // 17. Scheduling: Reminders
-  reminders: defineTable({
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    message: v.string(),
-    remindAt: v.number(),
-    relatedEntity: v.optional(v.string()), // e.g., messageId, eventId, etc.
-    createdAt: v.number(),
-  }),
-
-  // 18. Learning & Projects: Flows
-  flows: defineTable({
-    title: v.string(),
-    description: v.optional(v.string()),
-    steps: v.array(v.object({
-      promptId: v.optional(v.id("prompts")),
-      name: v.string(), // e.g. "Foundation", "Hook", etc.
-      instructions: v.optional(v.string()),
-      order: v.number(),
-      prerequisites: v.optional(v.array(v.string())), // step names that must be completed first
-    })),
-    createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    meta: v.optional(v.any()),
-  })
-    .index("by_createdBy", ["createdBy"])
-    .index("by_createdAt", ["createdAt"]),
-
-  // 19. Learning & Projects: Lessons (for both LMS and flows)
-  lessons: defineTable({
-    flowId: v.optional(v.id("flows")), // for flow-based lessons
-    courseId: v.optional(v.id("courses")), // for LMS lessons
-    stepName: v.optional(v.string()), // for flow-based lessons
-    title: v.optional(v.string()),
-    content: v.optional(v.string()),
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    role: v.optional(v.string()),
-    assignedAt: v.optional(v.number()),
-    assignedBy: v.optional(v.id("users")),
-    createdAt: v.optional(v.number()),
-    updatedAt: v.optional(v.number()),
-    meta: v.optional(v.any()),
-  })
-    .index("by_flowId", ["flowId"])
-    .index("by_courseId", ["courseId"])
-    .index("by_userId", ["userId"]),
-
-  // 20. Learning & Projects: Flow Progress
-  flowProgress: defineTable({
-    flowId: v.id("flows"),
-    stepName: v.string(),
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    status: v.union(
-      v.literal("Not Started"),
-      v.literal("In Progress"),
-      v.literal("Completed"),
-      v.literal("Blocked"),
-      v.literal("Skipped")
-    ),
-    notes: v.optional(v.string()),
-    startedAt: v.optional(v.number()),
-    completedAt: v.optional(v.number()),
-    updatedAt: v.number(),
-    meta: v.optional(v.any()),
-  })
-    .index("by_flowId", ["flowId"])
-    .index("by_userId", ["userId"])
-    .index("by_agentId", ["agentId"]),
-
-  // 21. Products (Shopify-Compatible)
-  products: defineTable({
-    id: v.optional(v.string()), // Shopify product ID (if syncing)
-    title: v.string(),
-    handle: v.string(),
-    description: v.optional(v.string()),
-    descriptionHtml: v.optional(v.string()),
-    vendor: v.optional(v.string()),
-    productType: v.optional(v.string()),
-    tags: v.optional(v.array(v.string())),
-    status: v.optional(v.string()), // e.g., 'active', 'draft', 'archived'
-    publishedAt: v.optional(v.number()),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    options: v.optional(v.array(v.object({
-      id: v.optional(v.string()),
-      name: v.string(),
-      values: v.array(v.string()),
-    }))),
-    variants: v.optional(v.array(v.object({
-      id: v.optional(v.string()),
-      title: v.optional(v.string()),
-      sku: v.optional(v.string()),
-      price: v.optional(v.number()),
-      compareAtPrice: v.optional(v.number()),
-      inventoryQuantity: v.optional(v.number()),
-      available: v.optional(v.boolean()),
-      selectedOptions: v.optional(v.array(v.object({
-        name: v.string(),
-        value: v.string(),
-      }))),
-      imageId: v.optional(v.string()),
-      weight: v.optional(v.number()),
-      weightUnit: v.optional(v.string()),
-      barcode: v.optional(v.string()),
-      taxable: v.optional(v.boolean()),
-      requiresShipping: v.optional(v.boolean()),
-      createdAt: v.optional(v.number()),
-      updatedAt: v.optional(v.number()),
-    }))),
-    images: v.optional(v.array(v.object({
-      id: v.optional(v.string()),
-      src: v.string(),
-      alt: v.optional(v.string()),
-      position: v.optional(v.number()),
-      createdAt: v.optional(v.number()),
-      updatedAt: v.optional(v.number()),
-    }))),
-    featuredMedia: v.optional(v.any()), // Can be image/video object
-    priceRange: v.optional(v.object({
-      min: v.number(),
-      max: v.number(),
-      currencyCode: v.optional(v.string()),
-    })),
-    compareAtPriceRange: v.optional(v.object({
-      min: v.number(),
-      max: v.number(),
-      currencyCode: v.optional(v.string()),
-    })),
-    totalInventory: v.optional(v.number()),
-    tracksInventory: v.optional(v.boolean()),
-    available: v.optional(v.boolean()),
-    seo: v.optional(v.object({
-      title: v.optional(v.string()),
-      description: v.optional(v.string()),
-    })),
-    onlineStoreUrl: v.optional(v.string()),
-    collections: v.optional(v.array(v.string())),
-    category: v.optional(v.string()),
-    metafields: v.optional(v.array(v.object({
-      namespace: v.string(),
-      key: v.string(),
-      value: v.any(),
-      type: v.optional(v.string()),
-    }))),
-  }),
-
-  // 22. Social Media Scheduling: Broadcasts
-  broadcasts: defineTable({
-    platform: v.string(), // e.g., 'twitter', 'facebook', 'linkedin'
-    content: v.string(),
-    scheduledTime: v.number(), // timestamp
-    status: v.union(
-      v.literal('scheduled'),
-      v.literal('posted'),
-      v.literal('failed'),
-      v.literal('cancelled')
-    ),
-    result: v.optional(v.string()), // e.g., post ID, error message
-    createdBy: v.id('users'),
-    agentId: v.optional(v.id('agents')),
-    groupId: v.optional(v.id('groups')),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    meta: v.optional(v.any()), // for platform-specific metadata
-  }),
-
-  // 23. AI Inference Usage Tracking
-  inferenceUsage: defineTable({
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    conversationId: v.optional(v.id("conversations")),
-    messageId: v.optional(v.id("conversationMessages")),
-    tokensUsed: v.number(),
-    cost: v.number(),
-    currency: v.optional(v.string()), // e.g., 'USD'
-    model: v.optional(v.string()), // e.g., 'gpt-4', 'gemini-1.5'
-    createdAt: v.number(),
     meta: v.optional(v.any()),
   }),
-
-  // 24. AI Evaluation Tracking (convex.dev evals)
-  evals: defineTable({
-    id: v.optional(v.string()),
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    model: v.optional(v.string()),
-    input: v.any(),
-    expectedOutput: v.optional(v.any()),
-    actualOutput: v.optional(v.any()),
-    score: v.optional(v.number()),
-    status: v.optional(v.string()), // e.g., 'pending', 'completed', 'failed'
-    error: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
+  onboardingFlow: defineTable({
+    organisationId: v.id("organisation"),
+    environmentId: v.id("environment"),
+    subscriberId: v.id("subscriber"),
+    status: v.string(),
+    personalAgentId: v.optional(v.id("agent")),
+    kycStatus: v.optional(v.string()),
     meta: v.optional(v.any()),
   }),
-
-  // 25. Simple LMS
-  courses: defineTable({
-    id: v.optional(v.string()),
-    title: v.string(),
-    description: v.optional(v.string()),
-    createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-  }),
-  lessons: defineTable({
-    id: v.optional(v.string()),
-    courseId: v.id("courses"),
-    title: v.string(),
-    content: v.optional(v.string()),
-    order: v.optional(v.number()),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-  }),
-  enrollments: defineTable({
-    id: v.optional(v.string()),
-    courseId: v.id("courses"),
-    userId: v.id("users"),
-    enrolledAt: v.number(),
-    progress: v.optional(v.number()), // percent or step
-    status: v.optional(v.string()), // e.g., 'active', 'completed', 'dropped'
-  }),
-
-  // 26. Task/Todo Manager
-  tasks: defineTable({
-    id: v.optional(v.string()),
-    title: v.string(),
-    description: v.optional(v.string()),
-    status: v.optional(v.string()), // e.g., 'todo', 'in_progress', 'done', 'archived'
-    dueDate: v.optional(v.number()),
-    assignedToUserId: v.optional(v.id("users")),
-    assignedToAgentId: v.optional(v.id("agents")),
-    createdBy: v.optional(v.id("users")),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    completedAt: v.optional(v.number()),
-    priority: v.optional(v.string()), // e.g., 'low', 'medium', 'high'
-    tags: v.optional(v.array(v.string())),
-  }),
-
-  // Subscriptions (Polar/Convex)
-  subscriptions: defineTable({
-    userId: v.id("users"),
-    productKey: v.string(), // e.g., 'premiumMonthly', 'premiumYearly'
-    productId: v.optional(v.string()), // link to products table
-    status: v.string(), // e.g., 'active', 'canceled', 'past_due'
-    currentPeriodStart: v.optional(v.number()),
-    currentPeriodEnd: v.optional(v.number()),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    meta: v.optional(v.any()),
-  })
-    .index("by_userId", ["userId"])
-    .index("by_productKey", ["productKey"]),
-
-  // AI Agent Threads (for @convex-dev/agent)
-  agentThreads: defineTable({
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-    title: v.optional(v.string()),
-    threadType: v.optional(v.string()), // e.g., 'support', 'project', 'learning'
-    context: v.optional(v.string()),
-    createdAt: v.number(),
-    updatedAt: v.optional(v.number()),
-    meta: v.optional(v.any()),
-  })
-    .index("by_userId", ["userId"])
-    .index("by_agentId", ["agentId"]),
-
-  // AI Agent Messages (for @convex-dev/agent)
-  agentMessages: defineTable({
-    threadId: v.id("agentThreads"),
-    authorId: v.optional(v.id("users")), // or agentId
-    kind: v.union(v.literal("user"), v.literal("agent"), v.literal("system")),
-    content: v.string(),
-    createdAt: v.number(),
-    vector: v.optional(v.array(v.number())),
-    meta: v.optional(v.any()),
-    status: v.optional(v.string()),
-    toolCall: v.optional(v.any()),
-    result: v.optional(v.any()),
-  })
-    .index("by_threadId", ["threadId"])
-    .index("by_authorId", ["authorId"]),
+  // ...add all other ONE/Novu tables as needed (event, reminder, task, product, broadcast, analytics, tag, comment, reaction, follow, etc.)
 });
 ```
 
+# shadcn/ui Component Mapping & Example Code
+
+This section maps major schema entities to shadcn/ui components and provides example code for rendering/managing them in the UI. See [ui.md](./ui.md) for full UI/UX details.
+
+## Summary Table: Schema Entities & shadcn/ui Components
+| Schema Entity   | shadcn/ui Components                |
+|----------------|-------------------------------------|
+| Agent          | Card, Avatar, Badge, Button         |
+| Conversation   | Card, Tabs, Badge, List, Button     |
+| Message        | Card, Badge, Avatar, Button         |
+| Group          | Card, Badge, List, Button           |
+| Tool           | Card, Badge, Button                 |
+| Assignment     | Badge, List, Button                 |
+| Progress       | ProgressBar, Badge, Card            |
+| Analytics      | Card, Tabs, Chart (custom), Badge   |
+
 ---
 
-# Example: Agent Document
-```json
-{
-  "_id": "agentId_123",
-  "name": "Director",
-  "description": "Lead orchestrator agent.",
-  "kind": "system_agent",
-  "avatarUrl": "/avatars/director.png",
-  "prompt": "You are the Director...",
-  "delegatesTo": ["agentId_Sage", "agentId_Writer"],
-  "tools": ["toolId_webSearch"],
-  "tags": ["leadership", "strategy"],
-  "model": "gpt-4",
-  "knowledge": { "foundationId": "..." },
-  "memories": [{ "summary": "User prefers concise answers." }],
-  "attachedPrompts": ["promptId_H1"],
-  "createdBy": "userId_admin",
-  "createdAt": 1710000000000,
-  "updatedAt": 1710000001000
+## Example: Agent Card
+```tsx
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+export function AgentCard({ agent }) {
+  return (
+    <Card>
+      <CardHeader className="flex items-center space-x-4">
+        <Avatar>
+          <AvatarImage src={agent.avatarUrl} />
+          <AvatarFallback>{agent.name[0]}</AvatarFallback>
+        </Avatar>
+        <CardTitle>{agent.name}</CardTitle>
+        <Badge variant="outline">{agent.kind}</Badge>
+      </CardHeader>
+      <CardContent>
+        <p>{agent.description}</p>
+        <div className="flex space-x-2 mt-2">
+          {agent.tools?.map(tool => <Badge key={tool}>{tool}</Badge>)}
+        </div>
+        <Button variant="outline" size="sm" className="mt-4">View Profile</Button>
+      </CardContent>
+    </Card>
+  );
 }
 ```
 
 ---
 
-# Relationships & Vector Search
-- **Agents, users, and conversations** are linked via participants and messages.
-- **Knowledge** is stored as vector embeddings for fast semantic search (RAG, agent memory, user docs, etc.).
-- **Tags** and **attachments** enable flexible organization and retrieval.
-- **AgentTools** and **prompts** allow for dynamic, extensible agent capabilities.
+## Example: Conversation List Item
+```tsx
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+export function ConversationListItem({ conversation }) {
+  return (
+    <Card className="flex items-center justify-between p-4 mb-2 cursor-pointer">
+      <div>
+        <h3 className="font-medium">{conversation.title}</h3>
+        <p className="text-sm text-gray-500">{conversation.lastMessagePreview}</p>
+      </div>
+      <Badge variant="outline">{conversation.status}</Badge>
+    </Card>
+  );
+}
+```
 
 ---
 
-# Developer Checklist: ONE Schema
-- [ ] All core tables and fields present and named clearly (step, template, etc.)
-- [ ] Vector search enabled for knowledge/messages
-- [ ] Relationships between agents, users, tools, prompts, and conversations are explicit
-- [ ] Social, Scheduling, LearningFlows, Assignments, and Progress tables are fully defined
-- [ ] All fields justified, minimal, and optimized for speed and security
-- [ ] Schema supports analytics, CRM, and future extensibility, enabling Turing-complete operations
+## Example: Message Bubble
+```tsx
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+
+export function MessageBubble({ message }) {
+  return (
+    <Card className="flex items-start space-x-3 p-3 mb-2">
+      <Avatar>
+        <AvatarFallback>{message.authorName[0]}</AvatarFallback>
+      </Avatar>
+      <div>
+        <div className="flex items-center space-x-2">
+          <span className="font-medium">{message.authorName}</span>
+          {message.tags?.map(tag => <Badge key={tag} variant="outline">{tag}</Badge>)}
+        </div>
+        <p>{message.content}</p>
+      </div>
+    </Card>
+  );
+}
+```
 
 ---
 
-# See Also
-- [Ontology](./ontology.md) for entity definitions and relationships
-- [Plan](./plan.md) for project steps and priorities
+## Example: Group Badge
+```tsx
+import { Badge } from "@/components/ui/badge";
 
-export type User = {
-  _id: string;
-  name: string;
-  email: string;
-  image?: string;
-  createdAt: number;
-};
+export function GroupBadge({ group }) {
+  return <Badge variant="default">{group.name}</Badge>;
+}
+```
 
-export type Agent = {
-  _id: string;
-  name: string;
-  description: string;
-  kind: "system_agent" | "user_agent";
-  avatarUrl?: string;
-  prompt: string;
-  delegatesTo?: string[];
-  tools?: string[];
-  tags?: string[];
-  model?: string;
-  knowledge?: any;
-  memories?: any;
-  attachedPrompts?: string[];
-  createdBy?: string;
-  createdAt: number;
-  updatedAt?: number;
-  updatedBy?: string;
-};
+---
 
-export type Conversation = {
-  _id: string;
-  title: string;
-  createdBy: string;
-  createdAt: number;
-  lastMessageTime?: number;
-  tags?: string[];
-};
+## Example: Tool Card
+```tsx
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-export type ConversationMessage = {
-  _id: string;
-  conversationId: string;
-  authorParticipantId: string;
-  kind: "participant" | "system";
-  type?: string;
-  step?: Step;
-  status?: string;
-  tags?: string[];
-  content: string;
-  attachments?: any[];
-  createdAt: number;
-  vector?: number[];
-  meta?: any;
-};
+export function ToolCard({ tool }) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{tool.name}</CardTitle>
+        <Badge variant="outline">Tool</Badge>
+      </CardHeader>
+      <CardContent>
+        <p>{tool.description}</p>
+      </CardContent>
+    </Card>
+  );
+}
+```
 
-export const addParticipant = mutation({
-  args: {
-    conversationId: v.id("conversations"),
-    kind: v.union(v.literal("user"), v.literal("agent")),
-    userId: v.optional(v.id("users")),
-    agentId: v.optional(v.id("agents")),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("conversationParticipants", {
-      kind: args.kind,
-      conversationId: args.conversationId,
-      userId: args.userId,
-      agentId: args.agentId,
-      status: "active",
-      isRemoved: false,
-      addedAt: Date.now(),
-    });
-  },
-});
+---
 
-export const sendMessage = mutation({
-  args: {
-    conversationId: v.id("conversations"),
-    authorParticipantId: v.id("conversationParticipants"),
-    content: v.string(),
-    step: v.optional(stepValidator),
-    kind: v.optional(v.union(v.literal("participant"), v.literal("system"))),
-    type: v.optional(v.string()),
-    tags: v.optional(v.array(v.string())),
-  },
-  handler: async (ctx, args) => {
-    await ctx.db.insert("conversationMessages", {
-      conversationId: args.conversationId,
-      authorParticipantId: args.authorParticipantId,
-      kind: args.kind ?? "participant",
-      type: args.type,
-      step: args.step,
-      status: "sent",
-      tags: args.tags,
-      content: args.content,
-      createdAt: Date.now(),
-    });
-  },
-});
+## Example: Assignment Badge
+```tsx
+import { Badge } from "@/components/ui/badge";
 
-import { query } from "./_generated/server";
+export function AssignmentBadge({ assignment }) {
+  return <Badge variant="secondary">Assigned: {assignment.agentName}</Badge>;
+}
+```
 
-export const listMessages = query({
-  args: { conversationId: v.id("conversations") },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("conversationMessages")
-      .withIndex("by_conversationId", (q) => q.eq("conversationId", args.conversationId))
-      .order("asc")
-      .collect();
-  },
-});
+---
 
-import { mutation } from "./_generated/server";
-import { v } from "convex/values";
+## Example: Progress Bar
+```tsx
+import { ProgressBar } from "@/components/ui/progress-bar";
 
-export const createAgent = mutation({
-  args: {
-    name: v.string(),
-    description: v.string(),
-    kind: v.union(v.literal("system_agent"), v.literal("user_agent")),
-    createdBy: v.optional(v.id("users")),
-    prompt: v.optional(v.string()),
-    avatarUrl: v.optional(v.string()),
-    delegatesTo: v.optional(v.array(v.id("agents"))),
-    tools: v.optional(v.array(v.id("tools"))),
-    tags: v.optional(v.array(v.string())),
-    model: v.optional(v.string()),
-    attachedPrompts: v.optional(v.array(v.id("prompts"))),
-  },
-  handler: async (ctx, args) => {
-    const agentId = await ctx.db.insert("agents", {
-      ...args,
-      createdAt: Date.now(),
-    });
-    return agentId;
-  },
-});
+export function StepProgress({ progress }) {
+  return <ProgressBar value={progress.percent} />;
+}
+```
 
-export const addKnowledge = mutation({
-  args: {
-    ownerType: v.union(v.literal("agent"), v.literal("user")),
-    ownerId: v.string(),
-    content: v.string(),
-    vector: v.optional(v.array(v.number())),
-    tags: v.optional(v.array(v.string())),
-  },
-  handler: async (ctx, args) => {
-    const knowledgeId = await ctx.db.insert("knowledge", {
-      ...args,
-      createdAt: Date.now(),
-    });
-    return knowledgeId;
-  },
-});
+---
 
-import { query } from "./_generated/server";
-
-export const searchKnowledgeByTag = query({
-  args: { tag: v.string() },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("knowledge")
-      .filter((q) => q.contains(q.field("tags"), args.tag))
-      .collect();
-  },
-});
+These examples show how to map schema entities to shadcn/ui components for a modern, extensible, and permission-aware UI. See [ui.md](./ui.md) for more details and full UI/UX patterns.
 

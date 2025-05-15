@@ -1,0 +1,374 @@
+Ran tool
+
+Search files...
+
+Ran tool
+
+Ran tool
+
+Ran tool
+
+Ran tool
+
+Ran tool
+
+Ran tool
+
+Read file: convex/conversations/mutations.ts
+
+Read file: convex/conversations/model.ts
+
+Read file: convex/conversationParticipants/model.ts
+
+Read file: convex/agents/model.ts
+
+Read file: convex/ai/triageMessage.ts
+
+Read file: convex/ai/utils.ts
+
+Read file: convex/conversations/internalMutations.ts
+
+Read file: convex/agents/internalMutations.ts
+
+Read file: convex/conversations/queries.ts
+
+Read file: convex/schema.ts
+Here's a plan and implementation outline for onboarding, triage, and collaborative team (group) creation, giving the Director agent responsibility for these flows. This leverages your current Convex backend, agent/team schema, and triage logic.
+
+---
+
+## 1. **Onboarding Flow Implementation**
+
+### a. **System Welcome & Director Handoff**
+- When a new user is created or joins, create a new conversation for onboarding.
+- Add the user as a participant.
+- Add a system message with the onboarding prompt (as you provided).
+- Add the Director agent as a participant (using the `joinTriageAgentToConversationIfNotAlreadyJoined` logic).
+- The Director agent then sends its onboarding message, takes over, and begins triage.
+
+### b. **Convex Mutations/Actions**
+- Use or extend the existing `createConversation`, `addUser`, and `addAgentOrReactivate` logic.
+- Use the `joinTriageAgentToConversationIfNotAlreadyJoined` to ensure the Director is present.
+- Use the `sendSystemMessageToConversation` utility to post onboarding/system messages.
+
+---
+
+## 2. **Director Agent: Triage & Team Creation**
+
+### a. **Triage Logic**
+- The Director agent is the triage agent (see `convex/ai/triageMessage.ts` and `convex/ai/utils.ts`).
+- When a message is sent in a conversation, the Director can:
+  - Analyze the message.
+  - Decide which agents (or humans) should be added to the conversation.
+  - Add them as participants (using `addAgentOrReactivate` or `addUser`).
+  - Optionally, create a new group (team) if the collaboration should be formalized.
+
+### b. **Team/Group Creation**
+- To create a group, add a new record to the `groups` table (if present in your schema) or use a convention (e.g., a conversation with a special tag or type).
+- Add the relevant agents and users as participants.
+- Announce the new team/group in the conversation.
+
+---
+
+## 3. **Example: Onboarding Action**
+
+Here's a high-level pseudocode for the onboarding action:
+
+```typescript
+export const onboardNewUser = action({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    // 1. Create onboarding conversation
+    const conversationId = await ctx.runMutation(internal.conversations.create, {
+      title: "Welcome to ONE Network",
+    });
+
+    // 2. Add user as participant
+    await ctx.runMutation(internal.conversationParticipants.addUser, {
+      conversationId,
+      userId,
+    });
+
+    // 3. Add system onboarding message
+    await sendSystemMessageToConversation(ctx, {
+      conversationId,
+      content: SYSTEM_ONBOARDING_PROMPT,
+      authorParticipantId: /* system participant id */,
+    });
+
+    // 4. Add Director agent as participant
+    const { agent: director, participant: directorParticipant } =
+      await getTriageAgentAndEnsureItIsJoinedToConversation(ctx, conversationId, userId);
+
+    // 5. Director sends onboarding message
+    await ctx.runMutation(internal.conversationMessages.sendFromTriageAgent, {
+      conversationId,
+      content: DIRECTOR_ONBOARDING_SCRIPT,
+    });
+
+    // 6. Optionally, trigger Director to triage and form teams as needed
+  }
+});
+```
+
+---
+
+## 4. **Director Agent: Triage & Team Formation**
+
+- The Director agent's triage logic (see `triageMessage.ts`) can be extended to:
+  - Detect when a new task or topic requires a team.
+  - Create a group/team (if not already present).
+  - Add relevant agents/humans as participants.
+  - Announce the team formation in the conversation.
+
+---
+
+## 5. **Schema/Infra Notes**
+
+- **Groups/Teams:** If you want formal group objects, ensure a `groups` table exists in your schema. Otherwise, use conversations with special tags.
+- **Agent Roles:** The Director agent is always present in onboarding and triage flows.
+- **Extensibility:** The Director can delegate to other agents (Sage, Writer, etc.) by adding them as participants and mentioning them.
+
+---
+
+## 6. **Next Steps**
+
+- Implement the onboarding action/mutation as above.
+- Ensure the Director agent's triage logic can add agents/humans and create teams/groups as needed.
+- Optionally, add a UI for users to see and manage their teams/groups.
+
+---
+
+**Summary:**  
+- The onboarding flow is automated: system welcomes, Director takes over, triages, and forms teams.
+- The Director agent is responsible for triage and team creation, using existing Convex logic for participants and conversations.
+- Extend the Director's logic to create and manage collaborative groups as needed.
+
+Would you like a concrete code implementation for the onboarding action, or for extending the Director's triage logic to create teams/groups? If so, specify which file or flow you want to start with!
+
+
+
+Absolutely! Here's how to architect your **ONE Network** schema and onboarding flow, using the Nuvo (Novu) multi-tenant notification schema as your foundation, and layering in your unique agent, tool, and permission-sharing logic. This will ensure a robust, extensible, and elegant system for connecting humans and AI agents, with seamless onboarding and collaboration.
+
+---
+
+## 1. **Schema Design: Nuvo Foundation + ONE Extensions**
+
+### **A. Core Nuvo/Novu Entities**
+- **Subscribers**: Every user (human or agent) is a subscriber.
+- **Organisations**: Multi-tenant support; each org can have its own users, agents, groups, channels, etc.
+- **Groups**: Collections of subscribers (users/agents) for sharing and collaboration.
+- **Channels**: Communication channels (chat, email, SMS, etc.).
+- **Workflows**: Notification and automation flows.
+- **Topics**: For notification targeting and segmentation.
+
+### **B. ONE Extensions**
+- **Agents**: AI agents (system, user-created, personal assistants).
+- **Tools**: Capabilities that can be granted to agents (web search, email, calendar, etc.).
+- **Permissions/Sharing**: Everything is private by default. Users can make things public or share with individuals/groups.
+- **Personal AI Assistant**: Each user can generate their own agent, which is linked to their subscriber/user record.
+- **Knowledge**: Connect external knowledge sources (Google Drive, Notion, etc.) to users/agents.
+- **KYC**: Option to verify identity via a Know Your Customer agent.
+
+### **C. Example Schema Outline**
+```typescript
+// Pseudocode/TypeScript-style
+organisation {
+  _id
+  name
+  // ...
+}
+
+subscriber {
+  _id
+  organisationId
+  email
+  phone
+  isHuman: boolean
+  agentId?: string // If this is a personal AI assistant
+  // ...
+}
+
+agent {
+  _id
+  organisationId
+  ownerId // subscriberId of the human owner
+  kind: "system" | "user" | "personal"
+  name
+  description
+  tools: [toolId]
+  knowledge: [knowledgeId]
+  // ...
+}
+
+group {
+  _id
+  organisationId
+  name
+  members: [subscriberId]
+  // ...
+}
+
+tool {
+  _id
+  name
+  description
+  // ...
+}
+
+channel {
+  _id
+  organisationId
+  type: "chat" | "email" | "sms" | ...
+  // ...
+}
+
+permission {
+  _id
+  resourceType
+  resourceId
+  ownerId
+  isPublic: boolean
+  sharedWith: [subscriberId | groupId]
+  // ...
+}
+```
+- **Everything starts private.** Users can make resources public or share with individuals/groups.
+- **Director agent** is a system agent present in every org, responsible for triage, onboarding, and team formation.
+
+---
+
+## 2. **Onboarding Flow (as described in your prompt)**
+
+### **A. Steps**
+1. **User joins:** Create a new subscriber and (optionally) organisation.
+2. **Start onboarding conversation:** Create a new channel/conversation, add the user and system agents (Director, etc.).
+3. **System welcome message:** Sent by the system, introducing the network, Anthony, and the AI assistant.
+4. **Director agent takes over:** Explains the team, capabilities, and offers to create a personal AI assistant.
+5. **Personal AI assistant creation:** If accepted, collect info (email, website, description, docs), generate agent, and add to conversation.
+6. **KYC option:** Offer video call with KYC agent.
+7. **Tool/knowledge integration:** Explain how to grant tools and connect knowledge sources.
+8. **Task management:** Personal assistant helps user create tasks, which Director can triage and assign to teams.
+9. **Collaboration:** Users can @mention anyone (human or agent), invite by email/phone, and form groups for projects, customers, etc.
+10. **Permission/sharing:** All resources (agents, knowledge, tools, groups) are private by default, can be made public or shared.
+
+### **B. Example Onboarding Action (Convex/TypeScript)**
+```typescript
+export const onboardNewUser = action({
+  args: { userId: v.id("subscribers") },
+  handler: async (ctx, { userId }) => {
+    // 1. Create onboarding conversation
+    const conversationId = await ctx.runMutation(internal.channels.create, {
+      type: "chat",
+      title: "Welcome to ONE Network",
+      organisationId: /* orgId */,
+    });
+
+    // 2. Add user and Director agent as participants
+    await ctx.runMutation(internal.channels.addParticipant, { conversationId, subscriberId: userId });
+    const directorAgent = await getOrCreateDirectorAgent(ctx, /* orgId */);
+    await ctx.runMutation(internal.channels.addParticipant, { conversationId, subscriberId: directorAgent._id });
+
+    // 3. Send system onboarding message
+    await sendSystemMessage(ctx, {
+      conversationId,
+      content: SYSTEM_ONBOARDING_PROMPT,
+      authorParticipantId: /* system participant id */,
+    });
+
+    // 4. Director agent sends intro and offers to create personal AI assistant
+    await sendAgentMessage(ctx, {
+      conversationId,
+      agentId: directorAgent._id,
+      content: DIRECTOR_ONBOARDING_SCRIPT,
+    });
+
+    // 5. If user accepts, create personal agent, add to conversation, etc.
+    // ... (rest of flow)
+  }
+});
+```
+
+---
+
+## 3. **Permissions & Sharing**
+
+- **Everything is private by default.**
+- **Make public:** User can toggle a resource to public.
+- **Share:** User can share with specific subscribers or groups.
+- **Director agent** can help manage permissions, e.g., "Would you like to share this agent with your team?"
+
+---
+
+## 4. **Team/Group Creation & Collaboration**
+
+- **Groups** are first-class: for friends, customers, staff, investors, etc.
+- **Director agent** can create groups, add members, and assign tasks.
+- **@mention** to add anyone (human or agent) to a conversation.
+- **Invite by email/phone** if not already in the network.
+
+---
+
+## 5. **Knowledge & Tool Integration**
+
+- **Connect knowledge sources:** Google Drive, Notion, CMS, etc.
+- **Grant tools:** Web browsing, messaging, email, calendar, etc.
+- **Personal AI assistant** can use these to help the user.
+
+---
+
+## 6. **Summary**
+
+- **ONE Network** = Nuvo/Novu multi-tenant schema + agents, tools, and elegant permission sharing.
+- **Onboarding** is seamless, with Director agent guiding the user, creating personal assistants, and forming collaborative teams.
+- **Everything is private by default,** with simple controls to make public or share.
+- **Director agent** is the orchestrator, triage, and team builder.
+
+---
+
+**Ready for code?**  
+If you want, I can generate:
+- A full Convex schema file (TypeScript) for this model.
+- The onboarding action/mutation.
+- Director agent logic for triage and team creation.
+- Permission and sharing utilities.
+
+Let me know which part you want to see implemented first!  
+(And for more on Novu's notification concepts, see [Novu Docs](https://docs.novu.co/platform/overview))
+
+# ONE Network Schema & Onboarding: Core Tasks Checklist
+
+> This checklist guides the implementation of the Nuvo/Novu-based schema, agent/team extensions, and onboarding flow for the ONE Network.
+
+## Core Schema Tasks
+- [ ] Define `organisation` table (multi-tenant support)
+- [ ] Define `subscriber` table (users, agents, isHuman, etc.)
+- [ ] Define `agent` table (system, user, personal agents)
+- [ ] Define `group` table (collaborative teams)
+- [ ] Define `tool` table (capabilities for agents)
+- [ ] Define `channel` table (chat, email, SMS, etc.)
+- [ ] Define `permission` table (private by default, sharing/public controls)
+- [ ] Define `knowledge` table (external knowledge sources)
+- [ ] Define `workflow` and `topic` tables (for notifications/automation)
+- [ ] Ensure all tables have `organisationId` for multi-tenancy
+
+## Onboarding & Collaboration Tasks
+- [ ] Implement onboarding action/mutation:
+  - [ ] Create onboarding conversation/channel
+  - [ ] Add user and Director agent as participants
+  - [ ] Send system onboarding message
+  - [ ] Director agent sends intro, offers to create personal AI assistant
+  - [ ] If accepted, collect info and generate personal agent
+  - [ ] Add personal agent to conversation
+  - [ ] Offer KYC (Know Your Customer) option
+  - [ ] Explain tool/knowledge integration
+  - [ ] Personal agent helps user create initial task list
+  - [ ] Director agent triages tasks, forms teams/groups as needed
+- [ ] Implement @mention logic to add users/agents to conversations
+- [ ] Implement invite-by-email/phone for non-network users
+- [ ] Implement group/team creation and sharing logic
+- [ ] Implement permission/sharing UI and backend (private, public, share with users/groups)
+
+---
+
+# (Continue with schema and implementation details below)

@@ -10,13 +10,7 @@ import { routes, useCurrentAgentId } from "../../../routes";
 import { AgentAvatar } from "@/components/ui/agent-avatar";
 import { Input } from "@/components/ui/input";
 
-type Agent = {
-  _id: Id<"agents">;
-  name: string;
-  description: string;
-  status: "idle" | "active" | "processing";
-  avatarUrl: string;
-};
+const DEFAULT_AGENT_NAME = "New Agent";
 
 export const AgentList = () => {
   const agents = useQuery(api.agents.queries.listAll);
@@ -36,17 +30,22 @@ export const AgentList = () => {
     );
   }, [agents, search]);
 
+  const handleCreate = () => {
+    createAgent()
+      .then((agentId) => {
+        setSearch("");
+        routes.agent({ agentId }).push();
+      })
+      .catch(onApiError);
+  };
+
   return (
     <>
       <div className="p-4">
         <Button
           className="w-full"
           variant="default"
-          onClick={() => {
-            void createAgent()
-              .then((agentId) => routes.agent({ agentId }).push())
-              .catch(onApiError);
-          }}
+          onClick={handleCreate}
         >
           <Plus className="h-5 w-5" />
           New Agent

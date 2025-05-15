@@ -13,9 +13,7 @@ export default function PeopleList() {
     const s = search.trim().toLowerCase();
     if (!s) return users;
     return users.filter(
-      (u) =>
-        u.name.toLowerCase().includes(s) ||
-        (u.email && u.email.toLowerCase().includes(s))
+      (u) => (u.name ?? "").toLowerCase().includes(s)
     );
   }, [users, search]);
 
@@ -36,17 +34,14 @@ export default function PeopleList() {
           >
             <Avatar>
               {user.image ? (
-                <AvatarImage src={user.image} alt={user.name} />
+                <AvatarImage src={user.image} alt={user.name ?? "?"} />
               ) : (
-                <AvatarFallback>{user.name[0]}</AvatarFallback>
+                <AvatarFallback>{(user.name ?? "?")[0]}</AvatarFallback>
               )}
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="font-medium text-primary-foreground truncate">
-                {user.name}
-              </div>
-              <div className="text-sm text-muted-foreground/80 truncate">
-                {user.email}
+                {user.name ?? "Unknown"}
               </div>
             </div>
           </div>

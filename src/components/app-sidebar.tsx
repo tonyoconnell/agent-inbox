@@ -14,6 +14,8 @@ import { BookOpen, Users, Wrench, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { UserProfile } from "@/components/authenticated/conversations/UserProfile";
+import { TaskList } from "@/components/authenticated/sidebar/TaskList";
+import { routes } from "@/routes";
 
 export interface SidebarNavItem {
   key: string;
@@ -47,6 +49,22 @@ export function AppSidebar({
           <SidebarGroupLabel className="text-muted-foreground px-2 pb-2">Main</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1 px-1">
+              <SidebarMenuItem key="tasks">
+                <SidebarMenuButton asChild isActive={activeNav === "tasks"}>
+                  <button
+                    className={`flex items-center gap-3 w-full px-2 py-2 rounded-lg transition-colors relative ${
+                      activeNav === "tasks"
+                        ? "bg-accent/80 text-accent-foreground font-semibold shadow border-l-4 border-primary"
+                        : "hover:bg-muted/60 text-muted-foreground"
+                    }`}
+                    style={activeNav === "tasks" ? { boxShadow: "0 2px 8px rgba(0,0,0,0.08)" } : {}}
+                    onClick={() => routes.tasks().push()}
+                  >
+                    <BookOpen className="w-5 h-5" />
+                    <span>Tasks</span>
+                  </button>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               {navItems.map((item) => {
                 const active = activeNav === item.key;
                 return (

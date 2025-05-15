@@ -33,6 +33,7 @@ import { useApiErrorHandler } from "../misc/errors";
 import { UsersPage } from "./users/UsersPage";
 import ToolList from "./sidebar/ToolList";
 import PeopleList from "./sidebar/PeopleList";
+import { TaskList } from "./sidebar/TaskList";
 
 const MIDDLE_TABS = [
   { value: "now", label: "Now" },
@@ -171,10 +172,11 @@ export function AuthenticatedContent() {
           </div>
           {/* List of conversations/agents/tools/people as cards */}
           <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-2 scrollbar-thin scrollbar-thumb-[#18181b] scrollbar-track-[#101014]">
-            {activeNav === "conversations" ? <MainConversationList /> : null}
-            {activeNav === "agents" ? <MainAgentList /> : null}
-            {activeNav === "tools" ? <ToolList /> : null}
-            {activeNav === "people" ? <PeopleList /> : null}
+            {route.name === "tasks" ? <TaskList /> : null}
+            {(route.name === "home" || route.name === "conversation") ? <MainConversationList /> : null}
+            {route.name === "agent" ? <MainAgentList /> : null}
+            {route.name === "tools" ? <ToolList /> : null}
+            {route.name === "profile" ? <PeopleList /> : null}
           </div>
         </main>
         {/* Right Panel */}

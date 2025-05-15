@@ -110,3 +110,106 @@ The ONE Agent Team architecture transforms the application from a simple chatbot
 - [Ontology](./ontology.md)
 - [Schema](./schema.md)
 - [Workflow](./workflow.md)
+
+# ONE Agent Team: Roles, Schema, and Orchestration
+
+## Agent Roles & Summary Table
+
+| Agent Role   | Purpose/Expertise                | Key Schema Fields                |
+|--------------|----------------------------------|----------------------------------|
+| Director     | Orchestrates, delegates, triages | kind, delegatesTo, team, assignments |
+| Sage         | Knowledge base, context provider | knowledge, tools, meta           |
+| Teacher      | Explains, guides learning        | flows, lessons, progress         |
+| Writer       | Generates content/assets         | tools, knowledge, tags           |
+| Marketer     | Campaigns, hooks, gifts          | tools, flows, assignments        |
+| Seller       | Sales, conversion optimization   | tools, flows, assignments        |
+| Media Buyer  | Paid media, analytics            | tools, analytics                 |
+| Advocate     | Reviews, referrals, advocacy     | flows, assignments               |
+| Guide        | Onboarding, customer journey     | flows, progress, assignments     |
+
+## Agent Configuration & Schema Mapping
+
+Each agent is defined in the `agent` table (see schema.md):
+- `name`, `description`, `kind`, `tools`, `knowledge`, `delegatesTo`, `meta`, `createdBy`, `createdAt`, `updatedAt`, `tags`, `avatarUrl`
+- Agents are assigned to flows, lessons, and chat threads via `assignments`, `progress`, `agentThreads`, `agentMessages`.
+
+**Example: Writer Agent JSON**
+```json
+{
+  "_id": "agentId_writer",
+  "name": "Writer",
+  "description": "Generates marketing copy and creative assets.",
+  "kind": "system",
+  "tools": ["toolId_webSearch", "toolId_summarizer"],
+  "knowledge": ["knowledgeId_foundation"],
+  "tags": ["copywriting", "content"],
+  "createdBy": "userId_admin",
+  "createdAt": 1710000000000,
+  "avatarUrl": "/avatars/writer.png",
+  "meta": { "custom": true }
+}
+```
+
+## Agent Orchestration & Team Formation
+
+- The **Director** agent forms teams, delegates tasks, and tracks assignments/progress in the schema (`assignments`, `progress`).
+- Teams are dynamically created for projects, onboarding, or campaigns.
+- Example: Director assigns Writer and Marketer to a "Gift" step in a flow, tracked in `assignments` and `progress`.
+
+**Example: Team Assignment Mutation (TypeScript/Convex)**
+```typescript
+export const assignAgentsToStep = mutation(async ({ db }, { flowId, step, agentIds }) => {
+  for (const agentId of agentIds) {
+    await db.insert("assignments", {
+      flowId,
+      step,
+      agentId,
+      assignedAt: Date.now(),
+      status: "assigned"
+    });
+  }
+});
+```
+
+## Permissions, Visibility, and Analytics
+
+- Agent actions, assignments, and collaborations are tracked for analytics (see analytics.md).
+- Permissions and visibility are enforced via the `permissions` table.
+- Example: Only certain agents can access specific flows or knowledge, as defined in `permissions`.
+
+## Concrete Examples
+
+### Agent Creation
+```typescript
+export const createAgent = mutation(async ({ db }, { name, kind, tools, knowledge, createdBy }) => {
+  return db.insert("agent", {
+    name,
+    kind,
+    tools,
+    knowledge,
+    createdBy,
+    createdAt: Date.now(),
+    meta: {}
+  });
+});
+```
+
+### Team Formation
+- Director creates a team for a campaign, adds agents via `assignments`.
+
+### Assignment to Flows/Lessons
+- Assign agents to steps, tracked in `assignments` and `progress`.
+
+### Agent-to-Agent Collaboration
+- Agents collaborate in a chat thread (`agentThreads`, `agentMessages`).
+
+## Cross-References
+- See [schema.md](./schema.md) for table/field details.
+- See [ontology.md](./ontology.md) for relationships.
+- See [analytics.md](./analytics.md) for measuring agent/team impact.
+
+## Extensibility
+- Add new agent types, roles, or orchestration patterns using `meta` fields and extensible schema.
+- Schema supports future growth without breaking existing logic.
+
+The ONE Agent Team architecture transforms the application from a simple chatbot into a collaborative, multi-expert AI system designed to guide users systematically through the Elevate Framework and beyond.

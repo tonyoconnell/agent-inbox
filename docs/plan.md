@@ -4,74 +4,79 @@ order: 1
 description: ONE plan to safely migrate to a Turing-complete agent system
 ---
 
-# ONE Agent System Project Plan (2024)
+# Schema Migration Task System
 
-## Schema Migration Roadmap (Top Priority)
+This section provides a full-featured, collaborative task system for safely migrating to the new schema while keeping the app fully functional. Use this as your live migration board.
 
-To upgrade the current codebase to the new, Turing-complete schema **without breaking anything**, follow this stepwise, safety-first plan:
+## How to Use This Task System
+- Each task has a description, owner, priority, dependencies, and status.
+- Use checkboxes to track progress: [ ] = not started, [/] = in progress, [x] = done.
+- Assign owners and update status as you work.
+- Add new tasks using the template below.
+- Reference the detailed roadmap and schema.md for context.
 
-### 1. Schema Gap Analysis
-- **Deliverables:**
-  - Compare new schema (docs/schema.md) to current Convex schema and codebase
-  - List all changes needed (tables, fields, types, indexes)
-- **Safety:**
-  - No changes yet; just analysis and planning
-
-### 2. Incremental Schema Upgrade
-- **Deliverables:**
-  - Add new tables/fields as optional (avoid breaking existing code)
-  - Update validators/types and add new indexes
-- **Safety:**
-  - Do not remove or rename fields in a single step—deprecate first
-  - Add new fields as optional, keep old fields until migration is complete
-
-### 3. Codebase Refactor
-- **Deliverables:**
-  - Update backend logic (models, mutations, queries) to support new schema
-  - Update frontend to read/write new fields, maintain compatibility
-- **Safety:**
-  - Refactor in small, testable increments
-  - Use feature flags or toggles for risky changes
-
-### 4. Data Migration
-- **Deliverables:**
-  - Write/run scripts or mutations to backfill and migrate data
-  - Validate data integrity at each step
-- **Safety:**
-  - Take full backups before each migration step
-  - Plan for rollback; every migration step should be reversible
-
-### 5. Testing & QA
-- **Deliverables:**
-  - Expand automated and manual tests for all core flows
-  - Test with both old and new data
-- **Safety:**
-  - Monitor for errors and regressions at each step
-
-### 6. Deprecate & Clean Up
-- **Deliverables:**
-  - Remove old fields/tables only after migration is complete and tested
-  - Remove legacy code
-- **Safety:**
-  - Clean up only after full validation and sign-off
-
-### 7. Launch & Monitor
-- **Deliverables:**
-  - Monitor for errors, performance, and data issues post-migration
-  - Rollback if any critical issues are found
-- **Safety:**
-  - Keep rollback plan and backups ready
+### Task Template
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+|                  |       |          |              | [ ]    |
 
 ---
 
-## Agent System Implementation (Sub-Priority)
+## Migration Task Board
 
-The following steps remain important, but are now sequenced after the migration:
+### 1. Schema File Update
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+| Review new schema in schema.md |        | High     |              | [ ]    |
+| Add new tables to schema.ts |        | High     | Review new schema | [ ]    |
+| Add new fields to existing tables (as optional) |        | High     | Add new tables | [ ]    |
+| Update validators/types for new/changed fields |        | High     | Add new fields | [ ]    |
+| Add/verify indexes for new tables/fields |        | Medium   | Update validators | [ ]    |
+| Document all changes in code/comments |        | Medium   | All above | [ ]    |
 
-1. Finalise Schema (see migration steps above)
-2. Seed the Initial Set of System Agents in the Database
-3. Scaffold the Convex Functions/Actions for Agent Logic
-4. Build or Update the Frontend Agent Profile Components
+### 2. Migration Scripts & Code Changes
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+| Write migration scripts for new fields/tables |        | High     | Schema file update | [ ]    |
+| Backfill data for new fields (e.g., createdAt) |        | High     | Migration scripts | [ ]    |
+| Copy/rename legacy fields as needed |        | Medium   | Migration scripts | [ ]    |
+| Add feature flags/toggles for risky changes |        | High     | Migration scripts | [ ]    |
+| Update backend logic for new schema |        | High     | Migration scripts | [ ]    |
+| Update frontend logic for new schema |        | High     | Backend update | [ ]    |
+| Integrate ONE Playbook (Elevate Framework) analytics example: Implement schema support for playbook steps (Hook, Gift, etc.), update analytics dashboards, track agent/team collaboration, ensure permission-aware visualizations, and document with examples in analytics.md. See new section in analytics.md for canonical example. |        | High     | Frontend/backend update, analytics schema | [ ]    |
+| Maintain backward compatibility |        | High     | Backend/frontend update | [ ]    |
+| Communicate changes to team |        | High     | All above | [ ]    |
+
+### 3. Data Migration
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+| Write/run data migration scripts |        | High     | Migration scripts/code | [ ]    |
+| Validate data integrity after each step |        | High     | Data migration | [ ]    |
+| Take full backups before each migration |        | High     | Data migration | [ ]    |
+| Plan and test rollback for each step |        | High     | Data migration | [ ]    |
+
+### 4. Testing & QA
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+| Expand automated tests for new schema |        | High     | Backend/frontend update | [ ]    |
+| Expand manual tests for all flows |        | High     | Backend/frontend update | [ ]    |
+| Test with both old and new data |        | High     | Data migration | [ ]    |
+| Monitor for errors/regressions |        | High     | Testing | [ ]    |
+
+### 5. Deprecate & Clean Up
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+| Remove old fields/tables after migration |        | Medium   | Data migration, QA | [ ]    |
+| Remove legacy code |        | Medium   | Remove old fields | [ ]    |
+| Final documentation update |        | Medium   | Clean up | [ ]    |
+
+### 6. Launch & Monitor
+| Task Description | Owner | Priority | Dependencies | Status |
+|------------------|-------|----------|--------------|--------|
+| Launch with new schema |        | High     | All above | [ ]    |
+| Monitor for errors/performance issues |        | High     | Launch | [ ]    |
+| Rollback if critical issues found |        | High     | Launch | [ ]    |
+| Keep rollback plan and backups ready |        | High     | Launch | [ ]    |
 
 ---
 
@@ -90,53 +95,4 @@ The following steps remain important, but are now sequenced after the migration:
 - **Zero downtime, no data loss, robust testing** are the guiding principles
 - Communicate changes and migration steps clearly to all team members
 - Document every change and migration step for future reference
-
- Here's a detailed, actionable checklist for the incremental schema upgrade, based on the gap analysis. This will guide you step-by-step through the migration, ensuring nothing is missed and everything is done safely.
-🟢 Incremental Schema Upgrade Checklist
-1. Add New Tables (as optional, non-breaking)
-[ ] tools
-[ ] attachments
-[ ] knowledge
-[ ] tags
-[ ] reactions
-[ ] comments
-[ ] follows
-[ ] events
-[ ] reminders
-[ ] flows
-[ ] lessons
-[ ] progress
-2. Update Existing Tables
-[ ] agents: Add/rename fields (delegatesTo, tools as IDs, canGuideSteps, etc.; replace goal, systemPrompt, personality, instructions with a single prompt field)
-[ ] prompts: Add step, learningFlowId, orderInFlow, etc.
-[ ] conversationMessages: Add step, vector, meta, attachments, etc.
-[ ] conversations: Add tags, createdAt, etc.
-[ ] conversationParticipants: Add status, isRemoved, addedAt, etc.
-3. Add/Update Indexes
-[ ] Add indexes for new tables (see schema)
-[ ] Add/verify indexes for learning, assignments, progress, etc.
-4. Update Validators/Types
-[ ] Update all validators to match new field types and optionality
-[ ] Update TypeScript types/interfaces for all affected entities
-5. Update Backend Logic
-[ ] Update models, mutations, and queries to support new fields/tables
-[ ] Ensure backward compatibility during transition
-6. Update Frontend
-[ ] Update UI to read/write new fields (agents, messages, learning, social, etc.)
-[ ] Add support for new features (learning flows, reactions, scheduling, etc.)
-7. Data Migration
-[ ] Write scripts/mutations to backfill new fields (e.g., set createdAt where missing)
-[ ] Migrate/convert data for renamed fields or changed types
-[ ] Validate data integrity after each migration step
-8. Testing & QA
-[ ] Expand automated and manual tests for all flows (old and new data)
-[ ] Test all new features and data paths
-9. Deprecate & Clean Up
-[ ] Remove old fields/tables only after migration is complete and tested
-[ ] Remove legacy code
-10. Launch & Monitor
-[ ] Monitor for errors, performance, and data issues post-migration
-[ ] Rollback if any critical issues are found
-Next Step:
-Would you like to start with the schema file update (step 1), or do you want a more granular breakdown for each table/field?
-Let me know if you want to proceed with the schema update, or if you want to review/plan the migration scripts and code changes in more detail!
+- Reference `schema.md` and `ontology.md` for field/entity details

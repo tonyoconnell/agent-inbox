@@ -1,95 +1,115 @@
 ---
-title: Features
-description: Learn how to set up and start building with the ONE framework
-date: 2024-02-02
-tags:
-  - agents
+title: ONE User Guide (Unified System)
+description: How to use the ONE network to connect, collaborate, and grow with humans and AI agents
 order: 1
+---
+
+# Introduction: Welcome to ONE
+
+**ONE is a network that connects humans with AI agents and each other.**
+
+When you join ONE:
+- You'll meet Anthony (the founder) and your personal AI assistant.
+- A new conversation is started, and you're introduced to the Director agent—your guide to relevant humans and AI agents.
+- Director explains the team's capabilities (humans and AI experts in Marketing, Sales, Service, Design, Engineering, Law, Intelligence, etc.).
+- You can add anyone to a conversation with an @ mention. If they're not in your network, add their email or phone to invite them.
+- On your first time, Director will offer to create your own personal AI assistant, who will:
+  - Gather info about you (email, website, description, docs)
+  - Kick off workflows to synthesize your data
+  - Help you connect tools, knowledge, and systems
+  - Represent you across every marketing channel
+- You can verify your identity with a video call from our Know Your Customer Agent.
+- You can give agents tools (web, messaging, phone, email, calendar, wallet, etc.) and connect knowledge (Google Drive, Notion, CMS, etc.).
+- You can generate your own agents for private or shared use, and create groups for friends, customers, staff, investors, or partners.
+- The goal: connect humans and AI agents with each other, premium tools, knowledge, and models.
+
+---
+
+## Summary Table: User Actions & ONE System Features
+| User Action                | ONE System Feature/Entity         |
+|---------------------------|-----------------------------------|
+| Sign in                   | Authentication, onboarding flow   |
+| Meet Director/Assistant   | Director agent, personal agent    |
+| Start conversation        | Conversation, channel, onboarding |
+| @mention anyone           | Mention logic, invite flow        |
+| Invite by email/phone     | Onboarding, invite, group         |
+| Create agent              | Agent/team model, permissions     |
+| Create group              | Group/team, sharing, permissions  |
+| Add tools/knowledge       | Tool/knowledge integration        |
+| Assign tasks              | Task, assignment, progress        |
+| Share resources           | Permission-aware sharing          |
+| Chat, collaborate         | Conversation, agent, group        |
+
 ---
 
 # 2. User Guide
 
-This section guides you through using the Agent Inbox application, from signing in to managing conversations and agents.
+This section guides you through using the ONE network, from signing in to managing conversations, agents, and collaboration.
 
-2.1. **Accessing Agent Inbox**
+## 2.1. Accessing ONE
 
-To start using Agent Inbox, simply navigate to the application URL in your web browser:
-[https://agents.one.ie](https://agents.one.ie)
+Go to [https://agents.one.ie](https://agents.one.ie) in your browser.
 
-2.2. **Authentication**
+## 2.2. Authentication & Onboarding
+- **Sign in/up:** Use GitHub or email/password. (See UI for details.)
+- **Onboarding:**
+  - On first login, you're greeted by Director and your personal AI assistant.
+  - Director explains the team, capabilities, and offers to create your assistant.
+  - If you accept, you'll enter info (email, website, description, docs) to help your agent understand you.
+  - Your agent is created, added to the conversation, and starts gathering/synthesizing your data.
+  - You can verify your identity with a video call from the Know Your Customer Agent.
 
-Agent Inbox requires you to sign in to access its features.
+## 2.3. Interface Overview
+- **Sidebar:** Navigation for conversations, agents, groups, tools, analytics.
+- **Main Area:** Chat, agent profiles, group/team management, analytics dashboards.
+- **Permission-aware:** Only see features/data you have access to.
 
-- **Signing In/Up:**
-  - **GitHub:** Click the "Sign in with GitHub" button on the initial screen (`SignInWithGithub.tsx`). You will be redirected to GitHub to authorize the application.
-  - **Email/Password:**
-    1.  Click the "Continue with Email" button (`UnauthenticatedContent.tsx`).
-    2.  The view will slide to the email/password form (`SignInWithPassword.tsx`).
-    3.  Enter your email and password.
-    4.  Choose either "Sign in" or "Sign up" based on whether you have an existing account. The form will toggle between these modes.
-- **Signing Out:** Once logged in, you can sign out at any time by clicking the "Sign out" button located within your user profile section at the bottom of the sidebar (`SignOutButton.tsx`).
+## 2.4. Managing Conversations & Collaboration
+- **Create conversation:** Click "+ New Conversation". Director/Assistant will join to help.
+- **@mention:** Type `@` to mention users, agents, or groups. Mentioning someone not in the conversation can trigger an invite.
+- **Invite by email/phone:** Add external users by email/phone; they'll get an invite to join.
+- **Participants:** See/manage all participants (users, agents, groups) in the conversation. System agents (like Director) can't be removed.
+- **Remove/block:** Users with tools/permissions can remove/block participants.
 
-2.3. **Interface Overview**
+## 2.5. Managing Agents & Teams
+- **View agents:** See all your agents (and public agents) in the Agents tab.
+- **Create agent:** Click "+ New Agent". Director/Assistant can help configure it.
+- **Edit agent:** Change avatar, name, description, personality, tools, knowledge, and permissions.
+- **Share agent:** Make agents public/private, or share with groups/individuals.
+- **Create group/team:** Create groups for friends, staff, customers, etc. Add agents/humans, assign roles, and share resources.
+- **Assign tasks:** Assign tasks to agents/teams; track progress and completion.
 
-The Agent Inbox interface is divided into two main sections:
+## 2.6. Tools & Knowledge Integration
+- **Add tools:** Give agents tools (web, messaging, phone, email, calendar, wallet, etc.).
+- **Connect knowledge:** Link Google Drive, Notion, CMS, or other sources to agents/teams.
+- **Personalization:** Your agent/team uses this info to better assist and represent you.
 
-- **Sidebar (`Sidebar.tsx`):** Located on the left side.
-  - **Header:** Displays the application logo.
-  - **Tabs:** Allows switching between "Conversations" and "Agents" views.
-  - **List Area:** Dynamically shows either your list of conversations or your list of created agents, depending on the active tab.
-  - **User Profile (`UserProfile.tsx`):** Located at the bottom, displays your avatar, name, email, and contains the "Sign out" button.
-- **Main Area:** Occupies the rest of the screen to the right of the sidebar.
-  - **Welcome Screen:** Displayed when you first log in or when no specific conversation or agent is selected. Prompts you to select or create an item.
-  - **Chat Area (`ChatArea.tsx`):** Displayed when a conversation is selected. Contains the conversation header, message history, and message input field.
-  - **Agent Profile View (`AgentProfile.tsx`):** Displayed when an agent is selected from the "Agents" tab in the sidebar. Shows agent details and allows editing.
+## 2.7. Chatting & Collaboration
+- **Send messages:** Type in the chat input and press Enter or click Send.
+- **Mentions:** Use `@` to mention users, agents, or groups. Mention logic is permission-aware.
+- **Reply to agent:** Hover over an agent's message to reply directly.
+- **Message types:**
+  - Your messages: right-aligned
+  - Agent messages: left-aligned, with agent name/avatar
+  - System messages: centered, with icons for events, tool usage, etc.
+- **Thinking indicator:** Shows when an agent is processing/responding.
+- **Markdown support:** Messages support Markdown formatting.
 
-2.4. **Managing Conversations**
-
-- **Creating a New Conversation:** Click the "+ New Conversation" button in the "Conversations" tab of the sidebar (`ConversationList.tsx`). A new conversation titled "New Conversation" will be created and automatically selected.
-- **Selecting a Conversation:** Click on any conversation item in the sidebar list to open its chat view in the main area. The selected conversation will be highlighted (`ConversationItem.tsx`).
-- **Viewing Conversation Header (`ConversationHeader.tsx`):**
-  - **Title:** The current title of the conversation is displayed at the top.
-  - **Settings:** Click the conversation title (or the wrench icon next to it) to open the settings dialog.
-    - **Rename:** Modify the conversation title in the input field and click "Save Changes".
-    - **Delete:** Click the "Delete Conversation" button (Trash icon) and confirm the deletion in the subsequent prompt (`Confirm.tsx`). _Warning: This action is irreversible and deletes all messages within the conversation._
-  - **Participants:** Avatars of participants are shown on the right side of the header (`ConversationParticipants.tsx`). Clicking these avatars opens the Participants Dialog.
-- **Managing Participants (`ParticipantsDialog.tsx`):**
-  - **Viewing:** See lists of users and agents currently in the conversation. Creators are marked. System agents (like Triage) cannot be removed.
-  - **Adding Agents:** Click the "Add Agent" button (UserPlus icon) to open a dropdown (`AgentSelector.tsx`) listing your available agents (those not already in the conversation). Select an agent to add them.
-  - **Removing Participants:** Hover over a user or a non-system agent and click the Trash icon to remove them from the conversation. A system message will appear in the chat indicating they have left.
-
-2.5. **Managing Agents**
-
-- **Viewing Agent List:** Select the "Agents" tab in the sidebar to see a list of all agents you have created (`AgentList.tsx`). Each item shows the agent's avatar, name, and description.
-- **Creating a New Agent:** Click the "+ New Agent" button in the "Agents" tab. A new agent based on a random predefined template (`shared/predefinedAgents.ts`) will be created, and you will be navigated to its profile view.
-- **Selecting an Agent:** Click on any agent in the list to view their detailed profile in the main area (`AgentProfile.tsx`).
-- **Editing Agent Details (`AgentProfile.tsx`):**
-  - **Avatar:** Click the Shuffle icon button near the avatar to randomly generate a new avatar (`AgentAvatar.tsx`).
-  - **Name:** Click the Pencil icon next to the name to enter edit mode. Type the new name and press Enter or click the Check icon to save. Press Escape to cancel.
-  - **Description:** In the "About" card, click the Pencil icon or the text itself to edit the description using the text area (`AgentDescription.tsx`, `EditableText.tsx`). Click "Save" to confirm changes or "Cancel" to discard.
-  - **Personality:** Similar to Description, edit the agent's personality in the "Personality" card (`AgentPersonality.tsx`).
-  - **Tools:** In the "Tools" card (`AgentTools.tsx`), click the Pencil icon to enter edit mode.
-    - Click the 'X' icon next to a tool badge to remove it.
-    - Click the "+ Add Tool" button to open a dropdown of available (user-choosable and not already added) tools. Select a tool to add it.
-    - Click the Pencil icon again to exit edit mode.
-- **Deleting an Agent:** On the Agent Profile screen, click the "Delete Agent" button at the bottom and confirm the deletion (`Confirm.tsx`). _Warning: This action is irreversible._
-
-2.6. **Chatting**
-
-- **Sending Messages:** Type your message in the input field at the bottom of the Chat Area (`ChatInput.tsx`) and press Enter (without Shift) or click the "Send" button.
-- **Mentioning Agents/Users:**
-  - Type `@` to trigger the suggestions popup (`react-mentions`).
-  - Start typing a name to filter the list of available agents and users in the current conversation.
-  - Select a user or agent from the list using arrow keys and Enter, or by clicking.
-  - The input will auto-complete with the mention syntax (e.g., `@[Agent Name](agent:ID)`).
-  - Messages with mentions are directed towards the mentioned participant(s). Messages without mentions are handled by the Triage agent.
-  - Mentions appear as formatted badges in the chat (`AgentMention.tsx`, `UserMention.tsx`). Agent mentions include their avatar; clicking an agent mention navigates to their profile.
-- **Replying to Agent Messages:** Hover over an agent's message bubble. A Reply icon will appear to the right (`ParticipantMessage.tsx`). Click it to automatically insert a mention of that agent into your chat input field, ready for you to type your reply (`ChatContext.tsx`).
-- **Understanding Message Types:**
-  - **Your Messages:** Appear aligned to the right, typically with a primary color background (`ParticipantMessage.tsx`).
-  - **Agent Messages:** Appear aligned to the left, typically with a muted background, showing the agent's name above the content (`ParticipantMessage.tsx`).
-  - **System Messages:** Appear centered, often with an icon (e.g., Info icon), indicating events like participant joins/leaves, tool usage, or errors (`SystemMessage.tsx`). Some system messages may have expandable details.
-- **Thinking Indicator (`ThinkingIndicator.tsx`):** When an agent is processing a request or generating a response (e.g., after being mentioned or using a tool), an indicator with their avatar and a "thinking" message will appear temporarily at the bottom of the chat.
-- **Markdown Support:** Messages support basic Markdown formatting (like bold, italics, links, lists) which will be rendered appropriately (`ReactMarkdown`, `remark-gfm`). Links automatically open in a new tab.
+## 2.8. Sharing, Permissions, and Privacy
+- **Everything is private by default.**
+- **Make public/share:** Toggle resources (agents, groups, knowledge, tools) to public or share with individuals/groups.
+- **Permissions:** Only creators/owners can edit/delete/make public/private their agents/resources.
+- **Audit trail:** All actions are tracked for security and analytics.
 
 ---
+
+## References
+- See [schema.md](./schema.md) for canonical schema.
+- See [agents.md](./agents.md) for agent/team logic.
+- See [mentions.md](./mentions.md) for mention logic and permissions.
+- See [analytics.md](./analytics.md) for analytics and impact tracking.
+- See [ui.md](./ui.md) for UI/UX patterns.
+
+---
+
+This guide ensures you can use all the features of the new ONE system—connecting, collaborating, and growing with humans and AI agents, tools, and knowledge.
