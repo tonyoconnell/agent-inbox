@@ -76,7 +76,6 @@ export function AuthenticatedContent() {
     if (route.name === "conversation") setActiveNav("conversations");
     if (route.name === "agent") setActiveNav("agents");
     if (route.name === "tools") setActiveNav("tools");
-    if (route.name === "people") setActiveNav("people");
   }, [route.name]);
 
   const SIDEBAR_NAV = [
